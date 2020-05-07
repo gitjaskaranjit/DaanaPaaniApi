@@ -28,10 +28,19 @@ namespace DaaniPaaniApi.Controllers
             _mapper = mapper;
         }
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<CustomerDTO>>> Get()
+        public async Task<ActionResult<PagedCollection<CustomerDTO>>> Get([FromQuery]PagingOptions pagingOptions = null)
         {
-            
-            return Ok( await _mapper.ProjectTo<CustomerDTO>(_customer.getAll()).ToListAsync());
+            pagingOptions.Limit = pagingOptions.Limit ?? 10;
+            pagingOptions.Offset = pagingOptions.Offset ?? 0;
+            var pagedcustomers =  await _mapper.ProjectTo<CustomerDTO>(_customer.getAll(pagingOptions)).ToListAsync();
+
+            var pagedCollection = new PagedCollection<CustomerDTO>
+            {
+                Offset = pagingOptions.Offset.Value,
+                Limit = pagingOptions.Limit.Value,
+                Items = pagedcustomers
+            };
+            return pagedCollection;
           }
 
         [HttpGet("{id}")]
@@ -76,10 +85,11 @@ namespace DaaniPaaniApi.Controllers
         }
         private bool PhoneUnique(CustomerDTO customer)
         {
-            if(_customer.getAll().Select(c=>c.PhoneNumber == customer.PhoneNumber).Any())
-            {
-                return false;
-            }
+            //TODO: Fix this Function
+            //if(_customer.getAll().Select(c=>c.PhoneNumber == customer.PhoneNumber).Any())
+            //{
+            //    return false;
+            //}
             return true;
         }
     }

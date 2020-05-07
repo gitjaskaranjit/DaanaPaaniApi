@@ -9,7 +9,7 @@ namespace DaanaPaaniApi.Repository
     public interface ICustomerService
     {
 
-        IQueryable<Customer> getAll();
+        IQueryable<Customer> getAll(PagingOptions pagingOptions);
         Task<Customer> getById(int id);
         Task<Customer> add(Customer customer);
         Task<Customer> update(int id, Customer customer);
