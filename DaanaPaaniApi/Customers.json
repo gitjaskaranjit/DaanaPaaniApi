@@ -1,0 +1,105 @@
+﻿[
+  {
+    "Fullname": "Tameka Rosales",
+    "Email": "tamekarosales@pharmacon.com",
+    "PhoneNumber": "(951) 484-2646",
+    "BillDate": "2020-12-04",
+    "Active": false,
+    "Address": {
+      "StreetNo": 25,
+      "StreetName": "John Street",
+      "City": "Thomasville",
+      "PostalCode": "T3J 5E7",
+      "AddressType": {
+        "AddressTypeName": "Main Door"
+      }
+    }
+  },
+  {
+    "Fullname": "Ivy Dale",
+    "Email": "ivydale@pharmacon.com",
+    "PhoneNumber": "(824) 490-2755",
+    "BillDate": "2020-03-19",
+    "Active": true,
+    "Address": {
+      "StreetNo": 71,
+      "StreetName": "Turner Place",
+      "City": "Soudan",
+      "PostalCode": "T3J 5E7",
+      "AddressType": {
+        "AddressTypeName": "Basement"
+      }
+    }
+  }
+  ,
+  {
+    "Fullname": "Estes Vaughan",
+    "Email": "estesvaughan@pharmacon.com",
+    "PhoneNumber": "(975) 422-2091",
+    "BillDate": "2020-06-24",
+    "Active": true,
+    "Address": {
+      "StreetNo": 28,
+      "StreetName": "Berkeley Place",
+      "City": "Harmon",
+      "PostalCode": "T3J 5E7",
+      "AddressTypeId": 1
+    }
+  },
+  {
+    "Fullname": "Gilda Pierce",
+    "Email": "gildapierce@pharmacon.com",
+    "PhoneNumber": "(925) 512-3645",
+    "BillDate": "2020-05-30",
+    "Active": true,
+    "Address": {
+      "StreetNo": 76,
+      "StreetName": "Ivan Court",
+      "City": "Albany",
+      "PostalCode": "T3J 5E7",
+      "AddressTypeId": 2
+    }
+  },
+  {
+    "Fullname": "Lilly Gonzalez",
+    "Email": "lillygonzalez@pharmacon.com",
+    "PhoneNumber": "(995) 544-3223",
+    "BillDate": "2020-05-30",
+    "Active": true,
+    "Address": {
+      "StreetNo": 39,
+      "StreetName": "Ebony Court",
+      "City": "Brazos",
+      "PostalCode": "T3J 5E7",
+      "AddressTypeId": 1
+    }
+  },
+  {
+    "Fullname": "Justice Weber",
+    "Email": "justiceweber@pharmacon.com",
+    "PhoneNumber": "(878) 518-2095",
+    "BillDate": "2020-11-04",
+    "Active": false,
+    "Address": {
+      "StreetNo": 68,
+      "StreetName": "Coles Street",
+      "City": "Sardis",
+      "PostalCode": "T3J 5E7",
+      "AddressTypeId": 2
+    }
+  },
+  {
+    "Fullname": "Rosalinda Montoya",
+    "Email": "rosalindamontoya@pharmacon.com",
+    "PhoneNumber": "(850) 566-2494",
+    "BillDate": "2020-09-02",
+    "Active": true,
+    "Address": {
+      "StreetNo": 36,
+      "StreetName": "Denton Place",
+      "City": "Wintersburg",
+      "PostalCode": "T3J 5E7",
+      "AddressTypeId": 1
+    }
+  }
+]
