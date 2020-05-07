@@ -21,6 +21,7 @@ namespace DaanaPaaniApi
                 {
                     context.Packages.Add(Package);
                 }
+                context.SaveChanges();
             }
 
         
@@ -32,6 +33,7 @@ namespace DaanaPaaniApi
                 {
                     context.Items.Add(item);
                 }
+                context.SaveChanges();
             }
 
             if (!context.PackageItems.Any())
