@@ -19,6 +19,8 @@ namespace DaanaPaaniApi
                                             .ForMember(src=>src.AddressTypeId,opt=>opt.MapFrom(des=>des.AddressType.AddressTypeId));
             CreateMap<AddressType, AddressTypeDTO>();
             CreateMap<AddressTypeDTO, AddressType>();
+            CreateMap<ItemDTO, Item>();
+            CreateMap<Item, ItemDTO>();
         }
         
     }

@@ -1,0 +1,109 @@
+﻿[
+  {
+    "PackageId": 1,
+    "ItemId": 1,
+    "Quantity": 1
+  },
+  {
+    "PackageId": 1,
+    "ItemId": 3,
+    "Quantity": 4
+  },
+  {
+    "PackageId": 2,
+    "ItemId": 1,
+    "Quantity": 1
+  },
+  {
+    "PackageId": 2,
+    "ItemId": 2,
+    "Quantity": 1
+  },
+  {
+    "PackageId": 2,
+    "ItemId": 3,
+    "Quantity": 6
+  },
+  {
+    "PackageId": 3,
+    "ItemId": 1,
+    "Quantity": 1
+  },
+  {
+    "PackageId": 3,
+    "ItemId": 2,
+    "Quantity": 1
+  },
+  {
+    "PackageId": 3,
+    "ItemId": 3,
+    "Quantity": 8
+  },
+  {
+    "PackageId": 4,
+    "ItemId": 1,
+    "Quantity": 1
+  },
+  {
+    "PackageId": 4,
+    "ItemId": 2,
+    "Quantity": 1
+  },
+  {
+    "PackageId": 4,
+    "ItemId": 3,
+    "Quantity": 10
+  },
+
+  {
+    "PackageId": 5,
+    "ItemId": 7,
+    "Quantity": 1
+  },
+
+  {
+    "PackageId": 5,
+    "ItemId": 8,
+    "Quantity": 1
+  },
+
+  {
+    "PackageId": 5,
+    "ItemId": 3,
+    "Quantity": 8
+  },
+
+
+  {
+    "PackageId": 5,
+    "ItemId": 4,
+    "Quantity": 1
+  },
+
+
+  {
+    "PackageId": 5,
+    "ItemId": 6,
+    "Quantity": 1
+  },
+
+  {
+    "PackageId": 6,
+    "ItemId": 7,
+    "Quantity": 1
+  },
+
+  {
+    "PackageId": 6,
+    "ItemId": 8,
+    "Quantity": 1
+  },
+
+
+  {
+    "PackageId": 6,
+    "ItemId": 3,
+    "Quantity": 12
+  }
+
+]

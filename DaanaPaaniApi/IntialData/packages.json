@@ -1,0 +1,26 @@
+[
+  {
+    "PackageName": "Bronze",
+    "PackagePrice": 100
+  },
+  {
+    "PackageName": "Silver",
+    "PackagePrice": 150
+  },
+  {
+    "PackageName": "Gold",
+    "PackagePrice": 160
+  },
+  {
+    "PackageName": "Platium",
+    "PackagePrice": 170
+  },
+  {
+    "PackageName": "Diamond",
+    "PackagePrice": 190
+  },
+  {
+    "PackageName": "Crown",
+    "PackagePrice": 200
+  }
+]

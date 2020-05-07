@@ -24,7 +24,7 @@ namespace DaanaPaaniApi
                 {
                     var context = services.GetRequiredService<DataContext>();
                     context.Database.Migrate();
-                    Seed.SeedCustomer(context);
+                    Seed.SeedDatabase(context);
 
                 }
                 catch (Exception ex)

@@ -44,6 +44,10 @@ namespace DaaniPaaniApi.Controllers
         [HttpPost]
         public async Task<IActionResult> Post([FromBody]CustomerDTO customerDTO)
         {
+            if (!PhoneUnique(customerDTO))
+            {
+                return BadRequest(new ApiError("Phone number already in use"));
+            }
             var customer = _mapper.Map<CustomerDTO, Customer>(customerDTO);
            return Ok(_mapper.Map<Customer,CustomerDTO>(await  _customer.add(customer)));
 
@@ -52,20 +56,28 @@ namespace DaaniPaaniApi.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, CustomerDTO customerDTO)
         {
-                 var customeEntity =    await _customer.getById(id);
+            var customeEntity =    await _customer.getById(id);
             if (customeEntity == null)
             {
                 return NotFound(new ApiError("Customer not found"));
             };
             var customer = _mapper.Map<CustomerDTO, Customer>(customerDTO,customeEntity);
            var updatedCustomer =  await _customer.update(id, customer);
-            return Ok(_mapper.Map<Customer,CustomerDTO>(updatedCustomer));
+            return NoContent();
     }
         [HttpDelete("{id}")]
         public async Task<IActionResult> Remove([FromRoute]int id)
         {
             if (await _customer.delete(id) == null) { return NotFound(new ApiError("Customer not Found")); }
             return NoContent();
+        }
+        private bool PhoneUnique(CustomerDTO customer)
+        {
+            if(_customer.getAll().Select(c=>c.PhoneNumber == customer.PhoneNumber).Any())
+            {
+                return false;
+            }
+            return true;
         }
     }
 }

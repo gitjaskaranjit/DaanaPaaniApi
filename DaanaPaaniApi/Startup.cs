@@ -43,8 +43,10 @@ namespace DaanaPaaniApi
                 }
                );
             services.AddDbContext<DataContext>(options => options.UseSqlite(Configuration.GetConnectionString("DefaultConnection")));
+            //
             services.AddAutoMapper(typeof(MappingProfile));
             services.AddScoped<ICustomerService, CustomerService>();
+            services.AddScoped<IItemService, ItemService>();
 
         }
 
