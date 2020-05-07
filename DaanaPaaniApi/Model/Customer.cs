@@ -21,5 +21,6 @@ namespace DaanaPaaniApi.Model
         public DateTime BillDate { get; set; }
         public bool Active { get; set; }
         public Address Address { get; set; }
+        public ICollection<Order> Order { get; set; }
     }
 }

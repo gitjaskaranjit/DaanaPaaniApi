@@ -15,7 +15,6 @@ namespace DaanaPaaniApi.DTOs
         [EmailAddress]
         public string Email { get; set; }
         [Required]
-        [UniquePhone]
         public string PhoneNumber { get; set; }
         public DateTime BillDate { get; set; }
         public AddressDTO Address { get; set; }
