@@ -47,6 +47,7 @@ namespace DaanaPaaniApi
             services.AddAutoMapper(typeof(MappingProfile));
             services.AddScoped<ICustomerService, CustomerService>();
             services.AddScoped<IItemService, ItemService>();
+            services.AddScoped<IPackageService, PackageService>();
 
         }
 

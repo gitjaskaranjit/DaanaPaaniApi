@@ -13,6 +13,6 @@ namespace DaanaPaaniApi.Repository
         Task<Customer> getById(int id);
         Task<Customer> add(Customer customer);
         Task<Customer> update(int id, Customer customer);
-        Task<Customer> delete(int id);
+        void delete(Customer customer);
     }
 }

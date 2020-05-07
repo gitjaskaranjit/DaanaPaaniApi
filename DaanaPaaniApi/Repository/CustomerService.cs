@@ -23,13 +23,12 @@ namespace DaanaPaaniApi.Repository
             return newCustomer.Entity;
         }
 
-        public async Task<Customer> delete(int id)
+        public async void delete(Customer customer)
         {
-            var customerEntity = await _context.Customers.FindAsync(id);
-            if (customerEntity == null) return null;
-            _context.Customers.Remove(customerEntity);
-           await  _context.SaveChangesAsync();
-            return customerEntity;
+            customer.Active = false;
+          
+            _context.Customers.Update(customer);
+            await  _context.SaveChangesAsync();
         }
 
         public IQueryable<Customer> getAll()

@@ -21,6 +21,10 @@ namespace DaanaPaaniApi
             CreateMap<AddressTypeDTO, AddressType>();
             CreateMap<ItemDTO, Item>();
             CreateMap<Item, ItemDTO>();
+            CreateMap<PackageItem, PackageItemDTO>();
+            CreateMap<PackageItemDTO, PackageItem>();
+            CreateMap<Package, PackageDTO>();
+            CreateMap<PackageDTO, Package>();
         }
         
     }

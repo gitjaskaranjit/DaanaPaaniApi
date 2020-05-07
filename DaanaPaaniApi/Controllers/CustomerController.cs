@@ -49,7 +49,8 @@ namespace DaaniPaaniApi.Controllers
                 return BadRequest(new ApiError("Phone number already in use"));
             }
             var customer = _mapper.Map<CustomerDTO, Customer>(customerDTO);
-           return Ok(_mapper.Map<Customer,CustomerDTO>(await  _customer.add(customer)));
+            var addedCustomer = _mapper.Map<Customer, CustomerDTO>(await _customer.add(customer));
+            return CreatedAtAction(nameof(GetById), new { id = addedCustomer.CustomerId }, addedCustomer);
 
           
         }
@@ -68,7 +69,9 @@ namespace DaaniPaaniApi.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Remove([FromRoute]int id)
         {
-            if (await _customer.delete(id) == null) { return NotFound(new ApiError("Customer not Found")); }
+            var customer = await  _customer.getById(id);
+            if (customer == null) { return NotFound(new ApiError("Customer not Found")); }
+            _customer.delete(customer);
             return NoContent();
         }
         private bool PhoneUnique(CustomerDTO customer)
