@@ -15,6 +15,11 @@ using Microsoft.Extensions.Logging;
 using AutoMapper;
 using DaanaPaaniApi.Repository;
 using DaanaPaaniApi.infrastructure;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using DaanaPaaniApi.DTOs;
+using Okta.AspNetCore;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.Authorization;
 
 namespace DaanaPaaniApi
 {
@@ -32,8 +37,15 @@ namespace DaanaPaaniApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc(options => options.Filters.Add<JsonExceptionFilter>()); ;
-
+            services.AddMvc(options => {
+                options.Filters.Add<JsonExceptionFilter>();
+                var policy = new AuthorizationPolicyBuilder()
+                .RequireAuthenticatedUser()
+                .Build();
+                options.Filters.Add(new AuthorizeFilter(policy));
+                
+                
+                }); 
             services.AddControllers()
                 .AddNewtonsoftJson(options => options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore)
                 .ConfigureApiBehaviorOptions(options => options.InvalidModelStateResponseFactory = context =>
@@ -43,11 +55,27 @@ namespace DaanaPaaniApi
                 }
                );
             services.AddDbContext<DataContext>(options => options.UseSqlite(Configuration.GetConnectionString("DefaultConnection")));
-            //
+            services.AddCors(options=>
+            {
+                options.AddPolicy("AllowAll", builder => builder.AllowAnyOrigin()
+                                                               .AllowAnyMethod()
+                                                               .AllowAnyHeader());
+            });
             services.AddAutoMapper(typeof(MappingProfile));
             services.AddScoped<ICustomerService, CustomerService>();
             services.AddScoped<IItemService, ItemService>();
             services.AddScoped<IPackageService, PackageService>();
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme =OktaDefaults.ApiAuthenticationScheme;
+                options.DefaultChallengeScheme = OktaDefaults.ApiAuthenticationScheme;
+                options.DefaultSignInScheme = OktaDefaults.ApiAuthenticationScheme;
+
+            }).AddOktaWebApi(new OktaWebApiOptions()
+            {
+            OktaDomain = Configuration.GetSection("Okta").GetSection("OktaDomain").Value
+            });
+            services.AddAuthorization();
 
         }
 
@@ -63,7 +91,9 @@ namespace DaanaPaaniApi
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
+
 
             app.UseEndpoints(endpoints =>
             {
