@@ -25,15 +25,19 @@ namespace DaanaPaaniApi.Controllers
             _mapper = mapper;
         }
 
-        // GET: api/Item
+        // GET: /Item
         [HttpGet]
+        [ProducesResponseType(200)]
         public async Task<ActionResult<IEnumerable<Item>>> GetItems()
         {
             return Ok( await _mapper.ProjectTo<ItemDTO>(_item.getAll()).ToListAsync());
         }
 
-        // GET: api/Item/5
+        // GET: /Item/5
         [HttpGet("{id}")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(404)]
+
         public async Task<ActionResult<ItemDTO>> GetItem(int id)
         {
             var item = await _item.getById(id);
@@ -46,10 +50,14 @@ namespace DaanaPaaniApi.Controllers
             return _mapper.Map<Item,ItemDTO>(item);
         }
 
-        // PUT: api/Item/5
+        // PUT: /Item/5
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPut("{id}")]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(204)]
+
         public async Task<IActionResult> PutItem(int id, ItemDTO itemDTO)
         {
             var itemEntity = await _item.getById(id);
@@ -68,20 +76,23 @@ namespace DaanaPaaniApi.Controllers
             return NoContent();
         }
 
-        // POST: api/Item
+        // POST: /Item
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(201)]
         public async Task<ActionResult<Item>> PostItem(ItemDTO itemDTO)
         {
-           var item =  _mapper.Map<ItemDTO, Item>(itemDTO);
-            var addedItem = await _item.add(item);
-
+            var item =  _mapper.Map<ItemDTO, Item>(itemDTO);
+            var addedItem = _mapper.Map<Item, ItemDTO>(await _item.add(item));
             return CreatedAtAction("GetItem", new { id = addedItem.ItemId}, addedItem);
         }
 
-        // DELETE: api/Item/5
+        // DELETE:/Item/5
         [HttpDelete("{id}")]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(204)]
         public async Task<ActionResult> DeleteItem(int id)
         {
             var item = await _item.getById(id);

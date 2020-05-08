@@ -28,22 +28,35 @@ namespace DaaniPaaniApi.Controllers
             _mapper = mapper;
         }
         [HttpGet]
-        public async Task<ActionResult<PagedCollection<CustomerDTO>>> Get([FromQuery]PagingOptions pagingOptions = null)
+        [ProducesResponseType(200)]
+        [ProducesResponseType(400)]
+        public async Task<ActionResult<PagedCollection<CustomerDTO>>> Get(
+                                                                            [FromQuery]PagingOptions pagingOptions = null,
+                                                                            [FromQuery]SortingOptions<CustomerDTO,Customer> sortingOptions = null
+                                                                             )
         {
             pagingOptions.Limit = pagingOptions.Limit ?? 10;
             pagingOptions.Offset = pagingOptions.Offset ?? 0;
-            var pagedcustomers =  await _mapper.ProjectTo<CustomerDTO>(_customer.getAll(pagingOptions)).ToListAsync();
+            var customersQuery = _customer.getAll();
+
+            customersQuery = sortingOptions.Apply(customersQuery);
+            var customers =  await _mapper.ProjectTo<CustomerDTO>(customersQuery).ToListAsync();
 
             var pagedCollection = new PagedCollection<CustomerDTO>
             {
                 Offset = pagingOptions.Offset.Value,
                 Limit = pagingOptions.Limit.Value,
-                Items = pagedcustomers
+                Size = customers.Count,
+                Items = customers.Skip(pagingOptions.Offset.Value)
+                                 .Take(pagingOptions.Limit.Value)
             };
             return pagedCollection;
           }
 
         [HttpGet("{id}")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
         public async Task<IActionResult> GetById([FromRoute]int id)
         {
             var customer = await  _customer.getById(id);
@@ -51,6 +64,9 @@ namespace DaaniPaaniApi.Controllers
             return Ok(_mapper.Map<Customer,CustomerDTO>(customer));
         }
         [HttpPost]
+        [ProducesResponseType(201)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
         public async Task<IActionResult> Post([FromBody]CustomerDTO customerDTO)
         {
             if (!PhoneUnique(customerDTO))
@@ -64,6 +80,9 @@ namespace DaaniPaaniApi.Controllers
           
         }
         [HttpPut("{id}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
         public async Task<IActionResult> Update(int id, CustomerDTO customerDTO)
         {
             var customeEntity =    await _customer.getById(id);
@@ -76,6 +95,9 @@ namespace DaaniPaaniApi.Controllers
             return NoContent();
     }
         [HttpDelete("{id}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
         public async Task<IActionResult> Remove([FromRoute]int id)
         {
             var customer = await  _customer.getById(id);
@@ -85,11 +107,10 @@ namespace DaaniPaaniApi.Controllers
         }
         private bool PhoneUnique(CustomerDTO customer)
         {
-            //TODO: Fix this Function
-            //if(_customer.getAll().Select(c=>c.PhoneNumber == customer.PhoneNumber).Any())
-            //{
-            //    return false;
-            //}
+            if (_customer.getAll().Where(c => c.PhoneNumber == customer.PhoneNumber).Any())
+            {
+                return false;
+            }
             return true;
         }
     }

@@ -31,16 +31,14 @@ namespace DaanaPaaniApi.Repository
             await  _context.SaveChangesAsync();
         }
 
-        public IQueryable<Customer> getAll(PagingOptions pagingOptions)
+        public IQueryable<Customer> getAll()
         {
           var customers =   _context.Customers
                             .Include(c => c.Address)
                             .ThenInclude(c => c.AddressType);
 
-            var pagedCustomers = customers
-                                        .Skip(pagingOptions.Offset.Value)
-                                        .Take(pagingOptions.Limit.Value);
-            return pagedCustomers;
+           
+            return customers;
                                         
                                         }
 

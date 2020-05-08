@@ -14,7 +14,7 @@ namespace DaanaPaaniApi.DTOs
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public int? Limit { get; set; }
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        //public int Size { get; set; }
+        public int Size { get; set; }
         public IEnumerable<T> Items { get; set; }
     }
 }

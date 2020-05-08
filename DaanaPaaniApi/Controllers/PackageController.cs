@@ -31,7 +31,6 @@ namespace DaanaPaaniApi.Controllers
         public async Task<ActionResult<IEnumerable<PackageDTO>>> GetPackages()
         {
             var packages = _package.getAll();
-
             return await _mapper.ProjectTo<PackageDTO>(packages).ToListAsync();
         }
 
@@ -40,12 +39,10 @@ namespace DaanaPaaniApi.Controllers
         public async Task<ActionResult<PackageDTO>> GetPackage(int id)
         {
             var package = await _package.getById(id);
-
             if (package == null)
             {
                 return NotFound();
             }
-
             return _mapper.Map<Package, PackageDTO>(package) ;
         }
 
