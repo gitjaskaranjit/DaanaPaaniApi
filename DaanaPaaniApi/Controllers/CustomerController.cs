@@ -32,7 +32,8 @@ namespace DaaniPaaniApi.Controllers
         [ProducesResponseType(400)]
         public async Task<ActionResult<PagedCollection<CustomerDTO>>> Get(
                                                                             [FromQuery]PagingOptions pagingOptions = null,
-                                                                            [FromQuery]SortingOptions<CustomerDTO,Customer> sortingOptions = null
+                                                                            [FromQuery]SortingOptions<CustomerDTO,Customer> sortingOptions = null,
+                                                                            [FromQuery] SearchOptions<CustomerDTO,Customer> searchOptions = null
                                                                              )
         {
             pagingOptions.Limit = pagingOptions.Limit ?? 10;
@@ -40,6 +41,7 @@ namespace DaaniPaaniApi.Controllers
             var customersQuery = _customer.getAll();
 
             customersQuery = sortingOptions.Apply(customersQuery);
+            customersQuery = searchOptions.Apply(customersQuery);
             var customers =  await _mapper.ProjectTo<CustomerDTO>(customersQuery).ToListAsync();
 
             var pagedCollection = new PagedCollection<CustomerDTO>

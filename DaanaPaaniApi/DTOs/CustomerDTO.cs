@@ -12,14 +12,19 @@ namespace DaanaPaaniApi.DTOs
 
         public int CustomerId { get; set; }
         [Sortable]
+        [Searchable]
         public string Fullname { get; set; }
         [EmailAddress]
+        [Searchable]
         public string Email { get; set; }
         [Required]
         public bool Active { get; set; }
+        [Searchable]
         public string PhoneNumber { get; set; }
         [Sortable]
+        [Searchable]
         public DateTime BillDate { get; set; }
+        [Searchable]
         public AddressDTO Address { get; set; }
     }
 }
