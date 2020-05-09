@@ -10,9 +10,8 @@ namespace DaanaPaaniApi.DTOs
     public class AddressDTO
     {
         public int StreetNo { get; set; }
-        [Searchable]
+
         public string StreetName { get; set; }
-        [Searchable]
         public string City { get; set; }
         public string PostalCode { get; set; }
 
