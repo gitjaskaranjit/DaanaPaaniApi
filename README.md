@@ -3,8 +3,9 @@
 This is .NET Core Web Api build using repository pattern.
 this Uses
 
-* SQLite for fast development.
+* Relational Database with SQLite.
 * Automapper for mapping.
+* Okta authorization server for authentication.
 
 ## Usage
  Run in git bash
