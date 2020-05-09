@@ -18,6 +18,7 @@ namespace DaanaPaaniApi.DTOs
         [Searchable]
         public string Email { get; set; }
         [Required]
+        [Searchable]
         public bool Active { get; set; }
         [Searchable]
         public string PhoneNumber { get; set; }

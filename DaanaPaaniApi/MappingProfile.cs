@@ -25,6 +25,10 @@ namespace DaanaPaaniApi
             CreateMap<PackageItemDTO, PackageItem>();
             CreateMap<Package, PackageDTO>();
             CreateMap<PackageDTO, Package>();
+            CreateMap<OrderDTO, Order>();
+            CreateMap<Order, OrderDTO>();
+            CreateMap<AddOnDTO, AddOn>();
+            CreateMap<AddOn, AddOnDTO>();
         }
         
     }

@@ -20,18 +20,21 @@ namespace DaaniPaaniApi.Controllers
     [ApiController]
     public class CustomerController : ControllerBase
     {
-        private readonly ICustomerService _customer;
-       
+        private readonly ICustomerService _customers;
+        private readonly IOrderService _orders;
         private readonly IMapper _mapper;
-        public CustomerController(IMapper mapper, ICustomerService customer)
+        public CustomerController(IMapper mapper,
+                                  ICustomerService customer,
+                                  IOrderService orders)
         {
-            _customer = customer;
+            _customers = customer;
             _mapper = mapper;
+            _orders = orders;
         }
         [HttpGet]
         [ProducesResponseType(200)]
         [ProducesResponseType(400)]
-        public async Task<ActionResult<PagedCollection<CustomerDTO>>> Get(
+        public async Task<ActionResult<PagedCollection<CustomerDTO>>> GetCustomers(
                                                                             [FromQuery]PagingOptions pagingOptions = null,
                                                                             [FromQuery]SortingOptions<CustomerDTO,Customer> sortingOptions = null,
                                                                             [FromQuery] SearchOptions<CustomerDTO,Customer> searchOptions = null
@@ -39,7 +42,7 @@ namespace DaaniPaaniApi.Controllers
         {
             pagingOptions.Limit = pagingOptions.Limit ?? 10;
             pagingOptions.Offset = pagingOptions.Offset ?? 0;
-            var customersQuery = _customer.getAll();
+            var customersQuery = _customers.getAll();
 
             customersQuery = sortingOptions.Apply(customersQuery);
             customersQuery = searchOptions.Apply(customersQuery);
@@ -60,9 +63,9 @@ namespace DaaniPaaniApi.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
-        public async Task<IActionResult> GetById([FromRoute]int id)
+        public async Task<IActionResult> GetCustomer([FromRoute]int id)
         {
-            var customer = await  _customer.getById(id);
+            var customer = await  _customers.getById(id);
             if (customer == null) return NotFound(new ApiError("Customer not found"));
             return Ok(_mapper.Map<Customer,CustomerDTO>(customer));
         }
@@ -70,15 +73,15 @@ namespace DaaniPaaniApi.Controllers
         [ProducesResponseType(201)]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
-        public async Task<IActionResult> Post([FromBody]CustomerDTO customerDTO)
+        public async Task<IActionResult> PostCustomer([FromBody]CustomerDTO customerDTO)
         {
             if (!PhoneUnique(customerDTO))
             {
                 return BadRequest(new ApiError("Phone number already in use"));
             }
             var customer = _mapper.Map<CustomerDTO, Customer>(customerDTO);
-            var addedCustomer = _mapper.Map<Customer, CustomerDTO>(await _customer.add(customer));
-            return CreatedAtAction(nameof(GetById), new { id = addedCustomer.CustomerId }, addedCustomer);
+            var addedCustomer = _mapper.Map<Customer, CustomerDTO>(await _customers.add(customer));
+            return CreatedAtAction(nameof(GetCustomer), new { id = addedCustomer.CustomerId }, addedCustomer);
 
           
         }
@@ -86,31 +89,49 @@ namespace DaaniPaaniApi.Controllers
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
-        public async Task<IActionResult> Update(int id, CustomerDTO customerDTO)
+        public async Task<IActionResult> UpdateCustomer(int id, CustomerDTO customerDTO)
         {
-            var customeEntity =    await _customer.getById(id);
+            var customeEntity =    await _customers.getById(id);
             if (customeEntity == null)
             {
                 return NotFound(new ApiError("Customer not found"));
             };
             var customer = _mapper.Map<CustomerDTO, Customer>(customerDTO,customeEntity);
-           var updatedCustomer =  await _customer.update(id, customer);
+           var updatedCustomer =  await _customers.update(id, customer);
             return NoContent();
     }
         [HttpDelete("{id}")]
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
-        public async Task<IActionResult> Remove([FromRoute]int id)
+        public async Task<IActionResult> RemoveCustomer([FromRoute]int id)
         {
-            var customer = await  _customer.getById(id);
+            var customer = await  _customers.getById(id);
             if (customer == null) { return NotFound(new ApiError("Customer not Found")); }
-            _customer.delete(customer);
+            _customers.delete(customer);
             return NoContent();
+        }
+
+        [HttpGet("{id}/order")]
+        public async Task<PagedCollection<OrderDTO>> GetOrderOfCustomer(int id, [FromQuery]PagingOptions pagingOptions = null)
+        {
+            pagingOptions.Limit = pagingOptions.Limit ?? 10;
+            pagingOptions.Offset = pagingOptions.Offset ?? 0;
+            var orders =  await _mapper.ProjectTo<OrderDTO>(_orders.getAll().Where(o => o.customerId == id)).ToListAsync() ;
+
+            return new PagedCollection<OrderDTO>
+            {
+                Offset = pagingOptions.Offset.Value,
+                Limit = pagingOptions.Limit.Value,
+                Size = orders.Count,
+                Items = orders.Skip(pagingOptions.Offset.Value)
+                                .Take(pagingOptions.Limit.Value)
+                
+            };
         }
         private bool PhoneUnique(CustomerDTO customer)
         {
-            if (_customer.getAll().Where(c => c.PhoneNumber == customer.PhoneNumber).Any())
+            if (_customers.getAll().Where(c => c.PhoneNumber == customer.PhoneNumber).Any())
             {
                 return false;
             }

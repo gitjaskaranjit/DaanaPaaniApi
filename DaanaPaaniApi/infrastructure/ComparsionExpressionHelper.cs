@@ -54,6 +54,14 @@ namespace DaanaPaaniApi.infrastructure
                             right = Expression.Constant(Int32.Parse(term.Value.ToString()))
                         };
                     }
+                case "Boolean":
+                    {
+                        return new ComparsionTerm
+                        {
+                            left = ExpressionHelper.GetPropertyExpression(pe, propertyInfo) as Expression,
+                            right = Expression.Constant(bool.Parse(term.Value.ToString()))
+                        };
+                    }
                 default: throw new ArgumentException($"invalid type");
 
             }

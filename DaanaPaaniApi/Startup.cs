@@ -66,6 +66,7 @@ namespace DaanaPaaniApi
             services.AddScoped<IItemService, ItemService>();
             services.AddScoped<IPackageService, PackageService>();
             services.AddScoped<IAddressTypeService, AddressTypeService>();
+            services.AddScoped<IOrderService, OrderService>();
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme =OktaDefaults.ApiAuthenticationScheme;
