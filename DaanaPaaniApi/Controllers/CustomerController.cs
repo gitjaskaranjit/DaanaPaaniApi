@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
+﻿using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -8,11 +6,8 @@ using DaanaPaaniApi;
 using DaanaPaaniApi.DTOs;
 using DaanaPaaniApi.Model;
 using DaanaPaaniApi.Repository;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using SQLitePCL;
 
 namespace DaaniPaaniApi.Controllers
 {
@@ -113,6 +108,7 @@ namespace DaaniPaaniApi.Controllers
         }
 
         [HttpGet("{id}/order")]
+        [ProducesResponseType(200)]
         public async Task<PagedCollection<OrderDTO>> GetOrderOfCustomer(int id, [FromQuery]PagingOptions pagingOptions = null)
         {
             pagingOptions.Limit = pagingOptions.Limit ?? 10;

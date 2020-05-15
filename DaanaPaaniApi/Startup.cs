@@ -78,6 +78,16 @@ namespace DaanaPaaniApi
             OktaDomain = Configuration.GetSection("Okta").GetSection("OktaDomain").Value
             });
             services.AddAuthorization();
+            services.AddSwaggerDocument(document=>document.AddSecurity("Bearer",Enumerable.Empty<string>(),new NSwag.OpenApiSecurityScheme { 
+            
+                Type =NSwag.OpenApiSecuritySchemeType.OAuth2,
+                 Flow = NSwag.OpenApiOAuth2Flow.Implicit,
+                 AuthorizationUrl = "https://dev-333876.okta.com/oauth2/default/v1/authorize",
+
+
+
+
+            }));
 
         }
 
@@ -96,6 +106,24 @@ namespace DaanaPaaniApi
             app.UseAuthentication();
             app.UseAuthorization();
 
+            app.UseOpenApi();
+            app.UseSwaggerUi3(setting=> {
+                setting.OAuth2Client = new NSwag.AspNetCore.OAuth2ClientSettings
+                {
+                    
+                    ClientId = "0oabm5bk8wDtCKnx14x6",
+                    AppName = "My SPA",
+                    UsePkceWithAuthorizationCodeGrant = true,
+                   AdditionalQueryStringParameters =
+                    {
+                        {"nonce" , new Random().Next(123456,999999).ToString()},
+                        {"response_Type" , "token" },
+                        {"scope" , "openid" }
+                    }
+                    
+                };
+               
+            });
 
             app.UseEndpoints(endpoints =>
             {
