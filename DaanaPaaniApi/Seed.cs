@@ -1,18 +1,14 @@
 ﻿using DaanaPaaniApi.Model;
 using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace DaanaPaaniApi
 {
     public class Seed
     {
-        public static void SeedDatabase(DataContext context) {
-
-
-
+        public static void SeedDatabase(DataContext context)
+        {
             if (!context.Packages.Any())
             {
                 var PackagesData = System.IO.File.ReadAllText("intialData/Packages.json");
@@ -24,12 +20,11 @@ namespace DaanaPaaniApi
                 context.SaveChanges();
             }
 
-        
-            if(!context.Items.Any()){
-
+            if (!context.Items.Any())
+            {
                 var itemData = System.IO.File.ReadAllText("intialData/items.json");
                 var items = JsonConvert.DeserializeObject<List<Item>>(itemData);
-                foreach(var item in items)
+                foreach (var item in items)
                 {
                     context.Items.Add(item);
                 }
@@ -49,11 +44,10 @@ namespace DaanaPaaniApi
             {
                 var customerData = System.IO.File.ReadAllText("intialData/Customers.json");
                 var customers = JsonConvert.DeserializeObject<List<Customer>>(customerData);
-                foreach(var customer in customers)
+                foreach (var customer in customers)
                 {
                     context.Customers.Add(customer);
                 }
-                
             }
             context.SaveChanges();
         }

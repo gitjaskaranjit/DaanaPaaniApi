@@ -1,11 +1,8 @@
 ﻿using DaanaPaaniApi.DTOs;
 using LandonApi.Infrastructure;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Threading.Tasks;
 
 namespace DaanaPaaniApi.infrastructure
 {
@@ -13,7 +10,6 @@ namespace DaanaPaaniApi.infrastructure
     {
         public static Expression getComparsion(Expression left, string op, ConstantExpression right)
         {
-
             switch (op)
             {
                 case "gt": return Expression.GreaterThan(left, right);
@@ -25,6 +21,7 @@ namespace DaanaPaaniApi.infrastructure
                 default: throw new ArgumentException($"Invalid operator '{op}'");
             }
         }
+
         public static ComparsionTerm getParams(ParameterExpression pe, PropertyInfo propertyInfo, SearchTerm term)
         {
             switch (propertyInfo.PropertyType.Name)
@@ -44,7 +41,6 @@ namespace DaanaPaaniApi.infrastructure
                             left = ExpressionHelper.GetPropertyExpression(pe, propertyInfo) as Expression,
                             right = Expression.Constant(DateTime.Parse(term.Value.ToString()))
                         };
-
                     }
                 case "Int32":
                     {
@@ -63,10 +59,7 @@ namespace DaanaPaaniApi.infrastructure
                         };
                     }
                 default: throw new ArgumentException($"invalid type");
-
             }
-
         }
-
     }
 }

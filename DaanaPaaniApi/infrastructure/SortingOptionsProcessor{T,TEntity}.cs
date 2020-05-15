@@ -1,20 +1,16 @@
 ﻿using DaanaPaaniApi.DTOs;
 using LandonApi.Infrastructure;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Reflection;
-using System.Security.Cryptography;
-using System.Threading.Tasks;
 
 namespace DaanaPaaniApi.infrastructure
 {
-    public class SortingOptionsProcessor<T,TEntity>
+    public class SortingOptionsProcessor<T, TEntity>
     {
         private readonly string[] _orderBy;
+
         public SortingOptionsProcessor(string[] orderBy)
         {
             _orderBy = orderBy;
@@ -23,7 +19,8 @@ namespace DaanaPaaniApi.infrastructure
         public IEnumerable<SortTerm> GetAllTerms()
         {
             if (_orderBy == null) yield break;
-            foreach (var term in _orderBy) {
+            foreach (var term in _orderBy)
+            {
                 var token = term.Split(' ');
                 if (token.Length == 0)
                 {
@@ -37,17 +34,19 @@ namespace DaanaPaaniApi.infrastructure
                 };
             }
         }
+
         private static IEnumerable<SortTerm> GetTermsFromModel()
         {
-        return    typeof(T).GetTypeInfo()
-                        .DeclaredProperties
-                        .Where(p => p.GetCustomAttributes<SortableAttribute>().Any())
-                        .Select(p => new SortTerm { Name = p.Name });
+            return typeof(T).GetTypeInfo()
+                            .DeclaredProperties
+                            .Where(p => p.GetCustomAttributes<SortableAttribute>().Any())
+                            .Select(p => new SortTerm { Name = p.Name });
         }
+
         public IEnumerable<SortTerm> GetValidTerms()
         {
             var queryTerms = GetAllTerms().ToArray();
-            if (!queryTerms.Any())  yield break;
+            if (!queryTerms.Any()) yield break;
 
             var declaredTerms = GetTermsFromModel();
 
@@ -61,11 +60,11 @@ namespace DaanaPaaniApi.infrastructure
                     Descending = term.Descending
                 };
             }
-
         }
+
         public IQueryable<TEntity> Apply(IQueryable<TEntity> query)
         {
-            var terms = GetValidTerms().ToArray() ;
+            var terms = GetValidTerms().ToArray();
             if (!terms.Any()) return query;
             var modifiedQuery = query;
             var useThenBy = false;
@@ -73,14 +72,14 @@ namespace DaanaPaaniApi.infrastructure
             foreach (var term in terms)
             {
                 var propertyInfo = ExpressionHelper.GetPropertyInfo<TEntity>(term.Name); // property
-               var parameterExpression = ExpressionHelper.Parameter<TEntity>(); // x
-                                                                                // propertyInfo.PropertyType;
-                                                                                //x=>x.property
-                var key = ExpressionHelper.GetPropertyExpression(parameterExpression,propertyInfo);//x.property
+                var parameterExpression = ExpressionHelper.Parameter<TEntity>(); // x
+                                                                                 // propertyInfo.PropertyType;
+                                                                                 //x=>x.property
+                var key = ExpressionHelper.GetPropertyExpression(parameterExpression, propertyInfo);//x.property
 
                 var keySelector = ExpressionHelper.GetLambda(typeof(TEntity), propertyInfo.PropertyType, parameterExpression, key);
 
-                modifiedQuery = ExpressionHelper.CallOrderByOrThenBy(modifiedQuery,useThenBy,term.Descending,propertyInfo.PropertyType,keySelector);
+                modifiedQuery = ExpressionHelper.CallOrderByOrThenBy(modifiedQuery, useThenBy, term.Descending, propertyInfo.PropertyType, keySelector);
 
                 useThenBy = true;
 

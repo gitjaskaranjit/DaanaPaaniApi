@@ -1,15 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using DaanaPaaniApi;
+﻿using AutoMapper;
+using DaanaPaaniApi.DTOs;
 using DaanaPaaniApi.Model;
 using DaanaPaaniApi.Repository;
-using AutoMapper;
-using DaanaPaaniApi.DTOs;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using NSwag.Annotations;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace DaanaPaaniApi.Controllers
 {
@@ -19,6 +16,7 @@ namespace DaanaPaaniApi.Controllers
     {
         private readonly IItemService _item;
         private readonly IMapper _mapper;
+
         public ItemController(IItemService item, IMapper mapper)
         {
             _item = item;
@@ -30,14 +28,13 @@ namespace DaanaPaaniApi.Controllers
         [ProducesResponseType(200)]
         public async Task<ActionResult<IEnumerable<Item>>> GetItems()
         {
-            return Ok( await _mapper.ProjectTo<ItemDTO>(_item.getAll()).ToListAsync());
+            return Ok(await _mapper.ProjectTo<ItemDTO>(_item.getAll()).ToListAsync());
         }
 
         // GET: /Item/5
         [HttpGet("{id}")]
         [ProducesResponseType(200)]
-        [ProducesResponseType(404)]
-
+        [SwaggerResponse(404, typeof(ApiError))]
         public async Task<ActionResult<ItemDTO>> GetItem(int id)
         {
             var item = await _item.getById(id);
@@ -47,21 +44,20 @@ namespace DaanaPaaniApi.Controllers
                 return NotFound(new ApiError("Item not found"));
             }
 
-            return _mapper.Map<Item,ItemDTO>(item);
+            return _mapper.Map<Item, ItemDTO>(item);
         }
 
         // PUT: /Item/5
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPut("{id}")]
-        [ProducesResponseType(404)]
-        [ProducesResponseType(400)]
+        [SwaggerResponse(400, typeof(ApiError))]
+        [SwaggerResponse(404, typeof(ApiError))]
         [ProducesResponseType(204)]
-
         public async Task<IActionResult> PutItem(int id, ItemDTO itemDTO)
         {
             var itemEntity = await _item.getById(id);
-            if(itemEntity == null)
+            if (itemEntity == null)
             {
                 return NotFound(new ApiError("Item doesn't exist"));
             }
@@ -69,9 +65,9 @@ namespace DaanaPaaniApi.Controllers
             {
                 return BadRequest(new ApiError("Invalid parameters"));
             }
-            var item = _mapper.Map<ItemDTO, Item>(itemDTO,itemEntity);
+            var item = _mapper.Map<ItemDTO, Item>(itemDTO, itemEntity);
 
-            await _item.update(id,item);
+            await _item.update(id, item);
 
             return NoContent();
         }
@@ -80,18 +76,18 @@ namespace DaanaPaaniApi.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
-        [ProducesResponseType(400)]
+        [SwaggerResponse(400, typeof(ApiError))]
         [ProducesResponseType(201)]
         public async Task<ActionResult<Item>> PostItem(ItemDTO itemDTO)
         {
-            var item =  _mapper.Map<ItemDTO, Item>(itemDTO);
+            var item = _mapper.Map<ItemDTO, Item>(itemDTO);
             var addedItem = _mapper.Map<Item, ItemDTO>(await _item.add(item));
-            return CreatedAtAction("GetItem", new { id = addedItem.ItemId}, addedItem);
+            return CreatedAtAction("GetItem", new { id = addedItem.ItemId }, addedItem);
         }
 
         // DELETE:/Item/5
         [HttpDelete("{id}")]
-        [ProducesResponseType(404)]
+        [SwaggerResponse(404, typeof(ApiError))]
         [ProducesResponseType(204)]
         public async Task<ActionResult> DeleteItem(int id)
         {
@@ -102,8 +98,7 @@ namespace DaanaPaaniApi.Controllers
             }
 
             _item.delete(item);
-             return NoContent();
+            return NoContent();
         }
-
     }
 }

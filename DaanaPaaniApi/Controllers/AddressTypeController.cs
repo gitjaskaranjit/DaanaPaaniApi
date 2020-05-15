@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+﻿using AutoMapper;
+using DaanaPaaniApi.DTOs;
+using DaanaPaaniApi.Repository;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using DaanaPaaniApi;
-using DaanaPaaniApi.Model;
-using DaanaPaaniApi.Repository;
-using AutoMapper;
-using DaanaPaaniApi.DTOs;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace DaanaPaaniApi.Controllers
 {

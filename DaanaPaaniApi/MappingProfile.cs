@@ -1,10 +1,6 @@
 ﻿using AutoMapper;
 using DaanaPaaniApi.DTOs;
 using DaanaPaaniApi.Model;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace DaanaPaaniApi
 {
@@ -15,8 +11,8 @@ namespace DaanaPaaniApi
             CreateMap<Customer, CustomerDTO>();
             CreateMap<CustomerDTO, Customer>();
             CreateMap<Address, AddressDTO>();
-            CreateMap<AddressDTO, Address>().ForMember(src=>src.AddressType,opt=>opt.Ignore())
-                                            .ForMember(src=>src.AddressTypeId,opt=>opt.MapFrom(des=>des.AddressType.AddressTypeId));
+            CreateMap<AddressDTO, Address>().ForMember(src => src.AddressType, opt => opt.Ignore())
+                                            .ForMember(src => src.AddressTypeId, opt => opt.MapFrom(des => des.AddressType.AddressTypeId));
             CreateMap<AddressType, AddressTypeDTO>();
             CreateMap<AddressTypeDTO, AddressType>();
             CreateMap<ItemDTO, Item>();
@@ -30,6 +26,5 @@ namespace DaanaPaaniApi
             CreateMap<AddOnDTO, AddOn>();
             CreateMap<AddOn, AddOnDTO>();
         }
-        
     }
 }

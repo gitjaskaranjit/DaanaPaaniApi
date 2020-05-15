@@ -1,6 +1,4 @@
 ﻿using DaanaPaaniApi.Model;
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -9,17 +7,18 @@ namespace DaanaPaaniApi.Repository
     public class ItemService : IItemService
     {
         private readonly DataContext _context;
+
         public ItemService(DataContext context)
         {
             _context = context;
         }
-        public async  Task<Item> add(Item item)
+
+        public async Task<Item> add(Item item)
         {
-          var itemsaved =   await  _context.Items.AddAsync(item);
-            await  _context.SaveChangesAsync();
+            var itemsaved = await _context.Items.AddAsync(item);
+            await _context.SaveChangesAsync();
 
             return itemsaved.Entity;
-
         }
 
         public async void delete(Item item)
@@ -40,7 +39,7 @@ namespace DaanaPaaniApi.Repository
 
         public async Task<Item> update(int id, Item item)
         {
-          var updatedItem =   _context.Items.Update(item);
+            var updatedItem = _context.Items.Update(item);
             await _context.SaveChangesAsync();
             return updatedItem.Entity;
         }

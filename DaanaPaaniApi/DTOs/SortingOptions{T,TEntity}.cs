@@ -3,8 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Net.WebSockets;
-using System.Threading.Tasks;
 
 namespace DaanaPaaniApi.DTOs
 {
@@ -27,7 +25,6 @@ namespace DaanaPaaniApi.DTOs
                     $"Invalid sort term '{term}'", new[] { nameof(OrderBy) }
                     );
             }
-
         }
 
         public IQueryable<TEntity> Apply(IQueryable<TEntity> query)

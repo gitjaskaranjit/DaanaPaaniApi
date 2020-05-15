@@ -1,10 +1,6 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace DaanaPaaniApi.infrastructure
 {
@@ -16,10 +12,12 @@ namespace DaanaPaaniApi.infrastructure
         {
             _env = env;
         }
+
         public void OnException(ExceptionContext context)
         {
             var error = new ApiError();
-            if (_env.IsDevelopment()) {
+            if (_env.IsDevelopment())
+            {
                 error.Message = context.Exception.Message;
                 error.Detail = context.Exception.StackTrace;
             }

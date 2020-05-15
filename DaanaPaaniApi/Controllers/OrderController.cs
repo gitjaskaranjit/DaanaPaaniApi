@@ -1,15 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using DaanaPaaniApi;
+﻿using AutoMapper;
+using DaanaPaaniApi.DTOs;
 using DaanaPaaniApi.Model;
 using DaanaPaaniApi.Repository;
-using AutoMapper;
-using DaanaPaaniApi.DTOs;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using NSwag.Annotations;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace DaanaPaaniApi.Controllers
 {
@@ -45,13 +43,14 @@ namespace DaanaPaaniApi.Controllers
                 return NotFound(new ApiError("Not found"));
             }
 
-            return _mapper.Map<Order,OrderDTO>(order);
+            return _mapper.Map<Order, OrderDTO>(order);
         }
 
         // PUT: api/Order/5
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPut("{id}")]
+        [SwaggerIgnore]
         public async Task<IActionResult> PutOrder(int id, Order order)
         {
             //if (id != order.OrderId)
@@ -86,6 +85,7 @@ namespace DaanaPaaniApi.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
+        [SwaggerIgnore]
         public async Task<ActionResult<Order>> PostOrder(Order order)
         {
             //_context.Orders.Add(order);
@@ -97,6 +97,7 @@ namespace DaanaPaaniApi.Controllers
 
         // DELETE: api/Order/5
         [HttpDelete("{id}")]
+        [SwaggerIgnore]
         public async Task<ActionResult<Order>> DeleteOrder(int id)
         {
             //var order = await _context.Orders.FindAsync(id);

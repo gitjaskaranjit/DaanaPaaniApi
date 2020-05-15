@@ -1,13 +1,14 @@
-﻿using System.Data;
-using System.Linq;
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using AutoMapper;
 using DaanaPaaniApi;
 using DaanaPaaniApi.DTOs;
 using DaanaPaaniApi.Model;
 using DaanaPaaniApi.Repository;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using NSwag.Annotations;
+using System.Data;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace DaaniPaaniApi.Controllers
 {
@@ -16,8 +17,9 @@ namespace DaaniPaaniApi.Controllers
     public class CustomerController : ControllerBase
     {
         private readonly ICustomerService _customers;
-        private readonly IOrderService _orders;
         private readonly IMapper _mapper;
+        private readonly IOrderService _orders;
+
         public CustomerController(IMapper mapper,
                                   ICustomerService customer,
                                   IOrderService orders)
@@ -26,13 +28,25 @@ namespace DaaniPaaniApi.Controllers
             _mapper = mapper;
             _orders = orders;
         }
+
+        [HttpGet("{id}")]
+        [ProducesResponseType(200)]
+        [SwaggerResponse(400, typeof(ApiError))]
+        [SwaggerResponse(404, typeof(ApiError))]
+        public async Task<IActionResult> GetCustomer([FromRoute]int id)
+        {
+            var customer = await _customers.getById(id);
+            if (customer == null) return NotFound(new ApiError("Customer not found"));
+            return Ok(_mapper.Map<Customer, CustomerDTO>(customer));
+        }
+
         [HttpGet]
         [ProducesResponseType(200)]
-        [ProducesResponseType(400)]
+        [SwaggerResponse(400, typeof(ApiError))]
         public async Task<ActionResult<PagedCollection<CustomerDTO>>> GetCustomers(
                                                                             [FromQuery]PagingOptions pagingOptions = null,
-                                                                            [FromQuery]SortingOptions<CustomerDTO,Customer> sortingOptions = null,
-                                                                            [FromQuery] SearchOptions<CustomerDTO,Customer> searchOptions = null
+                                                                            [FromQuery]SortingOptions<CustomerDTO, Customer> sortingOptions = null,
+                                                                            [FromQuery] SearchOptions<CustomerDTO, Customer> searchOptions = null
                                                                              )
         {
             pagingOptions.Limit = pagingOptions.Limit ?? 10;
@@ -41,7 +55,7 @@ namespace DaaniPaaniApi.Controllers
 
             customersQuery = sortingOptions.Apply(customersQuery);
             customersQuery = searchOptions.Apply(customersQuery);
-            var customers =  await _mapper.ProjectTo<CustomerDTO>(customersQuery).ToListAsync();
+            var customers = await _mapper.ProjectTo<CustomerDTO>(customersQuery).ToListAsync();
 
             var pagedCollection = new PagedCollection<CustomerDTO>
             {
@@ -52,22 +66,38 @@ namespace DaaniPaaniApi.Controllers
                                  .Take(pagingOptions.Limit.Value)
             };
             return pagedCollection;
-          }
-
-        [HttpGet("{id}")]
-        [ProducesResponseType(200)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(404)]
-        public async Task<IActionResult> GetCustomer([FromRoute]int id)
-        {
-            var customer = await  _customers.getById(id);
-            if (customer == null) return NotFound(new ApiError("Customer not found"));
-            return Ok(_mapper.Map<Customer,CustomerDTO>(customer));
         }
+
+        [HttpGet("{id}/order")]
+        [ProducesResponseType(200)]
+        [SwaggerResponse(404, typeof(ApiError))]
+        public async Task<ActionResult<PagedCollection<OrderDTO>>> GetOrderOfCustomer(int id, [FromQuery]PagingOptions pagingOptions = null)
+        {
+            pagingOptions.Limit = pagingOptions.Limit ?? 10;
+            pagingOptions.Offset = pagingOptions.Offset ?? 0;
+            if (CustomerExist(id))
+            {
+                var orders = await _mapper.ProjectTo<OrderDTO>(_orders.getAll().Where(o => o.customerId == id)).ToListAsync();
+
+                return new PagedCollection<OrderDTO>
+                {
+                    Offset = pagingOptions.Offset.Value,
+                    Limit = pagingOptions.Limit.Value,
+                    Size = orders.Count,
+                    Items = orders.Skip(pagingOptions.Offset.Value)
+                                    .Take(pagingOptions.Limit.Value)
+                };
+            }
+            else
+            {
+                return NotFound(new ApiError("Customer doesn't exist"));
+            }
+        }
+
         [HttpPost]
         [ProducesResponseType(201)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(404)]
+        [SwaggerResponse(400, typeof(ApiError))]
+        [SwaggerResponse(404, typeof(ApiError))]
         public async Task<IActionResult> PostCustomer([FromBody]CustomerDTO customerDTO)
         {
             if (!PhoneUnique(customerDTO))
@@ -77,54 +107,45 @@ namespace DaaniPaaniApi.Controllers
             var customer = _mapper.Map<CustomerDTO, Customer>(customerDTO);
             var addedCustomer = _mapper.Map<Customer, CustomerDTO>(await _customers.add(customer));
             return CreatedAtAction(nameof(GetCustomer), new { id = addedCustomer.CustomerId }, addedCustomer);
-
-          
         }
+
+        [HttpDelete("{id}")]
+        [ProducesResponseType(204)]
+        [SwaggerResponse(400, typeof(ApiError))]
+        [SwaggerResponse(404, typeof(ApiError))]
+        public async Task<IActionResult> RemoveCustomer([FromRoute]int id)
+        {
+            var customer = await _customers.getById(id);
+            if (customer == null) { return NotFound(new ApiError("Customer not Found")); }
+            _customers.delete(customer); return NoContent();
+        }
+
         [HttpPut("{id}")]
         [ProducesResponseType(204)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(404)]
+        [SwaggerResponse(400, typeof(ApiError))]
+        [SwaggerResponse(404, typeof(ApiError))]
         public async Task<IActionResult> UpdateCustomer(int id, CustomerDTO customerDTO)
         {
-            var customeEntity =    await _customers.getById(id);
+            var customeEntity = await _customers.getById(id);
             if (customeEntity == null)
             {
                 return NotFound(new ApiError("Customer not found"));
             };
-            var customer = _mapper.Map<CustomerDTO, Customer>(customerDTO,customeEntity);
-           var updatedCustomer =  await _customers.update(id, customer);
-            return NoContent();
-    }
-        [HttpDelete("{id}")]
-        [ProducesResponseType(204)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(404)]
-        public async Task<IActionResult> RemoveCustomer([FromRoute]int id)
-        {
-            var customer = await  _customers.getById(id);
-            if (customer == null) { return NotFound(new ApiError("Customer not Found")); }
-            _customers.delete(customer);
+            var customer = _mapper.Map<CustomerDTO, Customer>(customerDTO, customeEntity);
+            var updatedCustomer = await _customers.update(id, customer);
             return NoContent();
         }
 
-        [HttpGet("{id}/order")]
-        [ProducesResponseType(200)]
-        public async Task<PagedCollection<OrderDTO>> GetOrderOfCustomer(int id, [FromQuery]PagingOptions pagingOptions = null)
+        private bool CustomerExist(int id)
         {
-            pagingOptions.Limit = pagingOptions.Limit ?? 10;
-            pagingOptions.Offset = pagingOptions.Offset ?? 0;
-            var orders =  await _mapper.ProjectTo<OrderDTO>(_orders.getAll().Where(o => o.customerId == id)).ToListAsync() ;
-
-            return new PagedCollection<OrderDTO>
+            var customer = _customers.getById(id).Result;
+            if (customer == null)
             {
-                Offset = pagingOptions.Offset.Value,
-                Limit = pagingOptions.Limit.Value,
-                Size = orders.Count,
-                Items = orders.Skip(pagingOptions.Offset.Value)
-                                .Take(pagingOptions.Limit.Value)
-                
-            };
+                return false;
+            }
+            return true;
         }
+
         private bool PhoneUnique(CustomerDTO customer)
         {
             if (_customers.getAll().Where(c => c.PhoneNumber == customer.PhoneNumber).Any())

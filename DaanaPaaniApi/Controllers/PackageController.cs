@@ -1,15 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using DaanaPaaniApi;
+﻿using AutoMapper;
+using DaanaPaaniApi.DTOs;
 using DaanaPaaniApi.Model;
 using DaanaPaaniApi.Repository;
-using AutoMapper;
-using DaanaPaaniApi.DTOs;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using NSwag.Annotations;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace DaanaPaaniApi.Controllers
 {
@@ -20,7 +18,7 @@ namespace DaanaPaaniApi.Controllers
         private readonly IPackageService _package;
         private readonly IMapper _mapper;
 
-        public PackageController(IPackageService package,IMapper mapper)
+        public PackageController(IPackageService package, IMapper mapper)
         {
             _package = package;
             _mapper = mapper;
@@ -43,13 +41,14 @@ namespace DaanaPaaniApi.Controllers
             {
                 return NotFound();
             }
-            return _mapper.Map<Package, PackageDTO>(package) ;
+            return _mapper.Map<Package, PackageDTO>(package);
         }
 
         // PUT: api/Package/5
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPut("{id}")]
+        [SwaggerIgnore]
         public async Task<IActionResult> PutPackage(int id, Package package)
         {
             //if (id != package.PackageId)
@@ -83,6 +82,7 @@ namespace DaanaPaaniApi.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
+        [SwaggerIgnore]
         public async Task<ActionResult<Package>> PostPackage(Package package)
         {
             //_context.Packages.Add(package);
@@ -94,6 +94,7 @@ namespace DaanaPaaniApi.Controllers
 
         // DELETE: api/Package/5
         [HttpDelete("{id}")]
+        [SwaggerIgnore]
         public async Task<ActionResult<Package>> DeletePackage(int id)
         {
             //    var package = await _context.Packages.FindAsync(id);
@@ -107,8 +108,6 @@ namespace DaanaPaaniApi.Controllers
 
             //    return package;
             throw new NotImplementedException();
-    }
-
-       
+        }
     }
 }
