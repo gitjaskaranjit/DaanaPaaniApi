@@ -18,7 +18,9 @@ namespace DaanaPaaniApi.Model
         [Required]
         public string PhoneNumber { get; set; }
 
-        public DateTime BillDate { get; set; }
+        public DateTime DateOfBirth { get; set; }
+
+        public DateTime AddedDate { get; set; }
         public bool Active { get; set; }
         public Address Address { get; set; }
         public ICollection<Order> Order { get; set; }

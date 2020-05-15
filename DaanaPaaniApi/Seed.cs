@@ -9,6 +9,7 @@ namespace DaanaPaaniApi
     {
         public static void SeedDatabase(DataContext context)
         {
+        
             if (!context.Packages.Any())
             {
                 var PackagesData = System.IO.File.ReadAllText("intialData/Packages.json");
@@ -47,6 +48,15 @@ namespace DaanaPaaniApi
                 foreach (var customer in customers)
                 {
                     context.Customers.Add(customer);
+                }
+            }
+            if (!context.DiscountTypes.Any())
+            {
+                var DiscountTypesData = System.IO.File.ReadAllText("intialData/DiscountType.json");
+                var DiscountsTypes = JsonConvert.DeserializeObject<List<DiscountType>>(DiscountTypesData);
+                foreach (var discountType in DiscountsTypes)
+                {
+                    context.DiscountTypes.Add(discountType);
                 }
             }
             context.SaveChanges();

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace DaanaPaaniApi.Model
 {
@@ -12,6 +13,9 @@ namespace DaanaPaaniApi.Model
         public int PackageId { get; set; }
         public Package Package { get; set; }
 
+        public DateTime StartDate { get; set; }
+        public DateTime? EndDate { get; set; }
         public ICollection<AddOn> AddOns { get; set; }
+        public Discount Discount { get; set; }
     }
 }

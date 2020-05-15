@@ -5,6 +5,7 @@
     "PhoneNumber": "(951) 484-2646",
     "BillDate": "2020-12-04",
     "Active": false,
+    "DateOfBirth": "1995-11-12",
     "Address": {
       "StreetNo": 25,
       "StreetName": "John Street",
@@ -21,6 +22,7 @@
     "PhoneNumber": "(824) 490-2755",
     "BillDate": "2020-03-19",
     "Active": true,
+    "DateOfBirth": "1995-11-12",
     "Address": {
       "StreetNo": 71,
       "StreetName": "Turner Place",
@@ -37,6 +39,7 @@
     "PhoneNumber": "(975) 422-2091",
     "BillDate": "2020-06-24",
     "Active": true,
+    "DateOfBirth": "1995-11-12",
     "Address": {
       "StreetNo": 28,
       "StreetName": "Berkeley Place",
@@ -51,6 +54,7 @@
     "PhoneNumber": "(925) 512-3645",
     "BillDate": "2020-05-30",
     "Active": true,
+    "DateOfBirth": "1995-11-12",
     "Address": {
       "StreetNo": 76,
       "StreetName": "Ivan Court",
@@ -65,6 +69,7 @@
     "PhoneNumber": "(995) 544-3223",
     "BillDate": "2020-05-30",
     "Active": true,
+    "DateOfBirth": "1995-11-12",
     "Address": {
       "StreetNo": 39,
       "StreetName": "Ebony Court",
@@ -79,6 +84,7 @@
     "PhoneNumber": "(878) 518-2095",
     "BillDate": "2020-11-04",
     "Active": false,
+    "DateOfBirth": "1995-11-12",
     "Address": {
       "StreetNo": 68,
       "StreetName": "Coles Street",
@@ -92,6 +98,7 @@
     "Email": "rosalindamontoya@pharmacon.com",
     "PhoneNumber": "(850) 566-2494",
     "BillDate": "2020-09-02",
+    "DateOfBirth": "1995-11-12",
     "Active": true,
     "Address": {
       "StreetNo": 36,

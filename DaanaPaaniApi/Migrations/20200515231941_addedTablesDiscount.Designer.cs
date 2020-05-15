@@ -9,8 +9,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DaanaPaaniApi.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20200507060556_addedOrderTables")]
-    partial class addedOrderTables
+    [Migration("20200515231941_addedTablesDiscount")]
+    partial class addedTablesDiscount
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -86,7 +86,10 @@ namespace DaanaPaaniApi.Migrations
                     b.Property<bool>("Active")
                         .HasColumnType("INTEGER");
 
-                    b.Property<DateTime>("BillDate")
+                    b.Property<DateTime>("AddedDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("DateOfBirth")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Email")
@@ -105,6 +108,38 @@ namespace DaanaPaaniApi.Migrations
                         .IsUnique();
 
                     b.ToTable("Customers");
+                });
+
+            modelBuilder.Entity("DaanaPaaniApi.Model.Discount", b =>
+                {
+                    b.Property<int>("OrderId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("DiscountTypeId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("DiscountValue")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("OrderId");
+
+                    b.HasIndex("DiscountTypeId");
+
+                    b.ToTable("Discounts");
+                });
+
+            modelBuilder.Entity("DaanaPaaniApi.Model.DiscountType", b =>
+                {
+                    b.Property<int>("DiscountTypeId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("DiscountTypeName")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("DiscountTypeId");
+
+                    b.ToTable("DiscountTypes");
                 });
 
             modelBuilder.Entity("DaanaPaaniApi.Model.Item", b =>
@@ -133,8 +168,14 @@ namespace DaanaPaaniApi.Migrations
                     b.Property<string>("Comment")
                         .HasColumnType("TEXT");
 
+                    b.Property<DateTime?>("EndDate")
+                        .HasColumnType("TEXT");
+
                     b.Property<int>("PackageId")
                         .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("TEXT");
 
                     b.Property<int>("customerId")
                         .HasColumnType("INTEGER");
@@ -209,6 +250,21 @@ namespace DaanaPaaniApi.Migrations
                     b.HasOne("DaanaPaaniApi.Model.Customer", "Customer")
                         .WithOne("Address")
                         .HasForeignKey("DaanaPaaniApi.Model.Address", "CustomerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("DaanaPaaniApi.Model.Discount", b =>
+                {
+                    b.HasOne("DaanaPaaniApi.Model.DiscountType", "DiscountType")
+                        .WithMany("Discounts")
+                        .HasForeignKey("DiscountTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DaanaPaaniApi.Model.Order", "Order")
+                        .WithOne("Discount")
+                        .HasForeignKey("DaanaPaaniApi.Model.Discount", "OrderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

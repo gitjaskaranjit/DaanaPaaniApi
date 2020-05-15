@@ -29,14 +29,16 @@ namespace DaanaPaaniApi.Repository
         {
             return _context.Orders
                  .Include(o => o.AddOns)
-                 .Include(o => o.Package);
+                 .Include(o => o.Package)
+                 .Include(o => o.Discount);
         }
 
         public Task<Order> getById(int id)
         {
             return _context.Orders
                 .Include(o => o.AddOns)
-                .Include(o => o.Package).SingleOrDefaultAsync(o => o.OrderId == id);
+                .Include(o => o.Package)
+                .Include(o => o.Discount).SingleOrDefaultAsync(o => o.OrderId == id);
         }
 
         public Task<Order> update(int id, Order order)

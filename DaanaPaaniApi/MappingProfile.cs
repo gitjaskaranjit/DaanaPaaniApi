@@ -25,6 +25,8 @@ namespace DaanaPaaniApi
             CreateMap<Order, OrderDTO>();
             CreateMap<AddOnDTO, AddOn>();
             CreateMap<AddOn, AddOnDTO>();
+            CreateMap<Discount, DiscountDTO>();
+            CreateMap<DiscountDTO, Discount>();
         }
     }
 }
