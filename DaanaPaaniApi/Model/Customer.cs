@@ -23,6 +23,7 @@ namespace DaanaPaaniApi.Model
         public DateTime AddedDate { get; set; }
         public bool Active { get; set; }
         public Address Address { get; set; }
+        public LocationInfo locationInfo { get; set; }
         public ICollection<Order> Order { get; set; }
     }
 }

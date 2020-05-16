@@ -1,5 +1,6 @@
 using AutoMapper;
 using DaanaPaaniApi.infrastructure;
+using DaanaPaaniApi.Model;
 using DaanaPaaniApi.Repository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -30,6 +31,8 @@ namespace DaanaPaaniApi
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddHttpContextAccessor();
+            services.AddHttpClient();
+            services.Configure<GoogleApiOptions>(Configuration.GetSection("GoogleApiOptions"));
             services.AddMvc(options =>
             {
                 options.Filters.Add<JsonExceptionFilter>();
@@ -59,6 +62,7 @@ namespace DaanaPaaniApi
             services.AddScoped<IPackageService, PackageService>();
             services.AddScoped<IAddressTypeService, AddressTypeService>();
             services.AddScoped<IOrderService, OrderService>();
+            services.AddScoped<IGoogleGeocode, GoogleGeocodeService>();
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = OktaDefaults.ApiAuthenticationScheme;

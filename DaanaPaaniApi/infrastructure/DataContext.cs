@@ -19,6 +19,7 @@ namespace DaanaPaaniApi
         public DbSet<PackageItem> PackageItems { get; set; }
         public DbSet<DiscountType> DiscountTypes { get; set; }
         public DbSet<Discount> Discounts { get; set; }
+        public DbSet<LocationInfo> LocationInfos { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
