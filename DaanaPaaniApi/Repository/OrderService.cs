@@ -15,9 +15,11 @@ namespace DaanaPaaniApi.Repository
             _context = context;
         }
 
-        public Task<Order> add(Order order)
+        public async Task<Order> add(Order order)
         {
-            throw new NotImplementedException();
+            var newOrder = _context.Orders.Update(order);
+            await _context.SaveChangesAsync();
+            return newOrder.Entity;
         }
 
         public void delete(Item item)

@@ -9,7 +9,6 @@ namespace DaanaPaaniApi.DTOs
     public class DiscountDTO
     {
         public int DiscountValue { get; set; }
-        public int OrderId { get; set; }
-        public DiscountType DiscountType { get; set; }
+        public DiscountTypeDTO DiscountType { get; set; }
     }
 }

@@ -50,7 +50,7 @@ namespace DaanaPaaniApi.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPut("{id}")]
-        [SwaggerIgnore]
+        [OpenApiIgnore]
         public async Task<IActionResult> PutOrder(int id, Order order)
         {
             //if (id != order.OrderId)
@@ -85,7 +85,7 @@ namespace DaanaPaaniApi.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
-        [SwaggerIgnore]
+        [OpenApiIgnore]
         public async Task<ActionResult<Order>> PostOrder(Order order)
         {
             //_context.Orders.Add(order);
@@ -97,7 +97,7 @@ namespace DaanaPaaniApi.Controllers
 
         // DELETE: api/Order/5
         [HttpDelete("{id}")]
-        [SwaggerIgnore]
+        [OpenApiIgnore]
         public async Task<ActionResult<Order>> DeleteOrder(int id)
         {
             //var order = await _context.Orders.FindAsync(id);

@@ -48,7 +48,7 @@ namespace DaanaPaaniApi.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPut("{id}")]
-        [SwaggerIgnore]
+        [OpenApiIgnore]
         public async Task<IActionResult> PutPackage(int id, Package package)
         {
             //if (id != package.PackageId)
@@ -82,7 +82,7 @@ namespace DaanaPaaniApi.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
-        [SwaggerIgnore]
+        [OpenApiIgnore]
         public async Task<ActionResult<Package>> PostPackage(Package package)
         {
             //_context.Packages.Add(package);
@@ -94,7 +94,7 @@ namespace DaanaPaaniApi.Controllers
 
         // DELETE: api/Package/5
         [HttpDelete("{id}")]
-        [SwaggerIgnore]
+        [OpenApiIgnore]
         public async Task<ActionResult<Package>> DeletePackage(int id)
         {
             //    var package = await _context.Packages.FindAsync(id);

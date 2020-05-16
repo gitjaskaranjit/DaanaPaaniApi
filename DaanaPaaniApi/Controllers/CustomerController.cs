@@ -6,6 +6,7 @@ using DaanaPaaniApi.Repository;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NSwag.Annotations;
+using System.ComponentModel;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
@@ -33,6 +34,7 @@ namespace DaaniPaaniApi.Controllers
         [ProducesResponseType(200)]
         [SwaggerResponse(400, typeof(ApiError))]
         [SwaggerResponse(404, typeof(ApiError))]
+        [Description("Get Specific customer")]
         public async Task<IActionResult> GetCustomer([FromRoute]int id)
         {
             var customer = await _customers.getById(id);
@@ -43,6 +45,7 @@ namespace DaaniPaaniApi.Controllers
         [HttpGet]
         [ProducesResponseType(200)]
         [SwaggerResponse(400, typeof(ApiError))]
+        [Description("Get the list of all the customers")]
         public async Task<ActionResult<PagedCollection<CustomerDTO>>> GetCustomers(
                                                                             [FromQuery]PagingOptions pagingOptions = null,
                                                                             [FromQuery]SortingOptions<CustomerDTO, Customer> sortingOptions = null,
@@ -71,6 +74,7 @@ namespace DaaniPaaniApi.Controllers
         [HttpGet("{id}/order")]
         [ProducesResponseType(200)]
         [SwaggerResponse(404, typeof(ApiError))]
+        [Description("Get the orders of specific customer")]
         public async Task<ActionResult<PagedCollection<OrderDTO>>> GetOrderOfCustomer(int id, [FromQuery]PagingOptions pagingOptions = null)
         {
             pagingOptions.Limit = pagingOptions.Limit ?? 10;
@@ -94,10 +98,31 @@ namespace DaaniPaaniApi.Controllers
             }
         }
 
+        [HttpPost("{id}/order")]
+        [ProducesResponseType(201)]
+        [SwaggerResponse(400, typeof(ApiError))]
+        [SwaggerResponse(404, typeof(ApiError))]
+        [Description("Create order for specific customer")]
+        public async Task<IActionResult> PostCustomerOrder(int id, [FromBody]OrderDTO orderDTO)
+        {
+            if (CustomerExist(id))
+            {
+                orderDTO.CustomerId = id;
+                var order = _mapper.Map<OrderDTO, Order>(orderDTO);
+                var addedOrder = _mapper.Map<Order, OrderDTO>(await _orders.add(order));
+                return CreatedAtAction(nameof(GetOrderOfCustomer), new { id = addedOrder.CustomerId }, addedOrder);
+            }
+            else
+            {
+                return NotFound(new ApiError("Customer doesn't exist"));
+            }
+        }
+
         [HttpPost]
         [ProducesResponseType(201)]
         [SwaggerResponse(400, typeof(ApiError))]
         [SwaggerResponse(404, typeof(ApiError))]
+        [Description("Create a customer")]
         public async Task<IActionResult> PostCustomer([FromBody]CustomerDTO customerDTO)
         {
             if (!PhoneUnique(customerDTO))
@@ -113,6 +138,7 @@ namespace DaaniPaaniApi.Controllers
         [ProducesResponseType(204)]
         [SwaggerResponse(400, typeof(ApiError))]
         [SwaggerResponse(404, typeof(ApiError))]
+        [Description("Set customer to inactive")]
         public async Task<IActionResult> RemoveCustomer([FromRoute]int id)
         {
             var customer = await _customers.getById(id);
@@ -124,6 +150,7 @@ namespace DaaniPaaniApi.Controllers
         [ProducesResponseType(204)]
         [SwaggerResponse(400, typeof(ApiError))]
         [SwaggerResponse(404, typeof(ApiError))]
+        [Description(" Update customer information")]
         public async Task<IActionResult> UpdateCustomer(int id, CustomerDTO customerDTO)
         {
             var customeEntity = await _customers.getById(id);
