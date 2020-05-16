@@ -1,4 +1,5 @@
 ﻿using DaanaPaaniApi.DTOs;
+using DaanaPaaniApi.Model;
 using LandonApi.Infrastructure;
 using System;
 using System.Collections.Generic;
@@ -85,13 +86,13 @@ namespace DaanaPaaniApi.infrastructure
             var terms = GetValidTerms().ToArray();
             if (!terms.Any()) return query;
             var modifiedQuery = query;
-
+            //query.where(p=>p.phonenumber == 647806244)
             foreach (var term in terms)
             {
-                var propertyInfo = ExpressionHelper.GetPropertyInfo<TEntity>(term.Name);
-                var parameterExpressiom = ExpressionHelper.Parameter<TEntity>();
-                var parm = ComparsionExpressionHelper.getParams(parameterExpressiom, propertyInfo, term);
-                var comparsion = ComparsionExpressionHelper.getComparsion(parm.left, term.Operator, parm.right);
+                var propertyInfo = ExpressionHelper.GetPropertyInfo<TEntity>(term.Name); //p.phonenumber
+                var parameterExpressiom = ExpressionHelper.Parameter<TEntity>();//p
+                var parm = ComparsionExpressionHelper.getParams(parameterExpressiom, propertyInfo, term); // 64754541
+                var comparsion = ComparsionExpressionHelper.getComparsion(parm.left, term.Operator, parm.right);// ==
                 var lamba = ExpressionHelper.GetLambda<TEntity, bool>(parameterExpressiom, comparsion);
                 modifiedQuery = ExpressionHelper.CallWhere(modifiedQuery, lamba);
             }

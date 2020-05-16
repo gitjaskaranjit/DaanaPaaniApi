@@ -6,6 +6,7 @@ using DaanaPaaniApi.Repository;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NSwag.Annotations;
+using System;
 using System.ComponentModel;
 using System.Data;
 using System.Linq;
@@ -129,6 +130,7 @@ namespace DaaniPaaniApi.Controllers
             {
                 return BadRequest(new ApiError("Phone number already in use"));
             }
+            customerDTO.AddedDate = DateTime.Now;
             var customer = _mapper.Map<CustomerDTO, Customer>(customerDTO);
             var addedCustomer = _mapper.Map<Customer, CustomerDTO>(await _customers.add(customer));
             return CreatedAtAction(nameof(GetCustomer), new { id = addedCustomer.CustomerId }, addedCustomer);

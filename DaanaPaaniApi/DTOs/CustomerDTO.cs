@@ -23,9 +23,12 @@ namespace DaanaPaaniApi.DTOs
         [Searchable]
         public string PhoneNumber { get; set; }
 
+        [Searchable]
+        public DateTime DateOfBirth { get; set; }
+
         [Sortable]
         [Searchable]
-        public DateTime BillDate { get; set; }
+        public DateTime AddedDate { get; set; }
 
         [Searchable]
         public AddressDTO Address { get; set; }
