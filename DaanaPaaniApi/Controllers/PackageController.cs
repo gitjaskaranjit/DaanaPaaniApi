@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using NSwag.Annotations;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Threading.Tasks;
 
 namespace DaanaPaaniApi.Controllers
@@ -26,6 +27,7 @@ namespace DaanaPaaniApi.Controllers
 
         // GET: api/Package
         [HttpGet]
+        [Description("Get list of all packages")]
         public async Task<ActionResult<IEnumerable<PackageDTO>>> GetPackages()
         {
             var packages = _package.getAll();
@@ -34,12 +36,14 @@ namespace DaanaPaaniApi.Controllers
 
         // GET: api/Package/5
         [HttpGet("{id}")]
+        [SwaggerResponse(404, typeof(ApiError))]
+        [Description("Get specific package")]
         public async Task<ActionResult<PackageDTO>> GetPackage(int id)
         {
             var package = await _package.getById(id);
             if (package == null)
             {
-                return NotFound();
+                return NotFound(new ApiError("Package not found"));
             }
             return _mapper.Map<Package, PackageDTO>(package);
         }

@@ -2,8 +2,11 @@
 using DaanaPaaniApi.DTOs;
 using DaanaPaaniApi.Repository;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient.Server;
 using Microsoft.EntityFrameworkCore;
+using NSwag.Annotations;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Threading.Tasks;
 
 namespace DaanaPaaniApi.Controllers
@@ -23,6 +26,7 @@ namespace DaanaPaaniApi.Controllers
 
         // GET: /AddressType
         [HttpGet]
+        [Description("Get list of address types")]
         public async Task<ActionResult<IEnumerable<AddressTypeDTO>>> GetAddressTypes()
         {
             var addressType = _addressType.getAll();
@@ -31,6 +35,7 @@ namespace DaanaPaaniApi.Controllers
 
         // GET: /AddressType/5
         [HttpGet("{id}")]
+        [Description("Get specific address type")]
         public async Task<ActionResult<AddressTypeDTO>> GetAddressType(int id)
         {
             var addressType = await _addressType.getById(id);

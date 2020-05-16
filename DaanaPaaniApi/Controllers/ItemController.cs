@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NSwag.Annotations;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Threading.Tasks;
 
 namespace DaanaPaaniApi.Controllers
@@ -26,6 +27,7 @@ namespace DaanaPaaniApi.Controllers
         // GET: /Item
         [HttpGet]
         [ProducesResponseType(200)]
+        [Description("Get list of items")]
         public async Task<ActionResult<IEnumerable<Item>>> GetItems()
         {
             return Ok(await _mapper.ProjectTo<ItemDTO>(_item.getAll()).ToListAsync());
@@ -35,6 +37,7 @@ namespace DaanaPaaniApi.Controllers
         [HttpGet("{id}")]
         [ProducesResponseType(200)]
         [SwaggerResponse(404, typeof(ApiError))]
+        [Description("Get specific item")]
         public async Task<ActionResult<ItemDTO>> GetItem(int id)
         {
             var item = await _item.getById(id);
@@ -54,6 +57,7 @@ namespace DaanaPaaniApi.Controllers
         [SwaggerResponse(400, typeof(ApiError))]
         [SwaggerResponse(404, typeof(ApiError))]
         [ProducesResponseType(204)]
+        [Description("Update item information")]
         public async Task<IActionResult> PutItem(int id, ItemDTO itemDTO)
         {
             var itemEntity = await _item.getById(id);
@@ -78,6 +82,7 @@ namespace DaanaPaaniApi.Controllers
         [HttpPost]
         [SwaggerResponse(400, typeof(ApiError))]
         [ProducesResponseType(201)]
+        [Description("Create new item")]
         public async Task<ActionResult<Item>> PostItem(ItemDTO itemDTO)
         {
             var item = _mapper.Map<ItemDTO, Item>(itemDTO);
@@ -89,6 +94,7 @@ namespace DaanaPaaniApi.Controllers
         [HttpDelete("{id}")]
         [SwaggerResponse(404, typeof(ApiError))]
         [ProducesResponseType(204)]
+        [Description("Delete item (Not Recommended)")]
         public async Task<ActionResult> DeleteItem(int id)
         {
             var item = await _item.getById(id);
