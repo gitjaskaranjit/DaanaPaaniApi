@@ -53,8 +53,8 @@ namespace DaaniPaaniApi.Controllers
                                                                             [FromQuery] SearchOptions<CustomerDTO, Customer> searchOptions = null
                                                                              )
         {
-            pagingOptions.Limit = pagingOptions.Limit ?? 10;
-            pagingOptions.Offset = pagingOptions.Offset ?? 0;
+            pagingOptions.Limit ??= 10;
+            pagingOptions.Offset ??= 0;
             var customersQuery = _customers.getAll();
 
             customersQuery = sortingOptions.Apply(customersQuery);
@@ -78,8 +78,8 @@ namespace DaaniPaaniApi.Controllers
         [Description("Get the orders of specific customer")]
         public async Task<ActionResult<PagedCollection<OrderDTO>>> GetOrderOfCustomer(int id, [FromQuery]PagingOptions pagingOptions = null)
         {
-            pagingOptions.Limit = pagingOptions.Limit ?? 10;
-            pagingOptions.Offset = pagingOptions.Offset ?? 0;
+            pagingOptions.Limit ??= 10;
+            pagingOptions.Offset ??= 0;
             if (CustomerExist(id))
             {
                 var orders = await _mapper.ProjectTo<OrderDTO>(_orders.getAll().Where(o => o.customerId == id)).ToListAsync();
@@ -161,7 +161,7 @@ namespace DaaniPaaniApi.Controllers
                 return NotFound(new ApiError("Customer not found"));
             };
             var customer = _mapper.Map<CustomerDTO, Customer>(customerDTO, customeEntity);
-            var updatedCustomer = await _customers.update(id, customer);
+           await _customers.update(id, customer);
             return NoContent();
         }
 

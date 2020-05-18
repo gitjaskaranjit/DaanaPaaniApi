@@ -24,7 +24,7 @@ namespace DaanaPaaniApi.infrastructure
             }
             else
             {
-                error.Message = "A server error occurred";
+                error.Message = "A server Error occurred";
                 error.Detail = context.Exception.Message;
             }
 

@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 
 namespace DaanaPaaniApi.Model
 {
-    public class GoogleApiOptions
+    public class HereApiOptions
     {
-        public string key { get; set; }
+        public string HereApikey { get; set; }
         public string GeocodeBaseUrl { get; set; }
     }
 }

@@ -32,7 +32,7 @@ namespace DaanaPaaniApi
         {
             services.AddHttpContextAccessor();
             services.AddHttpClient();
-            services.Configure<GoogleApiOptions>(Configuration.GetSection("GoogleApiOptions"));
+            services.Configure<HereApiOptions>(Configuration.GetSection("HereApiOptions"));
             services.AddMvc(options =>
             {
                 options.Filters.Add<JsonExceptionFilter>();
@@ -62,7 +62,7 @@ namespace DaanaPaaniApi
             services.AddScoped<IPackageService, PackageService>();
             services.AddScoped<IAddressTypeService, AddressTypeService>();
             services.AddScoped<IOrderService, OrderService>();
-            services.AddScoped<IGoogleGeocode, GoogleGeocodeService>();
+            services.AddScoped<IGeocodeService, HereGeocodeService>();
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = OktaDefaults.ApiAuthenticationScheme;

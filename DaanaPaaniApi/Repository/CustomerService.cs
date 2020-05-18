@@ -11,29 +11,29 @@ namespace DaanaPaaniApi.Repository
     public class CustomerService : ICustomerService
     {
         protected readonly DataContext _context;
-        private readonly IGoogleGeocode _googleGeocode;
+        private readonly IGeocodeService _geocodeService;
 
         public CustomerService(DataContext context,
-            IGoogleGeocode googleGeocode
+            IGeocodeService geocodeService
             )
         {
             _context = context;
-            _googleGeocode = googleGeocode;
+            _geocodeService = geocodeService;
         }
 
         public async Task<Customer> add(Customer customer)
         {
-            var locationInfo = await _googleGeocode.GetLocationInfoAsync(customer.Address);
-            if (!_googleGeocode.error)
+            var locationInfo = await _geocodeService.GetLocationInfoAsync(customer.Address);
+            if (!_geocodeService.Error)
             {
                 var newCustomer = _context.Customers.Update(customer);
 
                 var location = new LocationInfo
                 {
-                    lat = locationInfo.Results[0].Geometry.location.lat,
-                    lng = locationInfo.Results[0].Geometry.location.lng,
-                    placeId = locationInfo.Results[0].PlaceId,
-                    formatted_address = locationInfo.Results[0].FormattedAddress,
+                    lat = locationInfo.Items[0].Position.Lat,
+                    lng = locationInfo.Items[0].Position.Lng,
+                    placeId = locationInfo.Items[0].Id,
+                    formatted_address = locationInfo.Items[0].Title,
                     customer = newCustomer.Entity
                 };
                 _context.LocationInfos.Update(location);
