@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DaanaPaaniApi.Entities;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -25,5 +26,7 @@ namespace DaanaPaaniApi.Model
         public Address Address { get; set; }
         public LocationInfo locationInfo { get; set; }
         public ICollection<Order> Order { get; set; }
+        public int? driverId { get; set; }
+        public Driver driver { get; set; }
     }
 }
