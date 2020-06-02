@@ -1,4 +1,5 @@
-﻿using DaanaPaaniApi.Model;
+﻿using DaanaPaaniApi.Entities;
+using DaanaPaaniApi.Model;
 using Microsoft.EntityFrameworkCore;
 
 namespace DaanaPaaniApi
@@ -18,6 +19,8 @@ namespace DaanaPaaniApi
         public DbSet<PackageItem> PackageItems { get; set; }
         public DbSet<Discount> Discounts { get; set; }
         public DbSet<LocationInfo> LocationInfos { get; set; }
+        public DbSet<Driver> Drivers { get; set; }
+        public DbSet<DriverAddress> DriverAddresses { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
