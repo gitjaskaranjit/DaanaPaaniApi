@@ -1,4 +1,6 @@
-﻿namespace DaanaPaaniApi.DTOs
+﻿using DaanaPaaniApi.Model;
+
+namespace DaanaPaaniApi.DTOs
 {
     public class AddressDTO
     {
@@ -8,6 +10,6 @@
         public string City { get; set; }
         public string PostalCode { get; set; }
 
-        public AddressTypeDTO AddressType { get; set; }
+        public AddressType AddressType { get; set; }
     }
 }

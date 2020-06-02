@@ -9,6 +9,6 @@ namespace DaanaPaaniApi.DTOs
     public class DiscountDTO
     {
         public int DiscountValue { get; set; }
-        public DiscountTypeDTO DiscountType { get; set; }
+        public DiscountType DiscountType { get; set; }
     }
 }

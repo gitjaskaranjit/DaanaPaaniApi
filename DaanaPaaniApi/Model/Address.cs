@@ -15,6 +15,5 @@ namespace DaanaPaaniApi.Model
         public int CustomerId { get; set; }
 
         public AddressType AddressType { get; set; }
-        public int AddressTypeId { get; set; }
     }
 }

@@ -3,23 +3,10 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace DaanaPaaniApi.Migrations
 {
-    public partial class addedTablesDiscount : Migration
+    public partial class intialMigration : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.CreateTable(
-                name: "AddressTypes",
-                columns: table => new
-                {
-                    AddressTypeId = table.Column<int>(nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    AddressTypeName = table.Column<string>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AddressTypes", x => x.AddressTypeId);
-                });
-
             migrationBuilder.CreateTable(
                 name: "Customers",
                 columns: table => new
@@ -36,19 +23,6 @@ namespace DaanaPaaniApi.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Customers", x => x.CustomerId);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "DiscountTypes",
-                columns: table => new
-                {
-                    DiscountTypeId = table.Column<int>(nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    DiscountTypeName = table.Column<string>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_DiscountTypes", x => x.DiscountTypeId);
                 });
 
             migrationBuilder.CreateTable(
@@ -88,20 +62,35 @@ namespace DaanaPaaniApi.Migrations
                     StreetName = table.Column<string>(nullable: true),
                     City = table.Column<string>(nullable: true),
                     PostalCode = table.Column<string>(nullable: true),
-                    AddressTypeId = table.Column<int>(nullable: false)
+                    AddressType = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Addresses", x => x.CustomerId);
                     table.ForeignKey(
-                        name: "FK_Addresses_AddressTypes_AddressTypeId",
-                        column: x => x.AddressTypeId,
-                        principalTable: "AddressTypes",
-                        principalColumn: "AddressTypeId",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
                         name: "FK_Addresses_Customers_CustomerId",
                         column: x => x.CustomerId,
+                        principalTable: "Customers",
+                        principalColumn: "CustomerId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "LocationInfos",
+                columns: table => new
+                {
+                    customerId = table.Column<int>(nullable: false),
+                    lat = table.Column<string>(nullable: true),
+                    lng = table.Column<string>(nullable: true),
+                    placeId = table.Column<string>(nullable: true),
+                    formatted_address = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_LocationInfos", x => x.customerId);
+                    table.ForeignKey(
+                        name: "FK_LocationInfos_Customers_customerId",
+                        column: x => x.customerId,
                         principalTable: "Customers",
                         principalColumn: "CustomerId",
                         onDelete: ReferentialAction.Cascade);
@@ -192,17 +181,11 @@ namespace DaanaPaaniApi.Migrations
                 {
                     OrderId = table.Column<int>(nullable: false),
                     DiscountValue = table.Column<int>(nullable: false),
-                    DiscountTypeId = table.Column<int>(nullable: false)
+                    DiscountType = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Discounts", x => x.OrderId);
-                    table.ForeignKey(
-                        name: "FK_Discounts_DiscountTypes_DiscountTypeId",
-                        column: x => x.DiscountTypeId,
-                        principalTable: "DiscountTypes",
-                        principalColumn: "DiscountTypeId",
-                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Discounts_Orders_OrderId",
                         column: x => x.OrderId,
@@ -217,20 +200,10 @@ namespace DaanaPaaniApi.Migrations
                 column: "OrderId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Addresses_AddressTypeId",
-                table: "Addresses",
-                column: "AddressTypeId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Customers_PhoneNumber",
                 table: "Customers",
                 column: "PhoneNumber",
                 unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Discounts_DiscountTypeId",
-                table: "Discounts",
-                column: "DiscountTypeId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Orders_PackageId",
@@ -260,13 +233,10 @@ namespace DaanaPaaniApi.Migrations
                 name: "Discounts");
 
             migrationBuilder.DropTable(
+                name: "LocationInfos");
+
+            migrationBuilder.DropTable(
                 name: "PackageItems");
-
-            migrationBuilder.DropTable(
-                name: "AddressTypes");
-
-            migrationBuilder.DropTable(
-                name: "DiscountTypes");
 
             migrationBuilder.DropTable(
                 name: "Orders");

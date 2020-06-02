@@ -11,10 +11,7 @@ namespace DaanaPaaniApi
             CreateMap<Customer, CustomerDTO>();
             CreateMap<CustomerDTO, Customer>();
             CreateMap<Address, AddressDTO>();
-            CreateMap<AddressDTO, Address>().ForMember(src => src.AddressType, opt => opt.Ignore())
-                                            .ForMember(src => src.AddressTypeId, opt => opt.MapFrom(des => des.AddressType.AddressTypeId));
-            CreateMap<AddressType, AddressTypeDTO>();
-            CreateMap<AddressTypeDTO, AddressType>();
+            CreateMap<AddressDTO, Address>();
             CreateMap<ItemDTO, Item>();
             CreateMap<Item, ItemDTO>();
             CreateMap<PackageItem, PackageItemDTO>();
@@ -27,8 +24,6 @@ namespace DaanaPaaniApi
             CreateMap<AddOn, AddOnDTO>();
             CreateMap<Discount, DiscountDTO>();
             CreateMap<DiscountDTO, Discount>();
-            CreateMap<DiscountType, DiscountTypeDTO>();
-            CreateMap<DiscountTypeDTO, DiscountType>();
         }
     }
 }

@@ -50,15 +50,6 @@ namespace DaanaPaaniApi
                     context.Customers.Add(customer);
                 }
             }
-            if (!context.DiscountTypes.Any())
-            {
-                var DiscountTypesData = System.IO.File.ReadAllText("intialData/DiscountType.json");
-                var DiscountsTypes = JsonConvert.DeserializeObject<List<DiscountType>>(DiscountTypesData);
-                foreach (var discountType in DiscountsTypes)
-                {
-                    context.DiscountTypes.Add(discountType);
-                }
-            }
             context.SaveChanges();
         }
     }

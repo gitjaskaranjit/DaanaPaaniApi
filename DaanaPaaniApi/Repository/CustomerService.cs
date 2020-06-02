@@ -57,8 +57,7 @@ namespace DaanaPaaniApi.Repository
         public IQueryable<Customer> getAll()
         {
             var customers = _context.Customers
-                              .Include(c => c.Address)
-                              .ThenInclude(c => c.AddressType);
+                              .Include(c => c.Address);
 
             return customers;
         }
@@ -67,7 +66,6 @@ namespace DaanaPaaniApi.Repository
         {
             var customer = await _context.Customers
                                         .Include(c => c.Address)
-                                        .ThenInclude(a => a.AddressType)
                                         .SingleOrDefaultAsync(c => c.CustomerId == id);
 
             return customer;

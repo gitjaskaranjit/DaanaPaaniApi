@@ -15,6 +15,7 @@ using Newtonsoft.Json;
 using Okta.AspNetCore;
 using System;
 using System.Linq;
+using System.Text.Json.Serialization;
 
 namespace DaanaPaaniApi
 {
@@ -42,7 +43,11 @@ namespace DaanaPaaniApi
                 options.Filters.Add(new AuthorizeFilter(policy));
             });
             services.AddControllers()
-                .AddNewtonsoftJson(options => options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore)
+                .AddNewtonsoftJson(options => {
+                    options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+                    options.SerializerSettings.Converters.Add(new Newtonsoft.Json.Converters.StringEnumConverter());
+
+                    })
                 .ConfigureApiBehaviorOptions(options => options.InvalidModelStateResponseFactory = context =>
                 {
                     var result = new BadRequestObjectResult(new ApiError(context.ModelState));
@@ -60,7 +65,6 @@ namespace DaanaPaaniApi
             services.AddScoped<ICustomerService, CustomerService>();
             services.AddScoped<IItemService, ItemService>();
             services.AddScoped<IPackageService, PackageService>();
-            services.AddScoped<IAddressTypeService, AddressTypeService>();
             services.AddScoped<IOrderService, OrderService>();
             services.AddScoped<IGeocodeService, HereGeocodeService>();
             services.AddAuthentication(options =>
@@ -81,7 +85,6 @@ namespace DaanaPaaniApi
                     Flow = NSwag.OpenApiOAuth2Flow.Implicit,
                     AuthorizationUrl = "https://dev-333876.okta.com/oauth2/default/v1/authorize"
                 });
-
                 document.PostProcess = setting =>
                 {
                     setting.Info.Version = "v1";

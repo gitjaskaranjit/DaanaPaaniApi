@@ -15,6 +15,5 @@ namespace DaanaPaaniApi.Model
         public int OrderId { get; set; }
 
         public DiscountType DiscountType { get; set; }
-        public int DiscountTypeId { get; set; }
     }
 }

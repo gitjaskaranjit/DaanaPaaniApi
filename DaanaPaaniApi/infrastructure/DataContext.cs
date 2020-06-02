@@ -11,13 +11,11 @@ namespace DaanaPaaniApi
 
         public DbSet<Customer> Customers { get; set; }
         public DbSet<Address> Addresses { get; set; }
-        public DbSet<AddressType> AddressTypes { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<Item> Items { get; set; }
         public DbSet<Package> Packages { get; set; }
         public DbSet<AddOn> AddOns { get; set; }
         public DbSet<PackageItem> PackageItems { get; set; }
-        public DbSet<DiscountType> DiscountTypes { get; set; }
         public DbSet<Discount> Discounts { get; set; }
         public DbSet<LocationInfo> LocationInfos { get; set; }
 

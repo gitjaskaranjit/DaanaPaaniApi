@@ -11,9 +11,7 @@
       "StreetName": "John Street",
       "City": "Thomasville",
       "PostalCode": "T3J 5E7",
-      "AddressType": {
-        "AddressTypeName": "Main Door"
-      }
+      "AddressType": 1
     }
   },
   {
@@ -28,9 +26,7 @@
       "StreetName": "Turner Place",
       "City": "Soudan",
       "PostalCode": "T3J 5E7",
-      "AddressType": {
-        "AddressTypeName": "Basement"
-      }
+      "AddressType": 2
     }
   },
   {
@@ -45,7 +41,7 @@
       "StreetName": "Berkeley Place",
       "City": "Harmon",
       "PostalCode": "T3J 5E7",
-      "AddressTypeId": 1
+      "AddressType": 1
     }
   },
   {
@@ -60,7 +56,7 @@
       "StreetName": "Ivan Court",
       "City": "Albany",
       "PostalCode": "T3J 5E7",
-      "AddressTypeId": 2
+      "AddressType": 2
     }
   },
   {
@@ -75,7 +71,7 @@
       "StreetName": "Ebony Court",
       "City": "Brazos",
       "PostalCode": "T3J 5E7",
-      "AddressTypeId": 1
+      "AddressType": 1
     }
   },
   {
@@ -90,7 +86,7 @@
       "StreetName": "Coles Street",
       "City": "Sardis",
       "PostalCode": "T3J 5E7",
-      "AddressTypeId": 2
+      "AddressType": 2
     }
   },
   {
@@ -105,7 +101,7 @@
       "StreetName": "Denton Place",
       "City": "Wintersburg",
       "PostalCode": "T3J 5E7",
-      "AddressTypeId": 1
+      "AddressType": 1
     }
   }
 ]

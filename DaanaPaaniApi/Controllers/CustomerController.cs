@@ -76,22 +76,13 @@ namespace DaaniPaaniApi.Controllers
         [ProducesResponseType(200)]
         [SwaggerResponse(404, typeof(ApiError))]
         [Description("Get the orders of specific customer")]
-        public async Task<ActionResult<PagedCollection<OrderDTO>>> GetOrderOfCustomer(int id, [FromQuery]PagingOptions pagingOptions = null)
+        public async Task<ActionResult<OrderDTO>> GetOrderOfCustomer(int id)
         {
-            pagingOptions.Limit ??= 10;
-            pagingOptions.Offset ??= 0;
             if (CustomerExist(id))
             {
                 var orders = await _mapper.ProjectTo<OrderDTO>(_orders.getAll().Where(o => o.customerId == id)).ToListAsync();
 
-                return new PagedCollection<OrderDTO>
-                {
-                    Offset = pagingOptions.Offset.Value,
-                    Limit = pagingOptions.Limit.Value,
-                    Size = orders.Count,
-                    Items = orders.Skip(pagingOptions.Offset.Value)
-                                    .Take(pagingOptions.Limit.Value)
-                };
+                return Ok(orders);
             }
             else
             {
