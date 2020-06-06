@@ -8,6 +8,7 @@ using NSwag.Annotations;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace DaanaPaaniApi.Controllers
@@ -28,10 +29,20 @@ namespace DaanaPaaniApi.Controllers
         // GET: api/Order
         [HttpGet]
         [Description("Get list of orders")]
-        public async Task<ActionResult<IEnumerable<OrderDTO>>> GetOrders()
+        public async Task<ActionResult<PagedCollection<OrderDTO>>> GetOrders([FromQuery]PagingOptions pagingOptions = null)
         {
-            var orders = _orders.getAll();
-            return await _mapper.ProjectTo<OrderDTO>(orders).ToListAsync();
+            pagingOptions.Limit ??= 10;
+            pagingOptions.Offset ??= 0;
+            var ordersQuery = _orders.getAll();
+            var orders = await _mapper.ProjectTo<OrderDTO>(ordersQuery).ToListAsync();
+            return new PagedCollection<OrderDTO>
+            {
+                Offset = pagingOptions.Offset.Value,
+                Limit = pagingOptions.Limit.Value,
+                Size = orders.Count,
+                Items = orders.Skip(pagingOptions.Offset.Value)
+                                 .Take(pagingOptions.Limit.Value)
+            };
         }
 
         // GET: api/Order/5
