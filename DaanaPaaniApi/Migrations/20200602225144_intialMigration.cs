@@ -8,21 +8,21 @@ namespace DaanaPaaniApi.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Customers",
+                name: "Drivers",
                 columns: table => new
                 {
-                    CustomerId = table.Column<int>(nullable: false)
+                    DriverId = table.Column<int>(nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    Fullname = table.Column<string>(nullable: true),
-                    Email = table.Column<string>(nullable: true),
-                    PhoneNumber = table.Column<string>(nullable: false),
-                    DateOfBirth = table.Column<DateTime>(nullable: false),
-                    AddedDate = table.Column<DateTime>(nullable: false),
-                    Active = table.Column<bool>(nullable: false)
+                    DriverName = table.Column<string>(nullable: true),
+                    DriverPhone = table.Column<string>(nullable: true),
+                    DriverEmail = table.Column<string>(nullable: true),
+                    LicenseNo = table.Column<string>(nullable: true),
+                    LinceseExp = table.Column<DateTime>(nullable: false),
+                    DriverNote = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Customers", x => x.CustomerId);
+                    table.PrimaryKey("PK_Drivers", x => x.DriverId);
                 });
 
             migrationBuilder.CreateTable(
@@ -51,6 +51,78 @@ namespace DaanaPaaniApi.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Packages", x => x.PackageId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Customers",
+                columns: table => new
+                {
+                    CustomerId = table.Column<int>(nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Fullname = table.Column<string>(nullable: true),
+                    Email = table.Column<string>(nullable: true),
+                    PhoneNumber = table.Column<string>(nullable: false),
+                    DateOfBirth = table.Column<DateTime>(nullable: false),
+                    AddedDate = table.Column<DateTime>(nullable: false),
+                    Active = table.Column<bool>(nullable: false),
+                    driverId = table.Column<int>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Customers", x => x.CustomerId);
+                    table.ForeignKey(
+                        name: "FK_Customers_Drivers_driverId",
+                        column: x => x.driverId,
+                        principalTable: "Drivers",
+                        principalColumn: "DriverId",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "DriverAddresses",
+                columns: table => new
+                {
+                    DriverId = table.Column<int>(nullable: false),
+                    StreetNo = table.Column<int>(nullable: false),
+                    StreetName = table.Column<string>(nullable: true),
+                    City = table.Column<string>(nullable: true),
+                    PostalCode = table.Column<string>(nullable: true),
+                    Province = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_DriverAddresses", x => x.DriverId);
+                    table.ForeignKey(
+                        name: "FK_DriverAddresses_Drivers_DriverId",
+                        column: x => x.DriverId,
+                        principalTable: "Drivers",
+                        principalColumn: "DriverId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "PackageItems",
+                columns: table => new
+                {
+                    PackageId = table.Column<int>(nullable: false),
+                    ItemId = table.Column<int>(nullable: false),
+                    Quantity = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PackageItems", x => new { x.ItemId, x.PackageId });
+                    table.ForeignKey(
+                        name: "FK_PackageItems_Items_ItemId",
+                        column: x => x.ItemId,
+                        principalTable: "Items",
+                        principalColumn: "ItemId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_PackageItems_Packages_PackageId",
+                        column: x => x.PackageId,
+                        principalTable: "Packages",
+                        principalColumn: "PackageId",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -126,31 +198,6 @@ namespace DaanaPaaniApi.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "PackageItems",
-                columns: table => new
-                {
-                    PackageId = table.Column<int>(nullable: false),
-                    ItemId = table.Column<int>(nullable: false),
-                    Quantity = table.Column<int>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_PackageItems", x => new { x.ItemId, x.PackageId });
-                    table.ForeignKey(
-                        name: "FK_PackageItems_Items_ItemId",
-                        column: x => x.ItemId,
-                        principalTable: "Items",
-                        principalColumn: "ItemId",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_PackageItems_Packages_PackageId",
-                        column: x => x.PackageId,
-                        principalTable: "Packages",
-                        principalColumn: "PackageId",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "AddOns",
                 columns: table => new
                 {
@@ -206,6 +253,11 @@ namespace DaanaPaaniApi.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_Customers_driverId",
+                table: "Customers",
+                column: "driverId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Orders_PackageId",
                 table: "Orders",
                 column: "PackageId");
@@ -233,6 +285,9 @@ namespace DaanaPaaniApi.Migrations
                 name: "Discounts");
 
             migrationBuilder.DropTable(
+                name: "DriverAddresses");
+
+            migrationBuilder.DropTable(
                 name: "LocationInfos");
 
             migrationBuilder.DropTable(
@@ -249,6 +304,9 @@ namespace DaanaPaaniApi.Migrations
 
             migrationBuilder.DropTable(
                 name: "Customers");
+
+            migrationBuilder.DropTable(
+                name: "Drivers");
         }
     }
 }

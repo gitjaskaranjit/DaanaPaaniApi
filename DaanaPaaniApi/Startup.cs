@@ -37,10 +37,10 @@ namespace DaanaPaaniApi
             services.AddMvc(options =>
             {
                 options.Filters.Add<JsonExceptionFilter>();
-                var policy = new AuthorizationPolicyBuilder()
-                .RequireAuthenticatedUser()
-                .Build();
-                options.Filters.Add(new AuthorizeFilter(policy));
+                //var policy = new AuthorizationPolicyBuilder()
+                //.RequireAuthenticatedUser()
+                //.Build();
+                //options.Filters.Add(new AuthorizeFilter(policy));
             });
             services.AddControllers()
                 .AddNewtonsoftJson(options => {
@@ -113,7 +113,7 @@ namespace DaanaPaaniApi
             app.UseHttpsRedirection();
 
             app.UseRouting();
-
+            app.UseCors("AllowAll");
             app.UseAuthentication();
             app.UseAuthorization();
 

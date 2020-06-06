@@ -11,7 +11,6 @@ using System.ComponentModel;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
-
 namespace DaaniPaaniApi.Controllers
 {
     [Route("[controller]")]
@@ -69,6 +68,7 @@ namespace DaaniPaaniApi.Controllers
                 Items = customers.Skip(pagingOptions.Offset.Value)
                                  .Take(pagingOptions.Limit.Value)
             };
+            var context = HttpContext;
             return pagedCollection;
         }
 

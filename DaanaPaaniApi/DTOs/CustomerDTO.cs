@@ -1,6 +1,7 @@
 ﻿using DaanaPaaniApi.infrastructure;
 using DaanaPaaniApi.Repository;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis;
 using System;
 using System.Collections.Generic;
@@ -26,6 +27,7 @@ namespace DaanaPaaniApi.DTOs
         public bool Active { get; set; }
 
         [Searchable]
+
         public string PhoneNumber { get; set; }
 
         [Searchable]
@@ -56,7 +58,8 @@ namespace DaanaPaaniApi.DTOs
             }
             if (requestMethod.Equals("PUT"))
             {
-                if (customerService.getAll().Where(c => c.PhoneNumber == this.PhoneNumber).Select(c => c.CustomerId).FirstOrDefault() != this.CustomerId)
+                var cus = customerService.getAll().Where(c => c.PhoneNumber == this.PhoneNumber)  ;
+                if(cus.Any() && cus.Select(c => c.CustomerId).FirstOrDefault() != CustomerId)
                 {
                     yield return new ValidationResult($"Phone number '{PhoneNumber}' already in use");
                 }

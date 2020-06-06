@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DaanaPaaniApi.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20200602064246_intialMigration")]
+    [Migration("20200602225144_intialMigration")]
     partial class intialMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -17,6 +17,60 @@ namespace DaanaPaaniApi.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "3.1.4");
+
+            modelBuilder.Entity("DaanaPaaniApi.Entities.Driver", b =>
+                {
+                    b.Property<int>("DriverId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("DriverEmail")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("DriverName")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("DriverNote")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("DriverPhone")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("LicenseNo")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("LinceseExp")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("DriverId");
+
+                    b.ToTable("Drivers");
+                });
+
+            modelBuilder.Entity("DaanaPaaniApi.Entities.DriverAddress", b =>
+                {
+                    b.Property<int>("DriverId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("City")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("PostalCode")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Province")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("StreetName")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("StreetNo")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("DriverId");
+
+                    b.ToTable("DriverAddresses");
+                });
 
             modelBuilder.Entity("DaanaPaaniApi.Model.AddOn", b =>
                 {
@@ -86,10 +140,15 @@ namespace DaanaPaaniApi.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<int?>("driverId")
+                        .HasColumnType("INTEGER");
+
                     b.HasKey("CustomerId");
 
                     b.HasIndex("PhoneNumber")
                         .IsUnique();
+
+                    b.HasIndex("driverId");
 
                     b.ToTable("Customers");
                 });
@@ -214,6 +273,15 @@ namespace DaanaPaaniApi.Migrations
                     b.ToTable("PackageItems");
                 });
 
+            modelBuilder.Entity("DaanaPaaniApi.Entities.DriverAddress", b =>
+                {
+                    b.HasOne("DaanaPaaniApi.Entities.Driver", "driver")
+                        .WithOne("driverAddress")
+                        .HasForeignKey("DaanaPaaniApi.Entities.DriverAddress", "DriverId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("DaanaPaaniApi.Model.AddOn", b =>
                 {
                     b.HasOne("DaanaPaaniApi.Model.Item", "Item")
@@ -236,6 +304,13 @@ namespace DaanaPaaniApi.Migrations
                         .HasForeignKey("DaanaPaaniApi.Model.Address", "CustomerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("DaanaPaaniApi.Model.Customer", b =>
+                {
+                    b.HasOne("DaanaPaaniApi.Entities.Driver", "driver")
+                        .WithMany("customers")
+                        .HasForeignKey("driverId");
                 });
 
             modelBuilder.Entity("DaanaPaaniApi.Model.Discount", b =>
