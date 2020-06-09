@@ -5,6 +5,8 @@ using DaanaPaaniApi.Repository;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NSwag.Annotations;
+using Sieve.Models;
+using Sieve.Services;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -19,30 +21,27 @@ namespace DaanaPaaniApi.Controllers
     {
         private readonly IOrderService _orders;
         private readonly IMapper _mapper;
+        private readonly ISieveProcessor _sieveProcessor;
 
-        public OrderController(IOrderService orders, IMapper mapper)
+        public OrderController(IOrderService orders,
+                               IMapper mapper,
+                               ISieveProcessor sieveProcessor)
         {
             _orders = orders;
             _mapper = mapper;
+            _sieveProcessor = sieveProcessor;
         }
 
         // GET: api/Order
         [HttpGet]
         [Description("Get list of orders")]
-        public async Task<ActionResult<PagedCollection<OrderDTO>>> GetOrders([FromQuery]PagingOptions pagingOptions = null)
+        public async Task<ActionResult<IEnumerable<OrderDTO>>> GetOrders([FromQuery]SieveModel sieveModel)
         {
-            pagingOptions.Limit ??= 10;
-            pagingOptions.Offset ??= 0;
             var ordersQuery = _orders.getAll();
+            ordersQuery = _sieveProcessor.Apply(sieveModel,ordersQuery, applyPagination : false);
             var orders = await _mapper.ProjectTo<OrderDTO>(ordersQuery).ToListAsync();
-            return new PagedCollection<OrderDTO>
-            {
-                Offset = pagingOptions.Offset.Value,
-                Limit = pagingOptions.Limit.Value,
-                Size = orders.Count,
-                Items = orders.Skip(pagingOptions.Offset.Value)
-                                 .Take(pagingOptions.Limit.Value)
-            };
+
+            return orders;
         }
 
         // GET: api/Order/5

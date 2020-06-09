@@ -6,7 +6,10 @@ using DaanaPaaniApi.Repository;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NSwag.Annotations;
+using Sieve.Models;
+using Sieve.Services;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Linq;
@@ -20,14 +23,17 @@ namespace DaaniPaaniApi.Controllers
         private readonly ICustomerService _customers;
         private readonly IMapper _mapper;
         private readonly IOrderService _orders;
+        private readonly ISieveProcessor _sieveProcessr;
 
         public CustomerController(IMapper mapper,
                                   ICustomerService customer,
-                                  IOrderService orders)
+                                  IOrderService orders,
+                                  ISieveProcessor sieveProcessor)
         {
             _customers = customer;
             _mapper = mapper;
             _orders = orders;
+            _sieveProcessr = sieveProcessor;
         }
 
         [HttpGet("{id}")]
@@ -46,30 +52,22 @@ namespace DaaniPaaniApi.Controllers
         [ProducesResponseType(200)]
         [SwaggerResponse(400, typeof(ApiError))]
         [Description("Get the list of all the customers")]
-        public async Task<ActionResult<PagedCollection<CustomerDTO>>> GetCustomers(
-                                                                            [FromQuery]PagingOptions pagingOptions = null,
-                                                                            [FromQuery]SortingOptions<CustomerDTO, Customer> sortingOptions = null,
-                                                                            [FromQuery] SearchOptions<CustomerDTO, Customer> searchOptions = null
-                                                                             )
+        public async Task<ActionResult<PagedCollection<CustomerDTO>>> GetCustomers([FromQuery]SieveModel sieveModel)
         {
-            pagingOptions.Limit ??= 10;
-            pagingOptions.Offset ??= 0;
-            var customersQuery = _customers.getAll();
-
-            customersQuery = sortingOptions.Apply(customersQuery);
-            customersQuery = searchOptions.Apply(customersQuery);
+            var customersQuery = _customers.getAll().AsNoTracking();
+           customersQuery = _sieveProcessr.Apply(sieveModel, customersQuery);
+            
             var customers = await _mapper.ProjectTo<CustomerDTO>(customersQuery).ToListAsync();
 
-            var pagedCollection = new PagedCollection<CustomerDTO>
+            return new PagedCollection<CustomerDTO>
             {
-                Offset = pagingOptions.Offset.Value,
-                Limit = pagingOptions.Limit.Value,
-                Size = customers.Count,
-                Items = customers.Skip(pagingOptions.Offset.Value)
-                                 .Take(pagingOptions.Limit.Value)
+                Page = sieveModel.Page,
+                PageSize = sieveModel.PageSize,
+                TotalSize = customersQuery.Count(),
+                Items = customers
+
+
             };
-            var context = HttpContext;
-            return pagedCollection;
         }
 
         [HttpGet("{id}/order")]

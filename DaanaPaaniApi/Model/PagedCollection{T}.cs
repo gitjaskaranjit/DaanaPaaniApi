@@ -6,13 +6,13 @@ namespace DaanaPaaniApi.DTOs
     public class PagedCollection<T>
     {
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        public int? Offset { get; set; }
+        public int? Page { get; set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        public int? Limit { get; set; }
+        public int? PageSize { get; set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        public int Size { get; set; }
+        public int TotalSize { get; set; }
 
         public IEnumerable<T> Items { get; set; }
     }

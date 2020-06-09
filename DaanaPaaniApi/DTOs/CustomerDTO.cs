@@ -3,6 +3,7 @@ using DaanaPaaniApi.Repository;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis;
+using Sieve.Attributes;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -14,30 +15,21 @@ namespace DaanaPaaniApi.DTOs
     {
         public int CustomerId { get; set; }
 
-        [Sortable]
-        [Searchable]
+       
         public string Fullname { get; set; }
 
         [EmailAddress]
-        [Searchable]
         public string Email { get; set; }
 
         [Required]
-        [Searchable]
         public bool Active { get; set; }
-
-        [Searchable]
 
         public string PhoneNumber { get; set; }
 
-        [Searchable]
         public DateTime DateOfBirth { get; set; }
 
-        [Sortable]
-        [Searchable]
         public DateTime AddedDate { get; set; }
 
-        [Searchable]
         public AddressDTO Address { get; set; }
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)

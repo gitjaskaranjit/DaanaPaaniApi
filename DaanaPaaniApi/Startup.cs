@@ -13,6 +13,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
 using Okta.AspNetCore;
+using Sieve.Services;
 using System;
 using System.Linq;
 using System.Text.Json.Serialization;
@@ -61,6 +62,7 @@ namespace DaanaPaaniApi
                                                                .AllowAnyMethod()
                                                                .AllowAnyHeader());
             });
+            services.AddScoped<ISieveProcessor,ApplicationSieveProcessor>();
             services.AddAutoMapper(typeof(MappingProfile));
             services.AddScoped<ICustomerService, CustomerService>();
             services.AddScoped<IItemService, ItemService>();
