@@ -1,4 +1,5 @@
-﻿using DaanaPaaniApi.Model;
+﻿using DaanaPaaniApi.DTOs;
+using DaanaPaaniApi.Model;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Linq;
@@ -15,9 +16,11 @@ namespace DaanaPaaniApi.Repository
             _context = context;
         }
 
-        public Task<Package> add(Package package)
+        public async Task<Package> add(Package package)
         {
-            throw new NotImplementedException();
+           var NewPackage =  _context.Packages.Update(package);
+         await   _context.SaveChangesAsync();
+            return NewPackage.Entity;
         }
 
         public Task<Package> delete(Package package)

@@ -27,6 +27,7 @@ namespace DaanaPaaniApi.Model
 
         [Sieve(CanFilter = true, CanSort = true)]
         public DateTime AddedDate { get; set; }
+        [Sieve(CanFilter = true, CanSort = true)]
         public bool Active { get; set; }
         public Address Address { get; set; }
         public LocationInfo locationInfo { get; set; }

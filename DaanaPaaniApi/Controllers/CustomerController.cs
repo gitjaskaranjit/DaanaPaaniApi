@@ -55,15 +55,16 @@ namespace DaaniPaaniApi.Controllers
         public async Task<ActionResult<PagedCollection<CustomerDTO>>> GetCustomers([FromQuery]SieveModel sieveModel)
         {
             var customersQuery = _customers.getAll().AsNoTracking();
-           customersQuery = _sieveProcessr.Apply(sieveModel, customersQuery);
-            
+           customersQuery = _sieveProcessr.Apply(sieveModel, customersQuery, applyPagination: false);
+            var totalSize = customersQuery.Count();
+            customersQuery = _sieveProcessr.Apply(sieveModel, customersQuery, applySorting: false, applyFiltering: false);
             var customers = await _mapper.ProjectTo<CustomerDTO>(customersQuery).ToListAsync();
 
             return new PagedCollection<CustomerDTO>
             {
                 Page = sieveModel.Page,
                 PageSize = sieveModel.PageSize,
-                TotalSize = customersQuery.Count(),
+                TotalSize = totalSize,
                 Items = customers
 
 

@@ -49,16 +49,15 @@ namespace DaanaPaaniApi.Controllers
         }
 
         // PUT: api/Package/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for
-        // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
+        
         [HttpPut("{id}")]
         [OpenApiIgnore]
         public async Task<IActionResult> PutPackage(int id, Package package)
         {
-            //if (id != package.PackageId)
-            //{
-            //    return BadRequest();
-            //}
+            if (id != package.PackageId)
+            {
+                return BadRequest();
+            }
 
             //_context.Entry(package).State = EntityState.Modified;
 
@@ -86,14 +85,14 @@ namespace DaanaPaaniApi.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
-        [OpenApiIgnore]
-        public async Task<ActionResult<Package>> PostPackage(Package package)
+        [Description("Create new Package")]
+        public async Task<ActionResult<PackageDTO>> PostPackage(PackageDTO package)
         {
-            //_context.Packages.Add(package);
-            //await _context.SaveChangesAsync();
+            var pack = _mapper.Map<Package>(package);
+           var newPackage =   await _package.add(pack);
 
-            //return CreatedAtAction("GetPackage", new { id = package.PackageId }, package);
-            throw new NotImplementedException();
+
+            return CreatedAtAction("GetPackage", new { id = newPackage.PackageId }, _mapper.Map<PackageDTO>(newPackage));
         }
 
         // DELETE: api/Package/5
