@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DaanaPaaniApi.Repository
 {
-    public class OrderService : IOrderService
+    public class OrderService : IRepository<Order>
     {
         private readonly DataContext _context;
 
@@ -22,7 +22,7 @@ namespace DaanaPaaniApi.Repository
             return newOrder.Entity;
         }
 
-        public void delete(Item item)
+        public void delete(Order entity)
         {
             throw new NotImplementedException();
         }

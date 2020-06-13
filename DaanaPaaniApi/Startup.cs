@@ -67,12 +67,12 @@ namespace DaanaPaaniApi
             });
             services.AddScoped<ISieveProcessor, ApplicationSieveProcessor>();
             services.AddAutoMapper(typeof(MappingProfile));
-            services.AddScoped<ICustomerService, CustomerService>();
-            services.AddScoped<IItemService, ItemService>();
-            services.AddScoped<IPackageService, PackageService>();
-            services.AddScoped<IOrderService, OrderService>();
+            services.AddScoped<IRepository<Customer>, CustomerService>();
+            services.AddScoped<IRepository<Item>, ItemService>();
+            services.AddScoped<IRepository<Package>, PackageService>();
+            services.AddScoped<IRepository<Order>, OrderService>();
+            services.AddScoped<IRepository<LocationInfo>, LocationService>();
             services.AddScoped<IGeocodeService, HereGeocodeService>();
-            services.AddScoped<IlocationService, LocationService>();
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = OktaDefaults.ApiAuthenticationScheme;

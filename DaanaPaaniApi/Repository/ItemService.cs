@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace DaanaPaaniApi.Repository
 {
-    public class ItemService : IItemService
+    public class ItemService : IRepository<Item>
     {
         private readonly DataContext _context;
 

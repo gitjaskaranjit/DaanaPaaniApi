@@ -15,10 +15,10 @@ namespace DaanaPaaniApi.Controllers
     [ApiController]
     public class ItemController : ControllerBase
     {
-        private readonly IItemService _item;
+        private readonly IRepository<Item> _item;
         private readonly IMapper _mapper;
 
-        public ItemController(IItemService item, IMapper mapper)
+        public ItemController(IRepository<Item> item, IMapper mapper)
         {
             _item = item;
             _mapper = mapper;

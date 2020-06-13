@@ -16,10 +16,10 @@ namespace DaanaPaaniApi.Controllers
     [ApiController]
     public class PackageController : ControllerBase
     {
-        private readonly IPackageService _package;
+        private readonly IRepository<Package> _package;
         private readonly IMapper _mapper;
 
-        public PackageController(IPackageService package, IMapper mapper)
+        public PackageController(IRepository<Package> package, IMapper mapper)
         {
             _package = package;
             _mapper = mapper;
@@ -49,7 +49,7 @@ namespace DaanaPaaniApi.Controllers
         }
 
         // PUT: api/Package/5
-        
+
         [HttpPut("{id}")]
         [OpenApiIgnore]
         public async Task<IActionResult> PutPackage(int id, Package package)
@@ -89,8 +89,7 @@ namespace DaanaPaaniApi.Controllers
         public async Task<ActionResult<PackageDTO>> PostPackage(PackageDTO package)
         {
             var pack = _mapper.Map<Package>(package);
-           var newPackage =   await _package.add(pack);
-
+            var newPackage = await _package.add(pack);
 
             return CreatedAtAction("GetPackage", new { id = newPackage.PackageId }, _mapper.Map<PackageDTO>(newPackage));
         }

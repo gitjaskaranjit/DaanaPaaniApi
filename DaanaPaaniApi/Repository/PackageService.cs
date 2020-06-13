@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace DaanaPaaniApi.Repository
 {
-    public class PackageService : IPackageService
+    public class PackageService : IRepository<Package>
     {
         private readonly DataContext _context;
 
@@ -18,14 +18,9 @@ namespace DaanaPaaniApi.Repository
 
         public async Task<Package> add(Package package)
         {
-           var NewPackage =  _context.Packages.Update(package);
-         await   _context.SaveChangesAsync();
+            var NewPackage = _context.Packages.Update(package);
+            await _context.SaveChangesAsync();
             return NewPackage.Entity;
-        }
-
-        public Task<Package> delete(Package package)
-        {
-            throw new NotImplementedException();
         }
 
         public IQueryable<Package> getAll()
@@ -39,6 +34,11 @@ namespace DaanaPaaniApi.Repository
         }
 
         public Task<Package> update(int id, Package packge)
+        {
+            throw new NotImplementedException();
+        }
+
+        void IRepository<Package>.delete(Package entity)
         {
             throw new NotImplementedException();
         }

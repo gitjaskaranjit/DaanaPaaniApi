@@ -1,4 +1,5 @@
 ﻿using DaanaPaaniApi.infrastructure;
+using DaanaPaaniApi.Model;
 using DaanaPaaniApi.Repository;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -36,7 +37,7 @@ namespace DaanaPaaniApi.DTOs
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
             var httpContextService = (IHttpContextAccessor)validationContext.GetService(typeof(IHttpContextAccessor));
-            var customerService = (ICustomerService)validationContext.GetService(typeof(ICustomerService));
+            var customerService = (IRepository<Customer>)validationContext.GetService(typeof(IRepository<Customer>));
             var requestMethod = httpContextService.HttpContext.Request.Method;
             if (requestMethod.Equals("POST"))
             {

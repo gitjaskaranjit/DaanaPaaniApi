@@ -21,16 +21,16 @@ namespace DaaniPaaniApi.Controllers
     [ApiController]
     public class CustomerController : ControllerBase
     {
-        private readonly ICustomerService _customers;
+        private readonly IRepository<Customer> _customers;
         private readonly IMapper _mapper;
-        private readonly IOrderService _orders;
-        private readonly IlocationService _Locations;
+        private readonly IRepository<Order> _orders;
+        private readonly IRepository<LocationInfo> _Locations;
         private readonly ISieveProcessor _sieveProcessr;
 
         public CustomerController(IMapper mapper,
-                                  ICustomerService customer,
-                                  IOrderService orders,
-                                  IlocationService locations,
+                                  IRepository<Customer> customer,
+                                   IRepository<Order> orders,
+                                   IRepository<LocationInfo> locations,
                                   ISieveProcessor sieveProcessor)
         {
             _customers = customer;
@@ -162,7 +162,7 @@ namespace DaaniPaaniApi.Controllers
         [Description("Get the list of all the customers Locations")]
         public ActionResult<IEnumerable<LocationInfoDTO>> GetCustomerLocations([FromQuery] SieveModel sieveModel)
         {
-            var LocationsQuery = _Locations.getAllAsync().AsNoTracking();
+            var LocationsQuery = _Locations.getAll().AsNoTracking();
             LocationsQuery = _sieveProcessr.Apply(sieveModel, LocationsQuery, applyPagination: false);
             return LocationsQuery.Select((l =>
                 new LocationInfoDTO

@@ -9,7 +9,7 @@ using NetTopologySuite.Geometries;
 
 namespace DaanaPaaniApi.Repository
 {
-    public class CustomerService : ICustomerService
+    public class CustomerService : IRepository<Customer>
     {
         protected readonly DataContext _context;
         private readonly IGeocodeService _geocodeService;

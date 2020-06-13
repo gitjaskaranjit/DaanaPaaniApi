@@ -19,11 +19,11 @@ namespace DaanaPaaniApi.Controllers
     [ApiController]
     public class OrderController : ControllerBase
     {
-        private readonly IOrderService _orders;
+        private readonly IRepository<Order> _orders;
         private readonly IMapper _mapper;
         private readonly ISieveProcessor _sieveProcessor;
 
-        public OrderController(IOrderService orders,
+        public OrderController(IRepository<Order> orders,
                                IMapper mapper,
                                ISieveProcessor sieveProcessor)
         {
@@ -35,10 +35,10 @@ namespace DaanaPaaniApi.Controllers
         // GET: api/Order
         [HttpGet]
         [Description("Get list of orders")]
-        public async Task<ActionResult<IEnumerable<OrderDTO>>> GetOrders([FromQuery]SieveModel sieveModel)
+        public async Task<ActionResult<IEnumerable<OrderDTO>>> GetOrders([FromQuery] SieveModel sieveModel)
         {
             var ordersQuery = _orders.getAll();
-            ordersQuery = _sieveProcessor.Apply(sieveModel,ordersQuery, applyPagination : false);
+            ordersQuery = _sieveProcessor.Apply(sieveModel, ordersQuery, applyPagination: false);
             var orders = await _mapper.ProjectTo<OrderDTO>(ordersQuery).ToListAsync();
 
             return orders;
