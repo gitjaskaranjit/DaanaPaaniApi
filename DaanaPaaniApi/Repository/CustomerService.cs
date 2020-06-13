@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using NetTopologySuite.Geometries;
 
 namespace DaanaPaaniApi.Repository
 {
@@ -30,8 +31,7 @@ namespace DaanaPaaniApi.Repository
 
                 var location = new LocationInfo
                 {
-                    lat = locationInfo.Items[0].Position.Lat,
-                    lng = locationInfo.Items[0].Position.Lng,
+                    Location = new Point(locationInfo.Items[0].Position.Lat, locationInfo.Items[0].Position.Lng) { SRID = 4326 },
                     placeId = locationInfo.Items[0].Id,
                     formatted_address = locationInfo.Items[0].Title,
                     customer = newCustomer.Entity

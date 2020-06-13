@@ -5,18 +5,19 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using NetTopologySuite.Geometries;
 
 namespace DaanaPaaniApi.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20200602225144_intialMigration")]
-    partial class intialMigration
+    [Migration("20200612174515_IntailMigration")]
+    partial class IntailMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "3.1.4");
+                .HasAnnotation("ProductVersion", "3.1.5");
 
             modelBuilder.Entity("DaanaPaaniApi.Entities.Driver", b =>
                 {
@@ -191,13 +192,11 @@ namespace DaanaPaaniApi.Migrations
                     b.Property<int>("customerId")
                         .HasColumnType("INTEGER");
 
+                    b.Property<Point>("Location")
+                        .HasColumnType("Geometry")
+                        .HasAnnotation("Sqlite:Srid", 4326);
+
                     b.Property<string>("formatted_address")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("lat")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("lng")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("placeId")

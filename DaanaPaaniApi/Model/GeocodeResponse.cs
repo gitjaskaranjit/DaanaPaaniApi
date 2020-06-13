@@ -45,10 +45,10 @@ namespace DaanaPaaniApi.DTOs
     public partial class Position
     {
         [JsonProperty("lat")]
-        public string Lat { get; set; }
+        public Double Lat { get; set; }
 
         [JsonProperty("lng")]
-        public string Lng { get; set; }
+        public Double Lng { get; set; }
     }
 
     public partial class GeoAddress
@@ -120,5 +120,3 @@ namespace DaanaPaaniApi.DTOs
         public long HouseNumber { get; set; }
     }
 }
-
-

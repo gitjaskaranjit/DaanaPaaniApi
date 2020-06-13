@@ -44,31 +44,35 @@ namespace DaanaPaaniApi
                 //options.Filters.Add(new AuthorizeFilter(policy));
             });
             services.AddControllers()
-                .AddNewtonsoftJson(options => {
+                .AddNewtonsoftJson(options =>
+                {
                     options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
                     options.SerializerSettings.Converters.Add(new Newtonsoft.Json.Converters.StringEnumConverter());
-
-                    })
+                    options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
+                })
                 .ConfigureApiBehaviorOptions(options => options.InvalidModelStateResponseFactory = context =>
                 {
                     var result = new BadRequestObjectResult(new ApiError(context.ModelState));
                     return result;
                 }
                );
-            services.AddDbContext<DataContext>(options => options.UseSqlite(Configuration.GetConnectionString("DefaultConnection")));
+            services.AddDbContext<DataContext>(options => options.UseSqlite(Configuration.GetConnectionString("DefaultConnection"),
+                                                                                                            x => x.UseNetTopologySuite()));
             services.AddCors(options =>
             {
                 options.AddPolicy("AllowAll", builder => builder.AllowAnyOrigin()
                                                                .AllowAnyMethod()
-                                                               .AllowAnyHeader());
+                                                               .AllowAnyHeader()
+                                                               );
             });
-            services.AddScoped<ISieveProcessor,ApplicationSieveProcessor>();
+            services.AddScoped<ISieveProcessor, ApplicationSieveProcessor>();
             services.AddAutoMapper(typeof(MappingProfile));
             services.AddScoped<ICustomerService, CustomerService>();
             services.AddScoped<IItemService, ItemService>();
             services.AddScoped<IPackageService, PackageService>();
             services.AddScoped<IOrderService, OrderService>();
             services.AddScoped<IGeocodeService, HereGeocodeService>();
+            services.AddScoped<IlocationService, LocationService>();
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = OktaDefaults.ApiAuthenticationScheme;

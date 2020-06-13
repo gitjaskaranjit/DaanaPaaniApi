@@ -3,6 +3,7 @@ using DaanaPaaniApi.Repository;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis;
+using Newtonsoft.Json;
 using Sieve.Attributes;
 using System;
 using System.Collections.Generic;
@@ -15,7 +16,6 @@ namespace DaanaPaaniApi.DTOs
     {
         public int CustomerId { get; set; }
 
-       
         public string Fullname { get; set; }
 
         [EmailAddress]
@@ -30,6 +30,7 @@ namespace DaanaPaaniApi.DTOs
 
         public DateTime AddedDate { get; set; }
 
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public AddressDTO Address { get; set; }
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
@@ -50,8 +51,8 @@ namespace DaanaPaaniApi.DTOs
             }
             if (requestMethod.Equals("PUT"))
             {
-                var cus = customerService.getAll().Where(c => c.PhoneNumber == this.PhoneNumber)  ;
-                if(cus.Any() && cus.Select(c => c.CustomerId).FirstOrDefault() != CustomerId)
+                var cus = customerService.getAll().Where(c => c.PhoneNumber == this.PhoneNumber);
+                if (cus.Any() && cus.Select(c => c.CustomerId).FirstOrDefault() != CustomerId)
                 {
                     yield return new ValidationResult($"Phone number '{PhoneNumber}' already in use");
                 }

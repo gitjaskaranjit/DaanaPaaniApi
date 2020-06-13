@@ -11,9 +11,8 @@ namespace DaanaPaaniApi.infrastructure
 {
     public class ApplicationSieveProcessor : SieveProcessor
     {
-        public ApplicationSieveProcessor(IOptions<SieveOptions> options):base(options)
+        public ApplicationSieveProcessor(IOptions<SieveOptions> options) : base(options)
         {
-
         }
 
         protected override SievePropertyMapper MapProperties(SievePropertyMapper mapper)
@@ -27,8 +26,9 @@ namespace DaanaPaaniApi.infrastructure
             mapper.Property<Customer>(c => c.Address.City)
                    .CanFilter()
                    .CanSort();
+            mapper.Property<LocationInfo>(c => c.customer.Active)
+                .CanFilter();
             return base.MapProperties(mapper);
         }
-
     }
 }

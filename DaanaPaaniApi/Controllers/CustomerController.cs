@@ -14,6 +14,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
+
 namespace DaaniPaaniApi.Controllers
 {
     [Route("[controller]")]
@@ -23,17 +24,20 @@ namespace DaaniPaaniApi.Controllers
         private readonly ICustomerService _customers;
         private readonly IMapper _mapper;
         private readonly IOrderService _orders;
+        private readonly IlocationService _Locations;
         private readonly ISieveProcessor _sieveProcessr;
 
         public CustomerController(IMapper mapper,
                                   ICustomerService customer,
                                   IOrderService orders,
+                                  IlocationService locations,
                                   ISieveProcessor sieveProcessor)
         {
             _customers = customer;
             _mapper = mapper;
             _orders = orders;
             _sieveProcessr = sieveProcessor;
+            _Locations = locations;
         }
 
         [HttpGet("{id}")]
@@ -41,7 +45,7 @@ namespace DaaniPaaniApi.Controllers
         [SwaggerResponse(400, typeof(ApiError))]
         [SwaggerResponse(404, typeof(ApiError))]
         [Description("Get Specific customer")]
-        public async Task<IActionResult> GetCustomer([FromRoute]int id)
+        public async Task<IActionResult> GetCustomer([FromRoute] int id)
         {
             var customer = await _customers.getById(id);
             if (customer == null) return NotFound(new ApiError("Customer not found"));
@@ -52,10 +56,10 @@ namespace DaaniPaaniApi.Controllers
         [ProducesResponseType(200)]
         [SwaggerResponse(400, typeof(ApiError))]
         [Description("Get the list of all the customers")]
-        public async Task<ActionResult<PagedCollection<CustomerDTO>>> GetCustomers([FromQuery]SieveModel sieveModel)
+        public async Task<ActionResult<PagedCollection<CustomerDTO>>> GetCustomers([FromQuery] SieveModel sieveModel)
         {
             var customersQuery = _customers.getAll().AsNoTracking();
-           customersQuery = _sieveProcessr.Apply(sieveModel, customersQuery, applyPagination: false);
+            customersQuery = _sieveProcessr.Apply(sieveModel, customersQuery, applyPagination: false);
             var totalSize = customersQuery.Count();
             customersQuery = _sieveProcessr.Apply(sieveModel, customersQuery, applySorting: false, applyFiltering: false);
             var customers = await _mapper.ProjectTo<CustomerDTO>(customersQuery).ToListAsync();
@@ -66,8 +70,6 @@ namespace DaaniPaaniApi.Controllers
                 PageSize = sieveModel.PageSize,
                 TotalSize = totalSize,
                 Items = customers
-
-
             };
         }
 
@@ -94,7 +96,7 @@ namespace DaaniPaaniApi.Controllers
         [SwaggerResponse(400, typeof(ApiError))]
         [SwaggerResponse(404, typeof(ApiError))]
         [Description("Create order for specific customer")]
-        public async Task<IActionResult> PostCustomerOrder(int id, [FromBody]OrderDTO orderDTO)
+        public async Task<IActionResult> PostCustomerOrder(int id, [FromBody] OrderDTO orderDTO)
         {
             if (CustomerExist(id))
             {
@@ -114,7 +116,7 @@ namespace DaaniPaaniApi.Controllers
         [SwaggerResponse(400, typeof(ApiError))]
         [SwaggerResponse(404, typeof(ApiError))]
         [Description("Create a customer")]
-        public async Task<IActionResult> PostCustomer([FromBody]CustomerDTO customerDTO)
+        public async Task<IActionResult> PostCustomer([FromBody] CustomerDTO customerDTO)
         {
             if (!PhoneUnique(customerDTO))
             {
@@ -131,7 +133,7 @@ namespace DaaniPaaniApi.Controllers
         [SwaggerResponse(400, typeof(ApiError))]
         [SwaggerResponse(404, typeof(ApiError))]
         [Description("Set customer to inactive")]
-        public async Task<IActionResult> RemoveCustomer([FromRoute]int id)
+        public async Task<IActionResult> RemoveCustomer([FromRoute] int id)
         {
             var customer = await _customers.getById(id);
             if (customer == null) { return NotFound(new ApiError("Customer not Found")); }
@@ -151,8 +153,34 @@ namespace DaaniPaaniApi.Controllers
                 return NotFound(new ApiError("Customer not found"));
             };
             var customer = _mapper.Map<CustomerDTO, Customer>(customerDTO, customeEntity);
-           await _customers.update(id, customer);
+            await _customers.update(id, customer);
             return NoContent();
+        }
+
+        [HttpGet("locations")]
+        [ProducesResponseType(200)]
+        [Description("Get the list of all the customers Locations")]
+        public ActionResult<IEnumerable<LocationInfoDTO>> GetCustomerLocations([FromQuery] SieveModel sieveModel)
+        {
+            var LocationsQuery = _Locations.getAllAsync().AsNoTracking();
+            LocationsQuery = _sieveProcessr.Apply(sieveModel, LocationsQuery, applyPagination: false);
+            return LocationsQuery.Select((l =>
+                new LocationInfoDTO
+                {
+                    Latitude = l.Location.X,
+                    Longitude = l.Location.Y,
+                    formatted_address = l.formatted_address,
+                    customer = new CustomerDTO
+                    {
+                        CustomerId = l.customer.CustomerId,
+                        Fullname = l.customer.Fullname,
+                        Email = l.customer.Email,
+                        Active = l.customer.Active,
+                        PhoneNumber = l.customer.PhoneNumber,
+                        AddedDate = l.customer.AddedDate
+                    }
+                }
+            )).ToList();
         }
 
         private bool CustomerExist(int id)

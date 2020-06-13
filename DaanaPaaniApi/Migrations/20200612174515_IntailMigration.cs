@@ -1,12 +1,16 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
+using NetTopologySuite.Geometries;
 
 namespace DaanaPaaniApi.Migrations
 {
-    public partial class intialMigration : Migration
+    public partial class IntailMigration : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.AlterDatabase()
+                .Annotation("Sqlite:InitSpatialMetaData", true);
+
             migrationBuilder.CreateTable(
                 name: "Drivers",
                 columns: table => new
@@ -152,8 +156,8 @@ namespace DaanaPaaniApi.Migrations
                 columns: table => new
                 {
                     customerId = table.Column<int>(nullable: false),
-                    lat = table.Column<string>(nullable: true),
-                    lng = table.Column<string>(nullable: true),
+                    Location = table.Column<Point>(type: "Geometry", nullable: true)
+                        .Annotation("Sqlite:Srid", 4326),
                     placeId = table.Column<string>(nullable: true),
                     formatted_address = table.Column<string>(nullable: true)
                 },

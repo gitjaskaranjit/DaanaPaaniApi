@@ -47,6 +47,9 @@ namespace DaanaPaaniApi
             modelBuilder.Entity<AddOn>()
                                 .HasOne(o => o.Item)
                                 .WithMany(i => i.AddOns);
+            //locationInfo cooridates
+            modelBuilder.Entity<LocationInfo>().Property(c => c.Location)
+                 .HasSrid(4326);
         }
     }
 }
