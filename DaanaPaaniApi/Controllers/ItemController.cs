@@ -2,6 +2,7 @@
 using DaanaPaaniApi.DTOs;
 using DaanaPaaniApi.Model;
 using DaanaPaaniApi.Repository;
+using DaanaPaaniApi.Repository.IRepository;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NSwag.Annotations;
@@ -15,12 +16,12 @@ namespace DaanaPaaniApi.Controllers
     [ApiController]
     public class ItemController : ControllerBase
     {
-        private readonly IRepository<Item> _item;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
-        public ItemController(IRepository<Item> item, IMapper mapper)
+        public ItemController(IUnitOfWork unitOfWork, IMapper mapper)
         {
-            _item = item;
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
 
@@ -30,7 +31,7 @@ namespace DaanaPaaniApi.Controllers
         [Description("Get list of items")]
         public async Task<ActionResult<IEnumerable<Item>>> GetItems()
         {
-            return Ok(await _mapper.ProjectTo<ItemDTO>(_item.getAll()).ToListAsync());
+            return Ok(await _mapper.ProjectTo<ItemDTO>(_unitOfWork.Item.GetAllAsync()).ToListAsync());
         }
 
         // GET: /Item/5
@@ -40,7 +41,7 @@ namespace DaanaPaaniApi.Controllers
         [Description("Get specific item")]
         public async Task<ActionResult<ItemDTO>> GetItem(int id)
         {
-            var item = await _item.getById(id);
+            var item = await _unitOfWork.Item.GetFirstOrDefault(i => i.ItemId == id);
 
             if (item == null)
             {
@@ -60,7 +61,7 @@ namespace DaanaPaaniApi.Controllers
         [Description("Update item information")]
         public async Task<IActionResult> PutItem(int id, ItemDTO itemDTO)
         {
-            var itemEntity = await _item.getById(id);
+            var itemEntity = await _unitOfWork.Item.GetFirstOrDefault(i => i.ItemId == id);
             if (itemEntity == null)
             {
                 return NotFound(new ApiError("Item doesn't exist"));
@@ -71,8 +72,8 @@ namespace DaanaPaaniApi.Controllers
             }
             var item = _mapper.Map<ItemDTO, Item>(itemDTO, itemEntity);
 
-            await _item.update(id, item);
-
+            _unitOfWork.Item.Update(item);
+            await _unitOfWork.SaveAsync();
             return NoContent();
         }
 
@@ -86,8 +87,9 @@ namespace DaanaPaaniApi.Controllers
         public async Task<ActionResult<Item>> PostItem(ItemDTO itemDTO)
         {
             var item = _mapper.Map<ItemDTO, Item>(itemDTO);
-            var addedItem = _mapper.Map<Item, ItemDTO>(await _item.add(item));
-            return CreatedAtAction("GetItem", new { id = addedItem.ItemId }, addedItem);
+            _unitOfWork.Item.AddAsync(item);
+            await _unitOfWork.SaveAsync();
+            return CreatedAtAction("GetItem", new { id = itemDTO.ItemId }, itemDTO);
         }
 
         // DELETE:/Item/5
@@ -97,13 +99,14 @@ namespace DaanaPaaniApi.Controllers
         [Description("Delete item (Not Recommended)")]
         public async Task<ActionResult> DeleteItem(int id)
         {
-            var item = await _item.getById(id);
+            var item = _unitOfWork.Item.GetFirstOrDefault(i => i.ItemId == id);
             if (item == null)
             {
                 return NotFound();
             }
 
-            _item.delete(item);
+            _unitOfWork.Item.Delete(id);
+            await _unitOfWork.SaveAsync();
             return NoContent();
         }
     }

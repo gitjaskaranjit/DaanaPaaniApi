@@ -4,15 +4,17 @@ using DaanaPaaniApi;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 
 namespace DaanaPaaniApi.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20200620042636_intialMigration")]
+    partial class intialMigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -125,6 +127,9 @@ namespace DaanaPaaniApi.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<bool>("Active")
+                        .HasColumnType("bit");
+
                     b.Property<DateTime>("AddedDate")
                         .HasColumnType("datetime2");
 
@@ -205,7 +210,7 @@ namespace DaanaPaaniApi.Migrations
 
                     b.HasKey("customerId");
 
-                    b.ToTable("Locations");
+                    b.ToTable("LocationInfos");
                 });
 
             modelBuilder.Entity("DaanaPaaniApi.Model.Order", b =>

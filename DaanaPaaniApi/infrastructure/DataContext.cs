@@ -18,7 +18,7 @@ namespace DaanaPaaniApi
         public DbSet<AddOn> AddOns { get; set; }
         public DbSet<PackageItem> PackageItems { get; set; }
         public DbSet<Discount> Discounts { get; set; }
-        public DbSet<LocationInfo> LocationInfos { get; set; }
+        public DbSet<Location> Locations { get; set; }
         public DbSet<Driver> Drivers { get; set; }
         public DbSet<DriverAddress> DriverAddresses { get; set; }
 
@@ -48,7 +48,7 @@ namespace DaanaPaaniApi
                                 .HasOne(o => o.Item)
                                 .WithMany(i => i.AddOns);
             //locationInfo cooridates
-            modelBuilder.Entity<LocationInfo>().Property(c => c.Location)
+            modelBuilder.Entity<Location>().Property(c => c.LocationPoints)
                  .HasSrid(4326);
         }
     }

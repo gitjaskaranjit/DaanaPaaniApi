@@ -2,9 +2,11 @@
 using DaanaPaaniApi.DTOs;
 using DaanaPaaniApi.Model;
 using DaanaPaaniApi.Repository;
+using DaanaPaaniApi.Repository.IRepository;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NSwag.Annotations;
+using ProjNet.CoordinateSystems;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -16,12 +18,12 @@ namespace DaanaPaaniApi.Controllers
     [ApiController]
     public class PackageController : ControllerBase
     {
-        private readonly IRepository<Package> _package;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
-        public PackageController(IRepository<Package> package, IMapper mapper)
+        public PackageController(IUnitOfWork unitOfWork, IMapper mapper)
         {
-            _package = package;
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
 
@@ -30,7 +32,8 @@ namespace DaanaPaaniApi.Controllers
         [Description("Get list of all packages")]
         public async Task<ActionResult<IEnumerable<PackageDTO>>> GetPackages()
         {
-            var packages = _package.getAll();
+            var packages = _unitOfWork.Package.GetAllAsync(include: s => s.Include(p => p.PackageItems).ThenInclude(p => p.Item),
+                                                           disableTracking: true);
             return await _mapper.ProjectTo<PackageDTO>(packages).ToListAsync();
         }
 
@@ -40,7 +43,9 @@ namespace DaanaPaaniApi.Controllers
         [Description("Get specific package")]
         public async Task<ActionResult<PackageDTO>> GetPackage(int id)
         {
-            var package = await _package.getById(id);
+            var package = await _unitOfWork.Package.GetFirstOrDefault(p => p.PackageId == id,
+                                                                      include: s => s.Include(p => p.PackageItems).ThenInclude(p => p.Item),
+                                                                      disableTracking: true);
             if (package == null)
             {
                 return NotFound(new ApiError("Package not found"));
@@ -51,34 +56,30 @@ namespace DaanaPaaniApi.Controllers
         // PUT: api/Package/5
 
         [HttpPut("{id}")]
-        [OpenApiIgnore]
-        public async Task<IActionResult> PutPackage(int id, Package package)
+        public async Task<IActionResult> PutPackage(int id, PackageDTO packageDTO)
         {
-            if (id != package.PackageId)
+            var packageEntity = await _unitOfWork.Package.GetFirstOrDefault(p => p.PackageId == id);
+            if (packageEntity == null)
             {
-                return BadRequest();
+                return BadRequest(new ApiError("Package not found"));
+            }
+            if (id != packageDTO.PackageId)
+            {
+                return BadRequest(new ApiError("Invalid Request"));
+            }
+            var package = _mapper.Map<PackageDTO, Package>(packageDTO, packageEntity);
+            _unitOfWork.Package.Update(package);
+
+            try
+            {
+                await _unitOfWork.SaveAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                throw;
             }
 
-            //_context.Entry(package).State = EntityState.Modified;
-
-            //try
-            //{
-            //    await _context.SaveChangesAsync();
-            //}
-            //catch (DbUpdateConcurrencyException)
-            //{
-            //    if (!PackageExists(id))
-            //    {
-            //        return NotFound();
-            //    }
-            //    else
-            //    {
-            //        throw;
-            //    }
-            //}
-
-            //return NoContent();
-            throw new NotImplementedException();
+            return NoContent();
         }
 
         // POST: api/Package
@@ -86,30 +87,29 @@ namespace DaanaPaaniApi.Controllers
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
         [Description("Create new Package")]
-        public async Task<ActionResult<PackageDTO>> PostPackage(PackageDTO package)
+        public async Task<ActionResult<PackageDTO>> PostPackage(PackageDTO packageDTO)
         {
-            var pack = _mapper.Map<Package>(package);
-            var newPackage = await _package.add(pack);
+            var package = _mapper.Map<Package>(packageDTO);
+            _unitOfWork.Package.AddAsync(package);
+            await _unitOfWork.SaveAsync();
 
-            return CreatedAtAction("GetPackage", new { id = newPackage.PackageId }, _mapper.Map<PackageDTO>(newPackage));
+            return CreatedAtAction("GetPackage", new { id = packageDTO.PackageId }, packageDTO);
         }
 
         // DELETE: api/Package/5
         [HttpDelete("{id}")]
-        [OpenApiIgnore]
         public async Task<ActionResult<Package>> DeletePackage(int id)
         {
-            //    var package = await _context.Packages.FindAsync(id);
-            //    if (package == null)
-            //    {
-            //        return NotFound();
-            //    }
+            var packageEntity = await _unitOfWork.Package.GetFirstOrDefault(p => p.PackageId == id);
+            if (packageEntity == null)
+            {
+                return NotFound();
+            }
 
-            //    _context.Packages.Remove(package);
-            //    await _context.SaveChangesAsync();
+            _unitOfWork.Package.Delete(id);
+            await _unitOfWork.SaveAsync();
 
-            //    return package;
-            throw new NotImplementedException();
+            return NoContent();
         }
     }
 }

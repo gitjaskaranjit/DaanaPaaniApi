@@ -3,6 +3,7 @@ using DaanaPaaniApi;
 using DaanaPaaniApi.DTOs;
 using DaanaPaaniApi.Model;
 using DaanaPaaniApi.Repository;
+using DaanaPaaniApi.Repository.IRepository;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NSwag.Annotations;
@@ -21,23 +22,18 @@ namespace DaaniPaaniApi.Controllers
     [ApiController]
     public class CustomerController : ControllerBase
     {
-        private readonly IRepository<Customer> _customers;
         private readonly IMapper _mapper;
-        private readonly IRepository<Order> _orders;
-        private readonly IRepository<LocationInfo> _Locations;
+
+        private readonly IUnitOfWork _unitOfWork;
         private readonly ISieveProcessor _sieveProcessr;
 
         public CustomerController(IMapper mapper,
-                                  IRepository<Customer> customer,
-                                   IRepository<Order> orders,
-                                   IRepository<LocationInfo> locations,
+                                  IUnitOfWork unitOfWork,
                                   ISieveProcessor sieveProcessor)
         {
-            _customers = customer;
             _mapper = mapper;
-            _orders = orders;
             _sieveProcessr = sieveProcessor;
-            _Locations = locations;
+            _unitOfWork = unitOfWork;
         }
 
         [HttpGet("{id}")]
@@ -47,7 +43,7 @@ namespace DaaniPaaniApi.Controllers
         [Description("Get Specific customer")]
         public async Task<IActionResult> GetCustomer([FromRoute] int id)
         {
-            var customer = await _customers.getById(id);
+            var customer = await _unitOfWork.Customer.GetFirstOrDefault(c => c.CustomerId == id, include: c => c.Include(c => c.Address), disableTracking: true);
             if (customer == null) return NotFound(new ApiError("Customer not found"));
             return Ok(_mapper.Map<Customer, CustomerDTO>(customer));
         }
@@ -58,7 +54,7 @@ namespace DaaniPaaniApi.Controllers
         [Description("Get the list of all the customers")]
         public async Task<ActionResult<PagedCollection<CustomerDTO>>> GetCustomers([FromQuery] SieveModel sieveModel)
         {
-            var customersQuery = _customers.getAll().AsNoTracking();
+            var customersQuery = _unitOfWork.Customer.GetAllAsync(include: c => c.Include(c => c.Address), disableTracking: true);
             customersQuery = _sieveProcessr.Apply(sieveModel, customersQuery, applyPagination: false);
             var totalSize = customersQuery.Count();
             customersQuery = _sieveProcessr.Apply(sieveModel, customersQuery, applySorting: false, applyFiltering: false);
@@ -81,7 +77,7 @@ namespace DaaniPaaniApi.Controllers
         {
             if (CustomerExist(id))
             {
-                var orders = await _mapper.ProjectTo<OrderDTO>(_orders.getAll().Where(o => o.customerId == id)).ToListAsync();
+                var orders = await _mapper.ProjectTo<OrderDTO>(_unitOfWork.Order.GetAllAsync(o => o.customerId == id)).ToListAsync();
 
                 return Ok(orders);
             }
@@ -102,8 +98,9 @@ namespace DaaniPaaniApi.Controllers
             {
                 orderDTO.CustomerId = id;
                 var order = _mapper.Map<OrderDTO, Order>(orderDTO);
-                var addedOrder = _mapper.Map<Order, OrderDTO>(await _orders.add(order));
-                return CreatedAtAction(nameof(GetOrderOfCustomer), new { id = addedOrder.CustomerId }, addedOrder);
+                _unitOfWork.Order.AddAsync(order);
+                await _unitOfWork.SaveAsync();
+                return CreatedAtAction(nameof(GetOrderOfCustomer), new { id = orderDTO.CustomerId }, orderDTO);
             }
             else
             {
@@ -124,8 +121,9 @@ namespace DaaniPaaniApi.Controllers
             }
             customerDTO.AddedDate = DateTime.Now;
             var customer = _mapper.Map<CustomerDTO, Customer>(customerDTO);
-            var addedCustomer = _mapper.Map<Customer, CustomerDTO>(await _customers.add(customer));
-            return CreatedAtAction(nameof(GetCustomer), new { id = addedCustomer.CustomerId }, addedCustomer);
+            _unitOfWork.Customer.AddAsync(customer);
+            await _unitOfWork.SaveAsync();
+            return CreatedAtAction(nameof(GetCustomer), new { id = customerDTO.CustomerId }, customerDTO);
         }
 
         [HttpDelete("{id}")]
@@ -135,9 +133,12 @@ namespace DaaniPaaniApi.Controllers
         [Description("Set customer to inactive")]
         public async Task<IActionResult> RemoveCustomer([FromRoute] int id)
         {
-            var customer = await _customers.getById(id);
+            var customer = await _unitOfWork.Customer.GetFirstOrDefault(c => c.CustomerId == id, disableTracking: true);
             if (customer == null) { return NotFound(new ApiError("Customer not Found")); }
-            _customers.delete(customer); return NoContent();
+            var orders = _unitOfWork.Order.GetAllAsync(o => o.customerId == id);
+            await orders.ForEachAsync(a => a.EndDate = DateTime.Now);
+            await _unitOfWork.SaveAsync();
+            return NoContent();
         }
 
         [HttpPut("{id}")]
@@ -147,35 +148,34 @@ namespace DaaniPaaniApi.Controllers
         [Description(" Update customer information")]
         public async Task<IActionResult> UpdateCustomer(int id, CustomerDTO customerDTO)
         {
-            var customeEntity = await _customers.getById(id);
+            var customeEntity = await _unitOfWork.Customer.GetFirstOrDefault(c => c.CustomerId == id);
             if (customeEntity == null)
             {
                 return NotFound(new ApiError("Customer not found"));
             };
             var customer = _mapper.Map<CustomerDTO, Customer>(customerDTO, customeEntity);
-            await _customers.update(id, customer);
+            _unitOfWork.Customer.Update(customer);
             return NoContent();
         }
 
         [HttpGet("locations")]
         [ProducesResponseType(200)]
         [Description("Get the list of all the customers Locations")]
-        public ActionResult<IEnumerable<LocationInfoDTO>> GetCustomerLocations([FromQuery] SieveModel sieveModel)
+        public ActionResult<IEnumerable<LocationDTO>> GetCustomerLocations([FromQuery] SieveModel sieveModel)
         {
-            var LocationsQuery = _Locations.getAll().AsNoTracking();
+            var LocationsQuery = _unitOfWork.Location.GetAllAsync().AsNoTracking();
             LocationsQuery = _sieveProcessr.Apply(sieveModel, LocationsQuery, applyPagination: false);
             return LocationsQuery.Select((l =>
-                new LocationInfoDTO
+                new LocationDTO
                 {
-                    Latitude = l.Location.X,
-                    Longitude = l.Location.Y,
+                    Latitude = l.LocationPoints.X,
+                    Longitude = l.LocationPoints.Y,
                     formatted_address = l.formatted_address,
                     customer = new CustomerDTO
                     {
                         CustomerId = l.customer.CustomerId,
                         Fullname = l.customer.Fullname,
                         Email = l.customer.Email,
-                        Active = l.customer.Active,
                         PhoneNumber = l.customer.PhoneNumber,
                         AddedDate = l.customer.AddedDate
                     }
@@ -185,7 +185,7 @@ namespace DaaniPaaniApi.Controllers
 
         private bool CustomerExist(int id)
         {
-            var customer = _customers.getById(id).Result;
+            var customer = _unitOfWork.Customer.GetFirstOrDefault(c => c.CustomerId == id);
             if (customer == null)
             {
                 return false;
@@ -195,7 +195,7 @@ namespace DaaniPaaniApi.Controllers
 
         private bool PhoneUnique(CustomerDTO customer)
         {
-            if (_customers.getAll().Where(c => c.PhoneNumber == customer.PhoneNumber).Any())
+            if (_unitOfWork.Customer.GetAllAsync(c => c.PhoneNumber == customer.PhoneNumber).Any())
             {
                 return false;
             }

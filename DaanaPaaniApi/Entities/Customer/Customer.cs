@@ -11,6 +11,7 @@ namespace DaanaPaaniApi.Model
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int CustomerId { get; set; }
+
         [Sieve(CanFilter = true, CanSort = true)]
         public string Fullname { get; set; }
 
@@ -18,7 +19,6 @@ namespace DaanaPaaniApi.Model
         public string Email { get; set; }
 
         [Required]
-
         [Sieve(CanFilter = true)]
         public string PhoneNumber { get; set; }
 
@@ -27,10 +27,11 @@ namespace DaanaPaaniApi.Model
 
         [Sieve(CanFilter = true, CanSort = true)]
         public DateTime AddedDate { get; set; }
+
         [Sieve(CanFilter = true, CanSort = true)]
-        public bool Active { get; set; }
         public Address Address { get; set; }
-        public LocationInfo locationInfo { get; set; }
+
+        public Location locationInfo { get; set; }
         public ICollection<Order> Order { get; set; }
         public int? driverId { get; set; }
         public Driver driver { get; set; }

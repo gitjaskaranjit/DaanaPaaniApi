@@ -8,10 +8,10 @@ using System.Threading.Tasks;
 
 namespace DaanaPaaniApi.Model
 {
-    public class LocationInfo
+    public class Location
     {
         [Column(TypeName = "Geometry")]
-        public Point Location { get; set; }
+        public Point LocationPoints { get; set; }
 
         public string placeId { get; set; }
         public string formatted_address { get; set; }

@@ -4,19 +4,16 @@ using NetTopologySuite.Geometries;
 
 namespace DaanaPaaniApi.Migrations
 {
-    public partial class IntailMigration : Migration
+    public partial class intialMigration : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AlterDatabase()
-                .Annotation("Sqlite:InitSpatialMetaData", true);
-
             migrationBuilder.CreateTable(
                 name: "Drivers",
                 columns: table => new
                 {
                     DriverId = table.Column<int>(nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     DriverName = table.Column<string>(nullable: true),
                     DriverPhone = table.Column<string>(nullable: true),
                     DriverEmail = table.Column<string>(nullable: true),
@@ -34,7 +31,7 @@ namespace DaanaPaaniApi.Migrations
                 columns: table => new
                 {
                     ItemId = table.Column<int>(nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     ItemName = table.Column<string>(nullable: true),
                     ItemPrice = table.Column<int>(nullable: false)
                 },
@@ -48,7 +45,7 @@ namespace DaanaPaaniApi.Migrations
                 columns: table => new
                 {
                     PackageId = table.Column<int>(nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     PackageName = table.Column<string>(nullable: true),
                     PackagePrice = table.Column<int>(nullable: false)
                 },
@@ -62,7 +59,7 @@ namespace DaanaPaaniApi.Migrations
                 columns: table => new
                 {
                     CustomerId = table.Column<int>(nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     Fullname = table.Column<string>(nullable: true),
                     Email = table.Column<string>(nullable: true),
                     PhoneNumber = table.Column<string>(nullable: false),
@@ -156,8 +153,7 @@ namespace DaanaPaaniApi.Migrations
                 columns: table => new
                 {
                     customerId = table.Column<int>(nullable: false),
-                    Location = table.Column<Point>(type: "Geometry", nullable: true)
-                        .Annotation("Sqlite:Srid", 4326),
+                    LocationPoints = table.Column<Point>(type: "Geometry", nullable: true),
                     placeId = table.Column<string>(nullable: true),
                     formatted_address = table.Column<string>(nullable: true)
                 },
@@ -177,7 +173,7 @@ namespace DaanaPaaniApi.Migrations
                 columns: table => new
                 {
                     OrderId = table.Column<int>(nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     customerId = table.Column<int>(nullable: false),
                     Comment = table.Column<string>(nullable: true),
                     PackageId = table.Column<int>(nullable: false),

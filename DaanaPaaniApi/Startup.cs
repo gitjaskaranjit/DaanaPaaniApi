@@ -2,6 +2,7 @@ using AutoMapper;
 using DaanaPaaniApi.infrastructure;
 using DaanaPaaniApi.Model;
 using DaanaPaaniApi.Repository;
+using DaanaPaaniApi.Repository.IRepository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -56,7 +57,7 @@ namespace DaanaPaaniApi
                     return result;
                 }
                );
-            services.AddDbContext<DataContext>(options => options.UseSqlite(Configuration.GetConnectionString("DefaultConnection"),
+            services.AddDbContext<DataContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"),
                                                                                                             x => x.UseNetTopologySuite()));
             services.AddCors(options =>
             {
@@ -65,13 +66,11 @@ namespace DaanaPaaniApi
                                                                .AllowAnyHeader()
                                                                );
             });
+            services.AddScoped<ISieveCustomFilterMethods, SieveCustomFilterMethods>();
+            services.AddScoped<ISieveCustomSortMethods, SieveCustomSortMethods>();
             services.AddScoped<ISieveProcessor, ApplicationSieveProcessor>();
             services.AddAutoMapper(typeof(MappingProfile));
-            services.AddScoped<IRepository<Customer>, CustomerService>();
-            services.AddScoped<IRepository<Item>, ItemService>();
-            services.AddScoped<IRepository<Package>, PackageService>();
-            services.AddScoped<IRepository<Order>, OrderService>();
-            services.AddScoped<IRepository<LocationInfo>, LocationService>();
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IGeocodeService, HereGeocodeService>();
             services.AddAuthentication(options =>
             {

@@ -2,9 +2,11 @@
 using DaanaPaaniApi.DTOs;
 using DaanaPaaniApi.Model;
 using DaanaPaaniApi.Repository;
+using DaanaPaaniApi.Repository.IRepository;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NSwag.Annotations;
+using ProjNet.CoordinateSystems;
 using Sieve.Models;
 using Sieve.Services;
 using System;
@@ -19,15 +21,15 @@ namespace DaanaPaaniApi.Controllers
     [ApiController]
     public class OrderController : ControllerBase
     {
-        private readonly IRepository<Order> _orders;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly ISieveProcessor _sieveProcessor;
 
-        public OrderController(IRepository<Order> orders,
+        public OrderController(IUnitOfWork unitOfWork,
                                IMapper mapper,
                                ISieveProcessor sieveProcessor)
         {
-            _orders = orders;
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
             _sieveProcessor = sieveProcessor;
         }
@@ -37,7 +39,7 @@ namespace DaanaPaaniApi.Controllers
         [Description("Get list of orders")]
         public async Task<ActionResult<IEnumerable<OrderDTO>>> GetOrders([FromQuery] SieveModel sieveModel)
         {
-            var ordersQuery = _orders.getAll();
+            var ordersQuery = _unitOfWork.Order.GetAllAsync(include: o => o.Include(o => o.AddOns).Include(o => o.Discount));
             ordersQuery = _sieveProcessor.Apply(sieveModel, ordersQuery, applyPagination: false);
             var orders = await _mapper.ProjectTo<OrderDTO>(ordersQuery).ToListAsync();
 
@@ -50,7 +52,7 @@ namespace DaanaPaaniApi.Controllers
         [SwaggerResponse(404, typeof(ApiError))]
         public async Task<ActionResult<OrderDTO>> GetOrder(int id)
         {
-            var order = await _orders.getById(id);
+            var order = await _unitOfWork.Order.GetFirstOrDefault(o => o.OrderId == id);
 
             if (order == null)
             {
@@ -62,21 +64,17 @@ namespace DaanaPaaniApi.Controllers
 
         // DELETE: /Order/5
         [HttpDelete("{id}")]
-        [OpenApiIgnore]
         public async Task<ActionResult<Order>> DeleteOrder(int id)
         {
-            //var order = await _context.Orders.FindAsync(id);
-            //if (order == null)
-            //{
-            //    return NotFound();
-            //}
+            var order = await _unitOfWork.Order.GetFirstOrDefault(o => o.OrderId == id);
+            if (order == null)
+            {
+                return NotFound();
+            }
 
-            //_context.Orders.Remove(order);
-            //await _context.SaveChangesAsync();
-
-            //return order;
-
-            throw new NotImplementedException();
+            _unitOfWork.Order.Delete(id);
+            await _unitOfWork.SaveAsync();
+            return NoContent();
         }
     }
 }

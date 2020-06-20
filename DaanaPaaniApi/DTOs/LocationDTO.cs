@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace DaanaPaaniApi.DTOs
 {
-    public class LocationInfoDTO
+    public class LocationDTO
     {
         public double Latitude { get; set; }
         public double Longitude { get; set; }

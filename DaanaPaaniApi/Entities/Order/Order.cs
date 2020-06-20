@@ -14,7 +14,7 @@ namespace DaanaPaaniApi.Model
         public Package Package { get; set; }
 
         public DateTime StartDate { get; set; }
-        public DateTime? EndDate { get; set; }
+        public DateTime? EndDate { get; set; } = null;
         public ICollection<AddOn> AddOns { get; set; }
         public Discount Discount { get; set; }
     }
