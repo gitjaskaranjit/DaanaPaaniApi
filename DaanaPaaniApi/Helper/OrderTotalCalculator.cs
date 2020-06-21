@@ -24,7 +24,7 @@ namespace DaanaPaaniApi.Helper
             }
             else
             {
-                OrderTotal += OrderTotal * (discount.DiscountValue / 100);
+                OrderTotal = OrderTotal - decimal.ToInt32(OrderTotal * (discount.DiscountValue / 100m));
             }
             return OrderTotal;
         }
