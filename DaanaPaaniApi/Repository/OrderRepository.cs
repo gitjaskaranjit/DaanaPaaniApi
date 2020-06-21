@@ -18,7 +18,9 @@ namespace DaanaPaaniApi.Repository
 
         public void Update(Order order)
         {
-            throw new NotImplementedException();
+            var addOns = _db.AddOns.Where(a=>a.OrderId == order.OrderId);
+            _db.AddOns.RemoveRange(addOns);
+            _db.Orders.Update(order);
         }
     }
 }

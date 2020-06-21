@@ -39,9 +39,8 @@ namespace DaanaPaaniApi.Controllers
         [Description("Get list of orders")]
         public async Task<ActionResult<IEnumerable<OrderDTO>>> GetOrders([FromQuery] SieveModel sieveModel)
         {
-            var ordersQuery = _unitOfWork.Order.GetAllAsync(include: o => o.Include(o => o.AddOns).ThenInclude(a => a.Item)
-                                                                            .Include(o => o.Package)
-                                                                            .Include(o => o.Discount));
+            var ordersQuery = _unitOfWork.Order.GetAllAsync(include: o => o.Include(o => o.AddOns).ThenInclude(a => a.Item).
+                                                                                                        Include(o => o.Discount));
             ordersQuery = _sieveProcessor.Apply(sieveModel, ordersQuery, applyPagination: false);
             var orders = await _mapper.ProjectTo<OrderDTO>(ordersQuery).ToListAsync();
 
@@ -54,8 +53,7 @@ namespace DaanaPaaniApi.Controllers
         [SwaggerResponse(404, typeof(ApiError))]
         public async Task<ActionResult<OrderDTO>> GetOrder(int id)
         {
-            var order = await _unitOfWork.Order.GetFirstOrDefault(o => o.OrderId == id, include: o => o.Include(o => o.AddOns).ThenInclude(a => a.Item)
-                                                                                                        .Include(o => o.Package).
+            var order = await _unitOfWork.Order.GetFirstOrDefault(o => o.OrderId == id, include: o => o.Include(o => o.AddOns).ThenInclude(a=>a.Item).
                                                                                                         Include(o => o.Discount));
 
             if (order == null)
@@ -64,6 +62,29 @@ namespace DaanaPaaniApi.Controllers
             }
 
             return _mapper.Map<Order, OrderDTO>(order);
+        }
+
+        [HttpPut("{id}")]
+        [Description("Update specific order")]
+        [ProducesResponseType(204)]
+        [SwaggerResponse(404,typeof(ApiError))]
+        public async Task<IActionResult> UpdateOrder(int id, [FromBody]OrderDTO orderDTO)
+        {
+            var orderEntity = await _unitOfWork.Order.GetFirstOrDefault(o => o.OrderId == id,
+                                                                        include: o => o.Include(o => o.AddOns).
+                                                                        Include(o => o.Discount));
+            if(orderEntity == null)
+            {
+                return NotFound(new ApiError("Order not found"));
+            }
+            if (orderDTO.OrderId != id)
+            {
+                return BadRequest(new ApiError("Invalid request"));
+            }
+            var order = _mapper.Map<OrderDTO, Order>(orderDTO, orderEntity);
+            _unitOfWork.Order.Update(order);
+             await  _unitOfWork.SaveAsync();
+            return NoContent();
         }
 
         // DELETE: /Order/5
