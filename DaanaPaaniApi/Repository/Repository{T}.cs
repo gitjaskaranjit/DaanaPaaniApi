@@ -19,9 +19,10 @@ namespace DaanaPaaniApi.Repository
             this.dbSet = _db.Set<T>();
         }
 
-        public void AddAsync(T entity)
+        public T Add(T entity)
         {
             dbSet.Update(entity);
+            return entity;
         }
 
         public void Delete(int id)

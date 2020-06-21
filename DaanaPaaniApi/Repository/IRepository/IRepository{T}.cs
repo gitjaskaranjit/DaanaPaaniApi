@@ -8,7 +8,7 @@ namespace DaanaPaaniApi.Repository
 {
     public interface IRepository<T> where T : class
     {
-        void AddAsync(T entity);
+        T Add(T entity);
 
         void Delete(int id);
 

@@ -17,5 +17,6 @@ namespace DaanaPaaniApi.Model
         public DateTime? EndDate { get; set; } = null;
         public ICollection<AddOn> AddOns { get; set; }
         public Discount Discount { get; set; }
+        public int OrderTotal { get; set; }
     }
 }

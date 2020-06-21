@@ -27,5 +27,10 @@ namespace DaanaPaaniApi.Repository
             var packageInDb = _db.Packages.Include(p => p.PackageItems).FirstOrDefault(p => p.PackageId == package.PackageId);
             _db.Packages.Update(package);
         }
+
+        public int GetPackagePrice(int id)
+        {
+            return _db.Packages.Where(p => p.PackageId == id).Select(p => p.PackagePrice).FirstOrDefault();
+        }
     }
 }

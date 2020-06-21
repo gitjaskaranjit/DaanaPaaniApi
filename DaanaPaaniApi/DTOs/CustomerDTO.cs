@@ -32,5 +32,8 @@ namespace DaanaPaaniApi.DTOs
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public AddressDTO Address { get; set; }
+
+        public int? DriverId { get; set; } = null;
+        public string DriverName { get; set; }
     }
 }

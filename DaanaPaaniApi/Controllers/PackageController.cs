@@ -90,10 +90,10 @@ namespace DaanaPaaniApi.Controllers
         public async Task<ActionResult<PackageDTO>> PostPackage(PackageDTO packageDTO)
         {
             var package = _mapper.Map<Package>(packageDTO);
-            _unitOfWork.Package.AddAsync(package);
+            var NewPackage = _unitOfWork.Package.Add(package);
             await _unitOfWork.SaveAsync();
 
-            return CreatedAtAction("GetPackage", new { id = packageDTO.PackageId }, packageDTO);
+            return CreatedAtAction("GetPackage", new { id = NewPackage.PackageId }, NewPackage);
         }
 
         // DELETE: api/Package/5

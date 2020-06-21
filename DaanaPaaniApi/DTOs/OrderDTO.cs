@@ -16,6 +16,7 @@ namespace DaanaPaaniApi.DTOs
         public DateTime EndDate { get; set; }
 
         public ICollection<AddOnDTO> AddOns { get; set; }
-        public DiscountDTO discount { get; set; }
+        public DiscountDTO Discount { get; set; }
+        public int OrderTotal { get; set; }
     }
 }

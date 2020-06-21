@@ -49,7 +49,7 @@ namespace DaanaPaaniApi
                 {
                     options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
                     options.SerializerSettings.Converters.Add(new Newtonsoft.Json.Converters.StringEnumConverter());
-                    options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
+                    // options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
                 })
                 .ConfigureApiBehaviorOptions(options => options.InvalidModelStateResponseFactory = context =>
                 {

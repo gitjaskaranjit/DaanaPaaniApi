@@ -1,11 +1,12 @@
 ﻿using AutoMapper;
 using DaanaPaaniApi;
 using DaanaPaaniApi.DTOs;
+using DaanaPaaniApi.infrastructure;
 using DaanaPaaniApi.Model;
-using DaanaPaaniApi.Repository;
 using DaanaPaaniApi.Repository.IRepository;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using NetTopologySuite.Geometries;
 using NSwag.Annotations;
 using Sieve.Models;
 using Sieve.Services;
@@ -23,14 +24,16 @@ namespace DaaniPaaniApi.Controllers
     public class CustomerController : ControllerBase
     {
         private readonly IMapper _mapper;
-
+        private readonly IGeocodeService _geocodeService;
         private readonly IUnitOfWork _unitOfWork;
         private readonly ISieveProcessor _sieveProcessr;
 
         public CustomerController(IMapper mapper,
+                                  IGeocodeService geocodeService,
                                   IUnitOfWork unitOfWork,
                                   ISieveProcessor sieveProcessor)
         {
+            _geocodeService = geocodeService;
             _mapper = mapper;
             _sieveProcessr = sieveProcessor;
             _unitOfWork = unitOfWork;
@@ -43,7 +46,7 @@ namespace DaaniPaaniApi.Controllers
         [Description("Get Specific customer")]
         public async Task<IActionResult> GetCustomer([FromRoute] int id)
         {
-            var customer = await _unitOfWork.Customer.GetFirstOrDefault(c => c.CustomerId == id, include: c => c.Include(c => c.Address), disableTracking: true);
+            var customer = await CustomerExist(id);
             if (customer == null) return NotFound(new ApiError("Customer not found"));
             return Ok(_mapper.Map<Customer, CustomerDTO>(customer));
         }
@@ -54,7 +57,7 @@ namespace DaaniPaaniApi.Controllers
         [Description("Get the list of all the customers")]
         public async Task<ActionResult<PagedCollection<CustomerDTO>>> GetCustomers([FromQuery] SieveModel sieveModel)
         {
-            var customersQuery = _unitOfWork.Customer.GetAllAsync(include: c => c.Include(c => c.Address), disableTracking: true);
+            var customersQuery = _unitOfWork.Customer.GetAllAsync(include: c => c.Include(c => c.Address).Include(c => c.driver), disableTracking: true);
             customersQuery = _sieveProcessr.Apply(sieveModel, customersQuery, applyPagination: false);
             var totalSize = customersQuery.Count();
             customersQuery = _sieveProcessr.Apply(sieveModel, customersQuery, applySorting: false, applyFiltering: false);
@@ -75,7 +78,7 @@ namespace DaaniPaaniApi.Controllers
         [Description("Get the orders of specific customer")]
         public async Task<ActionResult<OrderDTO>> GetOrderOfCustomer(int id)
         {
-            if (CustomerExist(id))
+            if (await CustomerExist(id) != null)
             {
                 var orders = await _mapper.ProjectTo<OrderDTO>(_unitOfWork.Order.GetAllAsync(o => o.customerId == id)).ToListAsync();
 
@@ -94,17 +97,17 @@ namespace DaaniPaaniApi.Controllers
         [Description("Create order for specific customer")]
         public async Task<IActionResult> PostCustomerOrder(int id, [FromBody] OrderDTO orderDTO)
         {
-            if (CustomerExist(id))
+            if (await CustomerExist(id) == null)
             {
-                orderDTO.CustomerId = id;
-                var order = _mapper.Map<OrderDTO, Order>(orderDTO);
-                _unitOfWork.Order.AddAsync(order);
-                await _unitOfWork.SaveAsync();
-                return CreatedAtAction(nameof(GetOrderOfCustomer), new { id = orderDTO.CustomerId }, orderDTO);
+                return NotFound(new ApiError("Customer doesn't exist"));
             }
             else
             {
-                return NotFound(new ApiError("Customer doesn't exist"));
+                orderDTO.CustomerId = id;
+                var order = _mapper.Map<OrderDTO, Order>(orderDTO);
+                var NewOrder = _unitOfWork.Order.Add(order);
+                await _unitOfWork.SaveAsync();
+                return CreatedAtAction(nameof(GetOrderOfCustomer), new { id = NewOrder.customerId }, NewOrder);
             }
         }
 
@@ -121,9 +124,25 @@ namespace DaaniPaaniApi.Controllers
             }
             customerDTO.AddedDate = DateTime.Now;
             var customer = _mapper.Map<CustomerDTO, Customer>(customerDTO);
-            _unitOfWork.Customer.AddAsync(customer);
-            await _unitOfWork.SaveAsync();
-            return CreatedAtAction(nameof(GetCustomer), new { id = customerDTO.CustomerId }, customerDTO);
+            var locationInfo = await _geocodeService.GetLocationInfoAsync(customer.Address);
+            if (!_geocodeService.Error)
+            {
+                var NewCustomer = _unitOfWork.Customer.Add(customer);
+                var location = new DaanaPaaniApi.Model.Location
+                {
+                    LocationPoints = new Point(locationInfo.Items[0].Position.Lat, locationInfo.Items[0].Position.Lng) { SRID = 4326 },
+                    placeId = locationInfo.Items[0].Id,
+                    formatted_address = locationInfo.Items[0].Title,
+                    customer = NewCustomer
+                };
+                _unitOfWork.Location.Add(location);
+                await _unitOfWork.SaveAsync();
+                return CreatedAtAction(nameof(GetCustomer), new { id = NewCustomer.CustomerId }, NewCustomer);
+            }
+            else
+            {
+                throw new InvalidOperationException("Problem occured check your address");
+            }
         }
 
         [HttpDelete("{id}")]
@@ -133,7 +152,7 @@ namespace DaaniPaaniApi.Controllers
         [Description("Set customer to inactive")]
         public async Task<IActionResult> RemoveCustomer([FromRoute] int id)
         {
-            var customer = await _unitOfWork.Customer.GetFirstOrDefault(c => c.CustomerId == id, disableTracking: true);
+            var customer = await CustomerExist(id);
             if (customer == null) { return NotFound(new ApiError("Customer not Found")); }
             var orders = _unitOfWork.Order.GetAllAsync(o => o.customerId == id);
             await orders.ForEachAsync(a => a.EndDate = DateTime.Now);
@@ -148,13 +167,14 @@ namespace DaaniPaaniApi.Controllers
         [Description(" Update customer information")]
         public async Task<IActionResult> UpdateCustomer(int id, CustomerDTO customerDTO)
         {
-            var customeEntity = await _unitOfWork.Customer.GetFirstOrDefault(c => c.CustomerId == id);
+            var customeEntity = await CustomerExist(id);
             if (customeEntity == null)
             {
                 return NotFound(new ApiError("Customer not found"));
             };
             var customer = _mapper.Map<CustomerDTO, Customer>(customerDTO, customeEntity);
             _unitOfWork.Customer.Update(customer);
+            await _unitOfWork.SaveAsync();
             return NoContent();
         }
 
@@ -183,14 +203,12 @@ namespace DaaniPaaniApi.Controllers
             )).ToList();
         }
 
-        private bool CustomerExist(int id)
+        private Task<Customer> CustomerExist(int id)
         {
-            var customer = _unitOfWork.Customer.GetFirstOrDefault(c => c.CustomerId == id);
-            if (customer == null)
-            {
-                return false;
-            }
-            return true;
+            var customer = _unitOfWork.Customer.GetFirstOrDefault(c => c.CustomerId == id,
+                                                                        include: c => c.Include(c => c.Address).Include(c => c.driver),
+                                                                        disableTracking: true);
+            return customer;
         }
 
         private bool PhoneUnique(CustomerDTO customer)

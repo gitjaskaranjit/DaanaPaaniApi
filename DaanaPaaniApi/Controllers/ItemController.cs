@@ -87,9 +87,9 @@ namespace DaanaPaaniApi.Controllers
         public async Task<ActionResult<Item>> PostItem(ItemDTO itemDTO)
         {
             var item = _mapper.Map<ItemDTO, Item>(itemDTO);
-            _unitOfWork.Item.AddAsync(item);
+            var NewItem = _unitOfWork.Item.Add(item);
             await _unitOfWork.SaveAsync();
-            return CreatedAtAction("GetItem", new { id = itemDTO.ItemId }, itemDTO);
+            return CreatedAtAction("GetItem", new { id = NewItem.ItemId }, NewItem);
         }
 
         // DELETE:/Item/5

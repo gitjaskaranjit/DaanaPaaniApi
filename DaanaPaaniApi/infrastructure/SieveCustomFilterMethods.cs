@@ -21,7 +21,7 @@ namespace DaanaPaaniApi.infrastructure
                 }
                 else
                 {
-                    return source.Where(p => p.Order.Where(o => o.EndDate <= DateTime.Now && o.OrderId > 0).Any());
+                    return source.Where(p => p.Order.Where(o => o.EndDate < DateTime.Now).Any() || !p.Order.Any());
                 }
             }
             else

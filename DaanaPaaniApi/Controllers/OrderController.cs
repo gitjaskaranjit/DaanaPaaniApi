@@ -39,7 +39,9 @@ namespace DaanaPaaniApi.Controllers
         [Description("Get list of orders")]
         public async Task<ActionResult<IEnumerable<OrderDTO>>> GetOrders([FromQuery] SieveModel sieveModel)
         {
-            var ordersQuery = _unitOfWork.Order.GetAllAsync(include: o => o.Include(o => o.AddOns).Include(o => o.Discount));
+            var ordersQuery = _unitOfWork.Order.GetAllAsync(include: o => o.Include(o => o.AddOns).ThenInclude(a => a.Item)
+                                                                            .Include(o => o.Package)
+                                                                            .Include(o => o.Discount));
             ordersQuery = _sieveProcessor.Apply(sieveModel, ordersQuery, applyPagination: false);
             var orders = await _mapper.ProjectTo<OrderDTO>(ordersQuery).ToListAsync();
 
@@ -52,7 +54,9 @@ namespace DaanaPaaniApi.Controllers
         [SwaggerResponse(404, typeof(ApiError))]
         public async Task<ActionResult<OrderDTO>> GetOrder(int id)
         {
-            var order = await _unitOfWork.Order.GetFirstOrDefault(o => o.OrderId == id);
+            var order = await _unitOfWork.Order.GetFirstOrDefault(o => o.OrderId == id, include: o => o.Include(o => o.AddOns).ThenInclude(a => a.Item)
+                                                                                                        .Include(o => o.Package).
+                                                                                                        Include(o => o.Discount));
 
             if (order == null)
             {

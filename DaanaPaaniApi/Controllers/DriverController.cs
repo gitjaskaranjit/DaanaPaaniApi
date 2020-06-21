@@ -2,7 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
+using DaanaPaaniApi.DTOs;
+using DaanaPaaniApi.Entities;
+using DaanaPaaniApi.Repository.IRepository;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace DaanaPaaniApi.Controllers
 {
@@ -10,31 +15,65 @@ namespace DaanaPaaniApi.Controllers
     [ApiController]
     public class DriverController : ControllerBase
     {
-        [HttpGet]
-        public IEnumerable<string> Get()
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly IMapper _mapper;
+
+        public DriverController(IUnitOfWork unitOfWork, IMapper mapper)
         {
-            return new string[] { "value1", "value2" };
+            _unitOfWork = unitOfWork;
+            _mapper = mapper;
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<DriverDTO>>> GetDrivers()
+        {
+            var drivers = _unitOfWork.Driver.GetAllAsync(include: d => d.Include(d => d.driverAddress),
+                                                        disableTracking: true);
+            return await _mapper.ProjectTo<DriverDTO>(drivers).ToListAsync();
         }
 
         [HttpGet("{id}")]
-        public string Get(int id)
+        public async Task<DriverDTO> GetDriver(int id)
         {
-            return "value";
+            var driver = await _unitOfWork.Driver.GetFirstOrDefault(d => d.DriverId == id,
+                                                               include: d => d.Include(d => d.driverAddress),
+                                                               disableTracking: true);
+            return _mapper.Map<Driver, DriverDTO>(driver);
         }
 
         [HttpPost]
-        public void Post([FromBody] string value)
+        public async Task<IActionResult> PostDriver([FromBody] DriverDTO driverDTO)
         {
+            var driver = _mapper.Map<DriverDTO, Driver>(driverDTO);
+            var NewDriver = _unitOfWork.Driver.Add(driver);
+            await _unitOfWork.SaveAsync();
+            return CreatedAtAction(nameof(GetDriver), new { id = NewDriver.DriverId }, NewDriver);
         }
 
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        public async Task<IActionResult> PutDriver(int id, [FromBody] DriverDTO driverDTO)
         {
+            var driverEntity = await _unitOfWork.Driver.GetFirstOrDefault(d => d.DriverId == id,
+                                                                include: d => d.Include(d => d.driverAddress),
+                                                                disableTracking: true);
+            if (driverEntity == null) return NotFound(new ApiError("Driver not found"));
+
+            var driver = _mapper.Map<DriverDTO, Driver>(driverDTO, driverEntity);
+            _unitOfWork.Driver.Update(driver);
+            await _unitOfWork.SaveAsync();
+            return NoContent();
         }
 
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
+            var driverEntity = await _unitOfWork.Driver.GetFirstOrDefault(d => d.DriverId == id,
+                                                                include: d => d.Include(d => d.driverAddress),
+                                                                disableTracking: true);
+            if (driverEntity == null) return NotFound(new ApiError("Driver not found"));
+            _unitOfWork.Driver.Delete(id);
+            await _unitOfWork.SaveAsync();
+            return NoContent();
         }
     }
 }

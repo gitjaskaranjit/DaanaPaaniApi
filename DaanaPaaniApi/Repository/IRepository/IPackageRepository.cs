@@ -10,5 +10,7 @@ namespace DaanaPaaniApi.Repository.IRepository
     public interface IPackageRepository : IRepository<Package>
     {
         void Update(Package package);
+
+        int GetPackagePrice(int id);
     }
 }

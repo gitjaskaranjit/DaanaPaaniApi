@@ -18,7 +18,7 @@ namespace DaanaPaaniApi.Repository
 
         public void Update(Customer customer)
         {
-            _db.Update(customer);
+            _db.Customers.UpdateRange(customer);
         }
     }
 }

@@ -18,7 +18,7 @@ namespace DaanaPaaniApi.Repository
 
         public void Update(Driver driver)
         {
-            throw new NotImplementedException();
+            _db.Drivers.UpdateRange(driver);
         }
     }
 }
