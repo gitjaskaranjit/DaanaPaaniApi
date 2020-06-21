@@ -29,5 +29,15 @@ namespace DaanaPaaniApi.infrastructure
                 return source;
             }
         }
+
+        public IQueryable<Order> isValid(IQueryable<Order> source, string op, string[] values)
+        {
+            return source.Where(o => o.EndDate > DateTime.Today || o.EndDate == null);
+        }
+
+        public IQueryable<Order> isExpire(IQueryable<Order> source, string op, string[] values)
+        {
+            return source.Where(o => o.EndDate < DateTime.Today);
+        }
     }
 }

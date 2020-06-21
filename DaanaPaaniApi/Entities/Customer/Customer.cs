@@ -23,9 +23,11 @@ namespace DaanaPaaniApi.Model
         public string PhoneNumber { get; set; }
 
         [Sieve(CanFilter = true, CanSort = true)]
+        [DataType(DataType.Date)]
         public DateTime DateOfBirth { get; set; }
 
         [Sieve(CanFilter = true, CanSort = true)]
+        [DataType(DataType.Date)]
         public DateTime AddedDate { get; set; }
 
         [Sieve(CanFilter = true, CanSort = true)]

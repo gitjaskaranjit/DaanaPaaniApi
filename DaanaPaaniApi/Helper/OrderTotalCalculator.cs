@@ -13,18 +13,24 @@ namespace DaanaPaaniApi.Helper
         {
             int OrderTotal = 0;
             int addontotal = 0;
-            foreach (var addOn in addOns)
+            if (addOns != null)
             {
-                addontotal += addOn.Item.ItemPrice * addOn.Quantity;
+                foreach (var addOn in addOns)
+                {
+                    addontotal += addOn.Item.ItemPrice * addOn.Quantity;
+                }
             }
             OrderTotal = packagePrice + addontotal;
-            if (discount.DiscountType == DiscountType.DOLLER)
+            if (discount != null)
             {
-                OrderTotal = OrderTotal - discount.DiscountValue;
-            }
-            else
-            {
-                OrderTotal = OrderTotal - decimal.ToInt32(OrderTotal * (discount.DiscountValue / 100m));
+                if (discount.DiscountType == DiscountType.DOLLER)
+                {
+                    OrderTotal = OrderTotal - discount.DiscountValue;
+                }
+                else
+                {
+                    OrderTotal = OrderTotal - decimal.ToInt32(OrderTotal * (discount.DiscountValue / 100m));
+                }
             }
             return OrderTotal;
         }
