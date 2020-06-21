@@ -68,7 +68,10 @@ namespace DaanaPaaniApi.Controllers
 
         // DELETE: /Order/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult<Order>> DeleteOrder(int id)
+        [Description("Delete Specific order")]
+        [ProducesResponseType(204)]
+        [SwaggerResponse(404, typeof(ApiError))]
+        public async Task<IActionResult> DeleteOrder(int id)
         {
             var order = await _unitOfWork.Order.GetFirstOrDefault(o => o.OrderId == id);
             if (order == null)

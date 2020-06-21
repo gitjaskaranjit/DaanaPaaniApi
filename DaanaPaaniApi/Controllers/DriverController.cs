@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -8,6 +9,7 @@ using DaanaPaaniApi.Entities;
 using DaanaPaaniApi.Repository.IRepository;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using NSwag.Annotations;
 
 namespace DaanaPaaniApi.Controllers
 {
@@ -25,6 +27,8 @@ namespace DaanaPaaniApi.Controllers
         }
 
         [HttpGet]
+        [Description("Get List of all drivers")]
+        [ProducesResponseType(200)]
         public async Task<ActionResult<IEnumerable<DriverDTO>>> GetDrivers()
         {
             var drivers = _unitOfWork.Driver.GetAllAsync(include: d => d.Include(d => d.driverAddress),
@@ -33,15 +37,25 @@ namespace DaanaPaaniApi.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<DriverDTO> GetDriver(int id)
+        [Description("Get Specific driver")]
+        [ProducesResponseType(200)]
+        [SwaggerResponse(404, typeof(ApiError))]
+        public async Task<ActionResult<DriverDTO>> GetDriver(int id)
         {
             var driver = await _unitOfWork.Driver.GetFirstOrDefault(d => d.DriverId == id,
                                                                include: d => d.Include(d => d.driverAddress),
                                                                disableTracking: true);
+            if(driver == null)
+            {
+                return NotFound(new ApiError("Driver not found"));
+            }
             return _mapper.Map<Driver, DriverDTO>(driver);
         }
 
         [HttpPost]
+        [ProducesResponseType(201)]
+        [SwaggerResponse(400,typeof(ApiError))]
+        [Description("Create new driver")]
         public async Task<IActionResult> PostDriver([FromBody] DriverDTO driverDTO)
         {
             var driver = _mapper.Map<DriverDTO, Driver>(driverDTO);
@@ -51,6 +65,9 @@ namespace DaanaPaaniApi.Controllers
         }
 
         [HttpPut("{id}")]
+        [Description("Update specific Driver")]
+        [ProducesResponseType(204)]
+        [SwaggerResponse(404, typeof(ApiError))]
         public async Task<IActionResult> PutDriver(int id, [FromBody] DriverDTO driverDTO)
         {
             var driverEntity = await _unitOfWork.Driver.GetFirstOrDefault(d => d.DriverId == id,
@@ -65,6 +82,9 @@ namespace DaanaPaaniApi.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Description("Delete specific Driver")]
+        [ProducesResponseType(204)]
+        [SwaggerResponse(404, typeof(ApiError))]
         public async Task<IActionResult> Delete(int id)
         {
             var driverEntity = await _unitOfWork.Driver.GetFirstOrDefault(d => d.DriverId == id,

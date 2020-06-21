@@ -30,6 +30,7 @@ namespace DaanaPaaniApi.Controllers
         // GET: api/Package
         [HttpGet]
         [Description("Get list of all packages")]
+        [ProducesResponseType(200)]
         public async Task<ActionResult<IEnumerable<PackageDTO>>> GetPackages()
         {
             var packages = _unitOfWork.Package.GetAllAsync(include: s => s.Include(p => p.PackageItems).ThenInclude(p => p.Item),
@@ -40,6 +41,7 @@ namespace DaanaPaaniApi.Controllers
         // GET: api/Package/5
         [HttpGet("{id}")]
         [SwaggerResponse(404, typeof(ApiError))]
+        [ProducesResponseType(200)]
         [Description("Get specific package")]
         public async Task<ActionResult<PackageDTO>> GetPackage(int id)
         {
@@ -56,6 +58,9 @@ namespace DaanaPaaniApi.Controllers
         // PUT: api/Package/5
 
         [HttpPut("{id}")]
+        [Description("Update specific Package")]
+        [ProducesResponseType(204)]
+        [SwaggerResponse(400, typeof(ApiError))]
         public async Task<IActionResult> PutPackage(int id, PackageDTO packageDTO)
         {
             var packageEntity = await _unitOfWork.Package.GetFirstOrDefault(p => p.PackageId == id);
@@ -87,6 +92,7 @@ namespace DaanaPaaniApi.Controllers
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
         [Description("Create new Package")]
+        [ProducesResponseType(200)]
         public async Task<ActionResult<PackageDTO>> PostPackage(PackageDTO packageDTO)
         {
             var package = _mapper.Map<Package>(packageDTO);
@@ -98,12 +104,14 @@ namespace DaanaPaaniApi.Controllers
 
         // DELETE: api/Package/5
         [HttpDelete("{id}")]
+        [ProducesResponseType(204)]
+        [SwaggerResponse(404,typeof(ApiError))]
         public async Task<ActionResult<Package>> DeletePackage(int id)
         {
             var packageEntity = await _unitOfWork.Package.GetFirstOrDefault(p => p.PackageId == id);
             if (packageEntity == null)
             {
-                return NotFound();
+                return NotFound(new ApiError("Package not found"));
             }
 
             _unitOfWork.Package.Delete(id);

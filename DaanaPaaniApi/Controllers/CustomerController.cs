@@ -53,7 +53,6 @@ namespace DaaniPaaniApi.Controllers
 
         [HttpGet]
         [ProducesResponseType(200)]
-        [SwaggerResponse(400, typeof(ApiError))]
         [Description("Get the list of all the customers")]
         public async Task<ActionResult<PagedCollection<CustomerDTO>>> GetCustomers([FromQuery] SieveModel sieveModel)
         {

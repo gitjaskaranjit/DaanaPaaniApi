@@ -29,7 +29,7 @@ namespace DaanaPaaniApi.Controllers
         [HttpGet]
         [ProducesResponseType(200)]
         [Description("Get list of items")]
-        public async Task<ActionResult<IEnumerable<Item>>> GetItems()
+        public async Task<ActionResult<IEnumerable<ItemDTO>>> GetItems()
         {
             return Ok(await _mapper.ProjectTo<ItemDTO>(_unitOfWork.Item.GetAllAsync()).ToListAsync());
         }
