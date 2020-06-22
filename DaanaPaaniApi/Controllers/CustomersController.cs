@@ -21,14 +21,14 @@ namespace DaaniPaaniApi.Controllers
 {
     [Route("[controller]")]
     [ApiController]
-    public class CustomerController : ControllerBase
+    public class CustomersController : ControllerBase
     {
         private readonly IMapper _mapper;
         private readonly IGeocodeService _geocodeService;
         private readonly IUnitOfWork _unitOfWork;
         private readonly ISieveProcessor _sieveProcessr;
 
-        public CustomerController(IMapper mapper,
+        public CustomersController(IMapper mapper,
                                   IGeocodeService geocodeService,
                                   IUnitOfWork unitOfWork,
                                   ISieveProcessor sieveProcessor)
@@ -71,11 +71,11 @@ namespace DaaniPaaniApi.Controllers
             };
         }
 
-        [HttpGet("{id}/order")]
+        [HttpGet("{id}/orders")]
         [ProducesResponseType(200)]
         [SwaggerResponse(404, typeof(ApiError))]
         [Description("Get the orders of specific customer")]
-        public async Task<ActionResult<OrderDTO>> GetOrderOfCustomer(int id)
+        public async Task<ActionResult<OrderDTO>> GetOrdersOfCustomer(int id)
         {
             if (await CustomerExist(id) != null)
             {
@@ -89,7 +89,18 @@ namespace DaaniPaaniApi.Controllers
             }
         }
 
-        [HttpPost("{id}/order")]
+        [HttpGet("{customerId}/orders/{orderId}")]
+        [ProducesResponseType(200)]
+        [SwaggerResponse(404, typeof(ApiError))]
+        [Description("Get the specfic order of specific customer")]
+        public async Task<ActionResult<IEnumerable<OrderDTO>>> GetOrderOfCustomer(int customerId,int orderId)
+        {
+            var order = await  _unitOfWork.Order.GetFirstOrDefault(c=>c.customerId == customerId && c.OrderId == orderId);
+            if(order == null) { return NotFound(new ApiError("Order not found")); }
+            return Ok(_mapper.Map<Order,OrderDTO>(order));
+        }
+
+        [HttpPost("{id}/orders")]
         [ProducesResponseType(201)]
         [SwaggerResponse(400, typeof(ApiError))]
         [SwaggerResponse(404, typeof(ApiError))]

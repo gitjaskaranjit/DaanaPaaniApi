@@ -16,12 +16,12 @@ namespace DaanaPaaniApi.Controllers
 {
     [Route("[controller]")]
     [ApiController]
-    public class PackageController : ControllerBase
+    public class PackagesController : ControllerBase
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
-        public PackageController(IUnitOfWork unitOfWork, IMapper mapper)
+        public PackagesController(IUnitOfWork unitOfWork, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;

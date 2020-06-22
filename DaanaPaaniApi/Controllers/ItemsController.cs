@@ -14,12 +14,12 @@ namespace DaanaPaaniApi.Controllers
 {
     [Route("[controller]")]
     [ApiController]
-    public class ItemController : ControllerBase
+    public class ItemsController : ControllerBase
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
-        public ItemController(IUnitOfWork unitOfWork, IMapper mapper)
+        public ItemsController(IUnitOfWork unitOfWork, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;

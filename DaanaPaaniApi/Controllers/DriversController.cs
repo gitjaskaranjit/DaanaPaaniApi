@@ -15,12 +15,12 @@ namespace DaanaPaaniApi.Controllers
 {
     [Route("[controller]")]
     [ApiController]
-    public class DriverController : ControllerBase
+    public class DriversController : ControllerBase
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
-        public DriverController(IUnitOfWork unitOfWork, IMapper mapper)
+        public DriversController(IUnitOfWork unitOfWork, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;

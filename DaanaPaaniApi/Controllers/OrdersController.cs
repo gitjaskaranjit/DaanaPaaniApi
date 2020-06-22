@@ -19,13 +19,13 @@ namespace DaanaPaaniApi.Controllers
 {
     [Route("[controller]")]
     [ApiController]
-    public class OrderController : ControllerBase
+    public class OrdersController : ControllerBase
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly ISieveProcessor _sieveProcessor;
 
-        public OrderController(IUnitOfWork unitOfWork,
+        public OrdersController(IUnitOfWork unitOfWork,
                                IMapper mapper,
                                ISieveProcessor sieveProcessor)
         {
@@ -103,6 +103,15 @@ namespace DaanaPaaniApi.Controllers
             _unitOfWork.Order.Delete(id);
             await _unitOfWork.SaveAsync();
             return NoContent();
+        }
+
+        //GET: /Orders/items
+        [HttpGet("/items")]
+        [Description("List of orders with items count")]
+        [ProducesResponseType(200)]
+        public async Task<IEnumerable<OrderItemDTO>> GetOrderItems()
+        {
+
         }
     }
 }

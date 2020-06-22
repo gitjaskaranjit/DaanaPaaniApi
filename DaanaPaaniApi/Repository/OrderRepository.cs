@@ -1,8 +1,10 @@
-﻿using DaanaPaaniApi.Model;
+﻿using DaanaPaaniApi.Controllers;
+using DaanaPaaniApi.Model;
 using DaanaPaaniApi.Repository.IRepository;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 
 namespace DaanaPaaniApi.Repository
@@ -14,6 +16,11 @@ namespace DaanaPaaniApi.Repository
         public OrderRepository(DataContext db) : base(db)
         {
             _db = db;
+        }
+
+        public Task<IEnumerable<OrderItemDTO>> GetOrderItems()
+        {
+           From 
         }
 
         public void Update(Order order)
