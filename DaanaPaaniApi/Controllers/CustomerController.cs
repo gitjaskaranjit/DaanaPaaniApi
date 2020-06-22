@@ -154,7 +154,7 @@ namespace DaaniPaaniApi.Controllers
             var customer = await CustomerExist(id);
             if (customer == null) { return NotFound(new ApiError("Customer not Found")); }
             var orders = _unitOfWork.Order.GetAllAsync(o => o.customerId == id);
-            await orders.ForEachAsync(a => a.EndDate = DateTime.Now);
+            await orders.ForEachAsync(a => a.EndDate = DateTime.Today);
             await _unitOfWork.SaveAsync();
             return NoContent();
         }

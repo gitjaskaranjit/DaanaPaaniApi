@@ -10,8 +10,6 @@ namespace DaanaPaaniApi.DTOs
         public int? OrderId { get; set; }
 
         public int CustomerId { get; set; }
-        public CustomerDTO Customer { get; set; }
-
         public string Comment { get; set; }
         public int PackageId { get; set; }
         public DateTime StartDate { get; set; }

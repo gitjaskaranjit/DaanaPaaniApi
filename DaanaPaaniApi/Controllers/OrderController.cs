@@ -53,7 +53,7 @@ namespace DaanaPaaniApi.Controllers
         [SwaggerResponse(404, typeof(ApiError))]
         public async Task<ActionResult<OrderDTO>> GetOrder(int id)
         {
-            var order = await _unitOfWork.Order.GetFirstOrDefault(o => o.OrderId == id, include: o => o.Include(o => o.AddOns).ThenInclude(a=>a.Item).
+            var order = await _unitOfWork.Order.GetFirstOrDefault(o => o.OrderId == id, include: o => o.Include(o => o.AddOns).ThenInclude(a => a.Item).
                                                                                                         Include(o => o.Discount));
 
             if (order == null)
@@ -67,13 +67,13 @@ namespace DaanaPaaniApi.Controllers
         [HttpPut("{id}")]
         [Description("Update specific order")]
         [ProducesResponseType(204)]
-        [SwaggerResponse(404,typeof(ApiError))]
-        public async Task<IActionResult> UpdateOrder(int id, [FromBody]OrderDTO orderDTO)
+        [SwaggerResponse(404, typeof(ApiError))]
+        public async Task<IActionResult> UpdateOrder(int id, [FromBody] OrderDTO orderDTO)
         {
             var orderEntity = await _unitOfWork.Order.GetFirstOrDefault(o => o.OrderId == id,
                                                                         include: o => o.Include(o => o.AddOns).
                                                                         Include(o => o.Discount));
-            if(orderEntity == null)
+            if (orderEntity == null)
             {
                 return NotFound(new ApiError("Order not found"));
             }
@@ -83,7 +83,7 @@ namespace DaanaPaaniApi.Controllers
             }
             var order = _mapper.Map<OrderDTO, Order>(orderDTO, orderEntity);
             _unitOfWork.Order.Update(order);
-             await  _unitOfWork.SaveAsync();
+            await _unitOfWork.SaveAsync();
             return NoContent();
         }
 

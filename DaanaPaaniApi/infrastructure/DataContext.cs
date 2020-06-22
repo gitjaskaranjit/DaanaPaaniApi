@@ -50,6 +50,10 @@ namespace DaanaPaaniApi
             //locationInfo cooridates
             modelBuilder.Entity<Location>().Property(c => c.LocationPoints)
                  .HasSrid(4326);
+            //remove Package Cascade delete
+            modelBuilder.Entity<Order>().HasOne(o => o.Package)
+                                         .WithMany(o => o.Orders)
+                                         .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

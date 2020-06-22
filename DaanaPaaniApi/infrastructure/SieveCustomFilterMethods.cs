@@ -37,7 +37,7 @@ namespace DaanaPaaniApi.infrastructure
 
         public IQueryable<Order> isExpire(IQueryable<Order> source, string op, string[] values)
         {
-            return source.Where(o => o.EndDate < DateTime.Today);
+            return source.Where(o => o.EndDate <= DateTime.Today);
         }
     }
 }
