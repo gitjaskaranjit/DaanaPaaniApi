@@ -74,7 +74,7 @@ namespace DaanaPaaniApi.Repository
             {
                 query = include(query);
             }
-
+           Console.WriteLine(query.ToString());
             return query.FirstOrDefaultAsync();
         }
     }

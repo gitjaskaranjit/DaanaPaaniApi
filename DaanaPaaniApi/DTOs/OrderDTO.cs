@@ -12,6 +12,7 @@ namespace DaanaPaaniApi.DTOs
         public int CustomerId { get; set; }
         public string Comment { get; set; }
         public int PackageId { get; set; }
+        public PackageDTO Package { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime? EndDate { get; set; }
 

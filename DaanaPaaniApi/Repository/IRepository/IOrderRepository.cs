@@ -10,6 +10,5 @@ namespace DaanaPaaniApi.Repository.IRepository
     public interface IOrderRepository : IRepository<Order>
     {
         void Update(Order order);
-        Task<IEnumerable<OrderItemDTO>> GetOrderItems();
     }
 }

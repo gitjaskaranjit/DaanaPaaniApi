@@ -5,6 +5,7 @@ using DaanaPaaniApi.Repository;
 using DaanaPaaniApi.Repository.IRepository;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
 using NSwag.Annotations;
 using ProjNet.CoordinateSystems;
 using Sieve.Models;
@@ -106,12 +107,26 @@ namespace DaanaPaaniApi.Controllers
         }
 
         //GET: /Orders/items
-        [HttpGet("/items")]
+        [HttpGet("byitems")]
         [Description("List of orders with items count")]
         [ProducesResponseType(200)]
-        public async Task<IEnumerable<OrderItemDTO>> GetOrderItems()
+        public async Task<IActionResult> GetOrderItems()
         {
-
+            var ordersQuery = _unitOfWork.Order.GetAllAsync(include: o => o.Include(o => o.AddOns).ThenInclude(a => a.Item).
+                                                                            Include(o => o.Package).ThenInclude(p => p.PackageItems));
+            var orders = await _mapper.ProjectTo<OrderDTO>(ordersQuery).ToListAsync();
+            return Ok(orders.Select(o => new
+            {
+                orderId = o.OrderId,
+                customerId = o.CustomerId,
+                items = o.Package.PackageItems.Cast<IorderItem>().Concat(o.AddOns).GroupBy(i=>i.Item.ItemId).Select(i=> new { 
+                item = i.FirstOrDefault(x=>x.Item.ItemId == i.Key).Item,
+                quantity = i.Sum(a=>a.Quantity)
+                }).ToList()
+            }
+            )
+     ) ;
+               
         }
     }
 }

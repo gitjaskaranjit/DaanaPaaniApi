@@ -1,6 +1,8 @@
-﻿namespace DaanaPaaniApi.Model
+﻿using DaanaPaaniApi.DTOs;
+
+namespace DaanaPaaniApi.Model
 {
-    public class AddOn
+    public class AddOn 
     {
         public int OrderId { get; set; }
         public Order Order { get; set; }

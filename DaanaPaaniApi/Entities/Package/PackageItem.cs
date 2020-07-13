@@ -1,4 +1,6 @@
-﻿namespace DaanaPaaniApi.Model
+﻿using DaanaPaaniApi.DTOs;
+
+namespace DaanaPaaniApi.Model
 {
     public class PackageItem
     {

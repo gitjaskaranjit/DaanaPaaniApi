@@ -18,11 +18,6 @@ namespace DaanaPaaniApi.Repository
             _db = db;
         }
 
-        public Task<IEnumerable<OrderItemDTO>> GetOrderItems()
-        {
-           From 
-        }
-
         public void Update(Order order)
         {
             var addOns = _db.AddOns.Where(a=>a.OrderId == order.OrderId);
