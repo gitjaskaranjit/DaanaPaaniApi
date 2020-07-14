@@ -5,6 +5,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Migrations\20200714173609_AddedNullableDiscountId.cs" />
+    <Compile Remove="Migrations\20200714173609_AddedNullableDiscountId.Designer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="AutoMapper" Version="9.0.0" />
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="7.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.5" />
@@ -28,5 +33,9 @@
     <TrimmerRootAssembly Include="System.IO.FileSystem" />
     <TrimmerRootAssembly Include="System.Xml.XPath.XDocument" />
     <TrimmerRootAssembly Include="System.Xml.Linq" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Helper\" />
   </ItemGroup>
 </Project>

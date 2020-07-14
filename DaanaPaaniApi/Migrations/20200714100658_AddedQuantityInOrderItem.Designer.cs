@@ -4,15 +4,17 @@ using DaanaPaaniApi;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 
 namespace DaanaPaaniApi.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20200714100658_AddedQuantityInOrderItem")]
+    partial class AddedQuantityInOrderItem
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -83,10 +85,8 @@ namespace DaanaPaaniApi.Migrations
 
             modelBuilder.Entity("DaanaPaaniApi.Entities.Discount", b =>
                 {
-                    b.Property<int>("DiscountId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                    b.Property<int>("OrderId")
+                        .HasColumnType("int");
 
                     b.Property<int>("DiscountType")
                         .HasColumnType("int");
@@ -94,7 +94,7 @@ namespace DaanaPaaniApi.Migrations
                     b.Property<int>("DiscountValue")
                         .HasColumnType("int");
 
-                    b.HasKey("DiscountId");
+                    b.HasKey("OrderId");
 
                     b.ToTable("Discounts");
                 });
@@ -202,12 +202,6 @@ namespace DaanaPaaniApi.Migrations
                     b.Property<string>("Comment")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("CustomerId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("DiscountId")
-                        .HasColumnType("int");
-
                     b.Property<DateTime?>("EndDate")
                         .HasColumnType("datetime2");
 
@@ -217,13 +211,12 @@ namespace DaanaPaaniApi.Migrations
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("customerId")
+                        .HasColumnType("int");
+
                     b.HasKey("OrderId");
 
-                    b.HasIndex("CustomerId");
-
-                    b.HasIndex("DiscountId")
-                        .IsUnique()
-                        .HasFilter("[DiscountId] IS NOT NULL");
+                    b.HasIndex("customerId");
 
                     b.ToTable("Orders");
                 });
@@ -265,17 +258,10 @@ namespace DaanaPaaniApi.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int?>("DiscountId")
-                        .HasColumnType("int");
-
                     b.Property<string>("OrderTempleteDesc")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("OrderTempleteId");
-
-                    b.HasIndex("DiscountId")
-                        .IsUnique()
-                        .HasFilter("[DiscountId] IS NOT NULL");
 
                     b.ToTable("OrderTempletes");
                 });
@@ -294,6 +280,15 @@ namespace DaanaPaaniApi.Migrations
                     b.HasOne("DaanaPaaniApi.Entities.Driver", "driver")
                         .WithMany("customers")
                         .HasForeignKey("driverId");
+                });
+
+            modelBuilder.Entity("DaanaPaaniApi.Entities.Discount", b =>
+                {
+                    b.HasOne("DaanaPaaniApi.Entities.Order", "Order")
+                        .WithOne("Discount")
+                        .HasForeignKey("DaanaPaaniApi.Entities.Discount", "OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("DaanaPaaniApi.Entities.DriverAddress", b =>
@@ -316,15 +311,11 @@ namespace DaanaPaaniApi.Migrations
 
             modelBuilder.Entity("DaanaPaaniApi.Entities.Order", b =>
                 {
-                    b.HasOne("DaanaPaaniApi.Entities.Customer", "Customer")
+                    b.HasOne("DaanaPaaniApi.Entities.Customer", "customer")
                         .WithMany("Order")
-                        .HasForeignKey("CustomerId")
+                        .HasForeignKey("customerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("DaanaPaaniApi.Entities.Discount", "Discount")
-                        .WithOne("Order")
-                        .HasForeignKey("DaanaPaaniApi.Entities.Order", "DiscountId");
                 });
 
             modelBuilder.Entity("DaanaPaaniApi.Entities.OrderItem", b =>
@@ -342,13 +333,6 @@ namespace DaanaPaaniApi.Migrations
                     b.HasOne("DaanaPaaniApi.Entities.OrderTemplete", "OrderTemplete")
                         .WithMany("OrderItems")
                         .HasForeignKey("OrderTempleteId");
-                });
-
-            modelBuilder.Entity("DaanaPaaniApi.Entities.OrderTemplete", b =>
-                {
-                    b.HasOne("DaanaPaaniApi.Entities.Discount", "Discount")
-                        .WithOne("OrderTempletes")
-                        .HasForeignKey("DaanaPaaniApi.Entities.OrderTemplete", "DiscountId");
                 });
 #pragma warning restore 612, 618
         }

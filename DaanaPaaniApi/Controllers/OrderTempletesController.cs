@@ -1,27 +1,26 @@
 ﻿using AutoMapper;
 using DaanaPaaniApi.DTOs;
-using DaanaPaaniApi.Model;
-using DaanaPaaniApi.Repository;
+using DaanaPaaniApi.Entities;
 using DaanaPaaniApi.Repository.IRepository;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NSwag.Annotations;
-using ProjNet.CoordinateSystems;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace DaanaPaaniApi.Controllers
 {
     [Route("[controller]")]
     [ApiController]
-    public class PackagesController : ControllerBase
+    public class OrderTempletesController : ControllerBase
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
-        public PackagesController(IUnitOfWork unitOfWork, IMapper mapper)
+        public OrderTempletesController(IUnitOfWork unitOfWork, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
@@ -31,11 +30,10 @@ namespace DaanaPaaniApi.Controllers
         [HttpGet]
         [Description("Get list of all packages")]
         [ProducesResponseType(200)]
-        public async Task<ActionResult<IEnumerable<PackageDTO>>> GetPackages()
+        public async Task<ActionResult<IEnumerable<OrderTempleteDTO>>> GetPackages()
         {
-            var packages = _unitOfWork.Package.GetAllAsync(include: s => s.Include(p => p.PackageItems).ThenInclude(p => p.Item),
-                                                           disableTracking: true);
-            return await _mapper.ProjectTo<PackageDTO>(packages).ToListAsync();
+            var orderTempletes =  _unitOfWork.OrderTemplete.GetAllAsync();
+            return _mapper.ProjectTo<OrderTempleteDTO>(orderTempletes).ToList();
         }
 
         // GET: api/Package/5
@@ -43,16 +41,16 @@ namespace DaanaPaaniApi.Controllers
         [SwaggerResponse(404, typeof(ApiError))]
         [ProducesResponseType(200)]
         [Description("Get specific package")]
-        public async Task<ActionResult<PackageDTO>> GetPackage(int id)
+        public async Task<ActionResult<OrderTempleteDTO>> GetPackage(int id)
         {
-            var package = await _unitOfWork.Package.GetFirstOrDefault(p => p.PackageId == id,
-                                                                      include: s => s.Include(p => p.PackageItems).ThenInclude(p => p.Item),
+            var templete = await _unitOfWork.OrderTemplete.GetFirstOrDefault(p => p.OrderTempleteId == id,
+                                                                                include: o=>o.Include(i=>i.OrderTempleteItems).ThenInclude(i=>i.Item),
                                                                       disableTracking: true);
-            if (package == null)
+            if (templete == null)
             {
-                return NotFound(new ApiError("Package not found"));
+                return NotFound(new ApiError("templete not found"));
             }
-            return _mapper.Map<Package, PackageDTO>(package);
+            return _mapper.Map<OrderTemplete, OrderTempleteDTO>(templete);
         }
 
         // PUT: api/Package/5
@@ -61,19 +59,19 @@ namespace DaanaPaaniApi.Controllers
         [Description("Update specific Package")]
         [ProducesResponseType(204)]
         [SwaggerResponse(400, typeof(ApiError))]
-        public async Task<IActionResult> PutPackage(int id, PackageDTO packageDTO)
+        public async Task<IActionResult> PutPackage(int id, OrderTempleteDTO orderTempleteDTO)
         {
-            var packageEntity = await _unitOfWork.Package.GetFirstOrDefault(p => p.PackageId == id);
-            if (packageEntity == null)
+            var orderTempleteEntity = await _unitOfWork.OrderTemplete.GetFirstOrDefault(p => p.OrderTempleteId == id);
+            if (orderTempleteEntity == null)
             {
                 return BadRequest(new ApiError("Package not found"));
             }
-            if (id != packageDTO.PackageId)
+            if (id != orderTempleteDTO.OrderTempleteId)
             {
                 return BadRequest(new ApiError("Invalid Request"));
             }
-            var package = _mapper.Map<PackageDTO, Package>(packageDTO, packageEntity);
-            _unitOfWork.Package.Update(package);
+            var package = _mapper.Map<OrderTempleteDTO, OrderTemplete>(orderTempleteDTO, orderTempleteEntity);
+            _unitOfWork.OrderTemplete.Update(package);
 
             try
             {
@@ -93,28 +91,28 @@ namespace DaanaPaaniApi.Controllers
         [HttpPost]
         [Description("Create new Package")]
         [ProducesResponseType(200)]
-        public async Task<ActionResult<PackageDTO>> PostPackage(PackageDTO packageDTO)
+        public async Task<ActionResult<OrderTempleteDTO>> PostPackage(OrderTempleteDTO orderTempleteDTO)
         {
-            var package = _mapper.Map<Package>(packageDTO);
-            var NewPackage = _unitOfWork.Package.Add(package);
+            var templete = _mapper.Map<OrderTemplete>(orderTempleteDTO);
+            var NewTemplete = _unitOfWork.OrderTemplete.Add(templete);
             await _unitOfWork.SaveAsync();
 
-            return CreatedAtAction("GetPackage", new { id = NewPackage.PackageId }, NewPackage);
+            return CreatedAtAction("GetPackage", new { id = NewTemplete.OrderTempleteId }, _mapper.Map<OrderTemplete,OrderTempleteDTO>(NewTemplete));
         }
 
         // DELETE: api/Package/5
         [HttpDelete("{id}")]
         [ProducesResponseType(204)]
-        [SwaggerResponse(404,typeof(ApiError))]
-        public async Task<ActionResult<Package>> DeletePackage(int id)
+        [SwaggerResponse(404, typeof(ApiError))]
+        public async Task<ActionResult<OrderTempleteDTO>> DeletePackage(int id)
         {
-            var packageEntity = await _unitOfWork.Package.GetFirstOrDefault(p => p.PackageId == id);
-            if (packageEntity == null)
+            var orderTempleteEntity = await _unitOfWork.OrderTemplete.GetFirstOrDefault(p => p.OrderTempleteId == id);
+            if (orderTempleteEntity == null)
             {
                 return NotFound(new ApiError("Package not found"));
             }
 
-            _unitOfWork.Package.Delete(id);
+            _unitOfWork.OrderTemplete.Delete(id);
             await _unitOfWork.SaveAsync();
 
             return NoContent();

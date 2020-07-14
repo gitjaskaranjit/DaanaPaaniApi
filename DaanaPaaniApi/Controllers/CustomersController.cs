@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using DaanaPaaniApi;
 using DaanaPaaniApi.DTOs;
+using DaanaPaaniApi.Entities;
 using DaanaPaaniApi.infrastructure;
 using DaanaPaaniApi.Model;
 using DaanaPaaniApi.Repository.IRepository;
@@ -79,7 +80,7 @@ namespace DaaniPaaniApi.Controllers
         {
             if (await CustomerExist(id) != null)
             {
-                var orders = await _mapper.ProjectTo<OrderDTO>(_unitOfWork.Order.GetAllAsync(o => o.customerId == id)).ToListAsync();
+                var orders = await _mapper.ProjectTo<OrderDTO>(_unitOfWork.Order.GetAllAsync(o => o.CustomerId == id)).ToListAsync();
 
                 return Ok(orders);
             }
@@ -95,7 +96,7 @@ namespace DaaniPaaniApi.Controllers
         [Description("Get the specfic order of specific customer")]
         public async Task<ActionResult<IEnumerable<OrderDTO>>> GetOrderOfCustomer(int customerId,int orderId)
         {
-            var order = await  _unitOfWork.Order.GetFirstOrDefault(c=>c.customerId == customerId && c.OrderId == orderId);
+            var order = await  _unitOfWork.Order.GetFirstOrDefault(c=>c.CustomerId == customerId && c.OrderId == orderId);
             if(order == null) { return NotFound(new ApiError("Order not found")); }
             return Ok(_mapper.Map<Order,OrderDTO>(order));
         }
@@ -117,7 +118,7 @@ namespace DaaniPaaniApi.Controllers
                 var order = _mapper.Map<OrderDTO, Order>(orderDTO);
                 var NewOrder = _unitOfWork.Order.Add(order);
                 await _unitOfWork.SaveAsync();
-                return CreatedAtAction(nameof(GetOrderOfCustomer), new { id = NewOrder.customerId }, NewOrder);
+                return CreatedAtAction(nameof(GetOrdersOfCustomer), new { id = NewOrder.CustomerId }, NewOrder);
             }
         }
 
@@ -138,7 +139,7 @@ namespace DaaniPaaniApi.Controllers
             if (!_geocodeService.Error)
             {
                 var NewCustomer = _unitOfWork.Customer.Add(customer);
-                var location = new DaanaPaaniApi.Model.Location
+                var location = new DaanaPaaniApi.Entities.Location
                 {
                     LocationPoints = new Point(locationInfo.Items[0].Position.Lat, locationInfo.Items[0].Position.Lng) { SRID = 4326 },
                     placeId = locationInfo.Items[0].Id,
@@ -164,7 +165,7 @@ namespace DaaniPaaniApi.Controllers
         {
             var customer = await CustomerExist(id);
             if (customer == null) { return NotFound(new ApiError("Customer not Found")); }
-            var orders = _unitOfWork.Order.GetAllAsync(o => o.customerId == id);
+            var orders = _unitOfWork.Order.GetAllAsync(o => o.CustomerId == id);
             await orders.ForEachAsync(a => a.EndDate = DateTime.Today);
             await _unitOfWork.SaveAsync();
             return NoContent();

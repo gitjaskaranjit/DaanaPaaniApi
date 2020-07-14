@@ -12,6 +12,6 @@ namespace DaanaPaaniApi.infrastructure
     {
         bool Error { get; set; }
 
-        Task<GeocodeResponse> GetLocationInfoAsync(Model.Address address);
+        Task<GeocodeResponse> GetLocationInfoAsync(Entities.Address address);
     }
 }

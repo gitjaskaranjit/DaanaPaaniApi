@@ -34,6 +34,5 @@ namespace DaanaPaaniApi.DTOs
         public AddressDTO Address { get; set; }
 
         public int? DriverId { get; set; } = null;
-        public string DriverName { get; set; }
     }
 }

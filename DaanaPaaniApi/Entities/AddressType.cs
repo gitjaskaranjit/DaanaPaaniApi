@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace DaanaPaaniApi.Model
+namespace DaanaPaaniApi.Entities
 {
     public enum AddressType
     {

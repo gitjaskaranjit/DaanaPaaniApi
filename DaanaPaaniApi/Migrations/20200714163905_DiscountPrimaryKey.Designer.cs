@@ -4,15 +4,17 @@ using DaanaPaaniApi;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 
 namespace DaanaPaaniApi.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20200714163905_DiscountPrimaryKey")]
+    partial class DiscountPrimaryKey
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -202,10 +204,7 @@ namespace DaanaPaaniApi.Migrations
                     b.Property<string>("Comment")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("CustomerId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("DiscountId")
+                    b.Property<int>("DiscountId")
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("EndDate")
@@ -217,13 +216,14 @@ namespace DaanaPaaniApi.Migrations
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("customerId")
+                        .HasColumnType("int");
+
                     b.HasKey("OrderId");
 
-                    b.HasIndex("CustomerId");
+                    b.HasIndex("DiscountId");
 
-                    b.HasIndex("DiscountId")
-                        .IsUnique()
-                        .HasFilter("[DiscountId] IS NOT NULL");
+                    b.HasIndex("customerId");
 
                     b.ToTable("Orders");
                 });
@@ -265,7 +265,7 @@ namespace DaanaPaaniApi.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int?>("DiscountId")
+                    b.Property<int>("DiscountId")
                         .HasColumnType("int");
 
                     b.Property<string>("OrderTempleteDesc")
@@ -273,9 +273,7 @@ namespace DaanaPaaniApi.Migrations
 
                     b.HasKey("OrderTempleteId");
 
-                    b.HasIndex("DiscountId")
-                        .IsUnique()
-                        .HasFilter("[DiscountId] IS NOT NULL");
+                    b.HasIndex("DiscountId");
 
                     b.ToTable("OrderTempletes");
                 });
@@ -316,15 +314,17 @@ namespace DaanaPaaniApi.Migrations
 
             modelBuilder.Entity("DaanaPaaniApi.Entities.Order", b =>
                 {
-                    b.HasOne("DaanaPaaniApi.Entities.Customer", "Customer")
-                        .WithMany("Order")
-                        .HasForeignKey("CustomerId")
+                    b.HasOne("DaanaPaaniApi.Entities.Discount", "Discount")
+                        .WithMany("Orders")
+                        .HasForeignKey("DiscountId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("DaanaPaaniApi.Entities.Discount", "Discount")
-                        .WithOne("Order")
-                        .HasForeignKey("DaanaPaaniApi.Entities.Order", "DiscountId");
+                    b.HasOne("DaanaPaaniApi.Entities.Customer", "customer")
+                        .WithMany("Order")
+                        .HasForeignKey("customerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("DaanaPaaniApi.Entities.OrderItem", b =>
@@ -347,8 +347,10 @@ namespace DaanaPaaniApi.Migrations
             modelBuilder.Entity("DaanaPaaniApi.Entities.OrderTemplete", b =>
                 {
                     b.HasOne("DaanaPaaniApi.Entities.Discount", "Discount")
-                        .WithOne("OrderTempletes")
-                        .HasForeignKey("DaanaPaaniApi.Entities.OrderTemplete", "DiscountId");
+                        .WithMany("OrderTempletes")
+                        .HasForeignKey("DiscountId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

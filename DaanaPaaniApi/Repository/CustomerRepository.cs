@@ -1,4 +1,5 @@
-﻿using DaanaPaaniApi.Model;
+﻿using DaanaPaaniApi.Entities;
+using DaanaPaaniApi.Model;
 using DaanaPaaniApi.Repository.IRepository;
 using System;
 using System.Collections.Generic;

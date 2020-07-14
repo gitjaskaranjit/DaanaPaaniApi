@@ -1,4 +1,5 @@
-﻿using DaanaPaaniApi.Model;
+﻿using DaanaPaaniApi.Entities;
+using DaanaPaaniApi.Model;
 using Sieve.Services;
 using System;
 using System.Collections.Generic;

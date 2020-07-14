@@ -1,4 +1,5 @@
 ﻿using DaanaPaaniApi.Controllers;
+using DaanaPaaniApi.Entities;
 using DaanaPaaniApi.Model;
 using DaanaPaaniApi.Repository.IRepository;
 using System;
@@ -20,9 +21,10 @@ namespace DaanaPaaniApi.Repository
 
         public void Update(Order order)
         {
-            var addOns = _db.AddOns.Where(a=>a.OrderId == order.OrderId);
-            _db.AddOns.RemoveRange(addOns);
+            var items = _db.OrderItems.Where(o => o.OrderId == order.OrderId);
+            _db.RemoveRange(items);
             _db.Orders.Update(order);
+
         }
     }
 }

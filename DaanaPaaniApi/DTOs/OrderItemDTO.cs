@@ -1,16 +1,10 @@
 ﻿using System.Collections.Generic;
 
-namespace DaanaPaaniApi.Controllers
+namespace DaanaPaaniApi.DTOs
 {
     public class OrderItemDTO
     {
-        public int OrderId { get; set; }
-        public ICollection<ItemNCount> ItemNCounts { get; set; }
-
-        public class ItemNCount
-        {
-            public string ItemName { get; set; }
-            public int Quantity { get; set; }
-        }
+        public ItemDTO Item { get; set; }
+        public int Quantity { get; set; }
     }
 }

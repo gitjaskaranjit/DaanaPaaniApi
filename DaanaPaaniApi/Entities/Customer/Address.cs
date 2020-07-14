@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace DaanaPaaniApi.Model
+namespace DaanaPaaniApi.Entities
 {
     public class Address
     {

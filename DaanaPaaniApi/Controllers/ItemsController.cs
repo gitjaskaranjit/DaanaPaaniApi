@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using DaanaPaaniApi.DTOs;
+using DaanaPaaniApi.Entities;
 using DaanaPaaniApi.Model;
 using DaanaPaaniApi.Repository;
 using DaanaPaaniApi.Repository.IRepository;

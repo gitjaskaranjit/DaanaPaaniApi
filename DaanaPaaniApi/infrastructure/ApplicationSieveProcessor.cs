@@ -1,4 +1,5 @@
-﻿using DaanaPaaniApi.Model;
+﻿using DaanaPaaniApi.Entities;
+using DaanaPaaniApi.Model;
 using Microsoft.Extensions.Options;
 using Sieve.Models;
 using Sieve.Services;

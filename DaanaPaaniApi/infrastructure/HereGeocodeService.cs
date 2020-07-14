@@ -23,7 +23,7 @@ namespace DaanaPaaniApi.Repository
 
         }
 
-        public  async Task<GeocodeResponse> GetLocationInfoAsync(Model.Address address)
+        public  async Task<GeocodeResponse> GetLocationInfoAsync(Entities.Address address)
         {
             var request = new HttpRequestMessage(HttpMethod.Get,
                                                 _options.GeocodeBaseUrl

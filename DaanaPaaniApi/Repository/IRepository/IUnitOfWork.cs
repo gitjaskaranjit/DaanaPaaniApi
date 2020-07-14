@@ -8,12 +8,11 @@ namespace DaanaPaaniApi.Repository.IRepository
     public interface IUnitOfWork : IDisposable
     {
         ICustomerRepository Customer { get; }
-        IPackageRepository Package { get; }
         IItemRepository Item { get; }
         IOrderRepository Order { get; }
         IDriverRepository Driver { get; }
         ILocationRepository Location { get; }
-
+        IOrderTempleteRepository OrderTemplete { get; }
         Task SaveAsync();
     }
 }

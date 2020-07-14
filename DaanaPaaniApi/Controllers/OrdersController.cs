@@ -1,16 +1,12 @@
 ﻿using AutoMapper;
 using DaanaPaaniApi.DTOs;
-using DaanaPaaniApi.Model;
-using DaanaPaaniApi.Repository;
+using DaanaPaaniApi.Entities;
 using DaanaPaaniApi.Repository.IRepository;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Internal;
 using NSwag.Annotations;
-using ProjNet.CoordinateSystems;
 using Sieve.Models;
 using Sieve.Services;
-using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -40,8 +36,7 @@ namespace DaanaPaaniApi.Controllers
         [Description("Get list of orders")]
         public async Task<ActionResult<IEnumerable<OrderDTO>>> GetOrders([FromQuery] SieveModel sieveModel)
         {
-            var ordersQuery = _unitOfWork.Order.GetAllAsync(include: o => o.Include(o => o.AddOns).ThenInclude(a => a.Item).
-                                                                                                        Include(o => o.Discount));
+            var ordersQuery = _unitOfWork.Order.GetAllAsync(include: o => o.Include(o => o.Discount));
             ordersQuery = _sieveProcessor.Apply(sieveModel, ordersQuery, applyPagination: false);
             var orders = await _mapper.ProjectTo<OrderDTO>(ordersQuery).ToListAsync();
 
@@ -54,8 +49,7 @@ namespace DaanaPaaniApi.Controllers
         [SwaggerResponse(404, typeof(ApiError))]
         public async Task<ActionResult<OrderDTO>> GetOrder(int id)
         {
-            var order = await _unitOfWork.Order.GetFirstOrDefault(o => o.OrderId == id, include: o => o.Include(o => o.AddOns).ThenInclude(a => a.Item).
-                                                                                                        Include(o => o.Discount));
+            var order = await _unitOfWork.Order.GetFirstOrDefault(o => o.OrderId == id, include: o => o.Include(o => o.Discount));
 
             if (order == null)
             {
@@ -72,8 +66,7 @@ namespace DaanaPaaniApi.Controllers
         public async Task<IActionResult> UpdateOrder(int id, [FromBody] OrderDTO orderDTO)
         {
             var orderEntity = await _unitOfWork.Order.GetFirstOrDefault(o => o.OrderId == id,
-                                                                        include: o => o.Include(o => o.AddOns).
-                                                                        Include(o => o.Discount));
+                                                                        include: o => o.Include(o => o.Discount));
             if (orderEntity == null)
             {
                 return NotFound(new ApiError("Order not found"));
@@ -104,29 +97,6 @@ namespace DaanaPaaniApi.Controllers
             _unitOfWork.Order.Delete(id);
             await _unitOfWork.SaveAsync();
             return NoContent();
-        }
-
-        //GET: /Orders/items
-        [HttpGet("byitems")]
-        [Description("List of orders with items count")]
-        [ProducesResponseType(200)]
-        public async Task<IActionResult> GetOrderItems()
-        {
-            var ordersQuery = _unitOfWork.Order.GetAllAsync(include: o => o.Include(o => o.AddOns).ThenInclude(a => a.Item).
-                                                                            Include(o => o.Package).ThenInclude(p => p.PackageItems));
-            var orders = await _mapper.ProjectTo<OrderDTO>(ordersQuery).ToListAsync();
-            return Ok(orders.Select(o => new
-            {
-                orderId = o.OrderId,
-                customerId = o.CustomerId,
-                items = o.Package.PackageItems.Cast<IorderItem>().Concat(o.AddOns).GroupBy(i=>i.Item.ItemId).Select(i=> new { 
-                item = i.FirstOrDefault(x=>x.Item.ItemId == i.Key).Item,
-                quantity = i.Sum(a=>a.Quantity)
-                }).ToList()
-            }
-            )
-     ) ;
-               
         }
     }
 }

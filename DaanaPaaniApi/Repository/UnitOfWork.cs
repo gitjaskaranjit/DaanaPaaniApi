@@ -10,20 +10,7 @@ namespace DaanaPaaniApi.Repository
     {
         private readonly DataContext _db;
 
-        public UnitOfWork(DataContext db)
-        {
-            _db = db;
-            Customer = new CustomerRepository(_db);
-            Package = new PackageRepository(_db);
-            Item = new ItemRepository(_db);
-            Order = new OrderRepository(_db);
-            Driver = new DriverRepository(_db);
-            Location = new LocationRepository(_db);
-        }
-
         public ICustomerRepository Customer { get; private set; }
-
-        public IPackageRepository Package { get; private set; }
 
         public IItemRepository Item { get; private set; }
 
@@ -33,6 +20,20 @@ namespace DaanaPaaniApi.Repository
 
         public ILocationRepository Location { get; private set; }
 
+        public IOrderTempleteRepository OrderTemplete { get; private set; }
+
+
+        public UnitOfWork(DataContext db)
+        {
+            _db = db;
+            Customer = new CustomerRepository(_db);
+            Item = new ItemRepository(_db);
+            Order = new OrderRepository(_db);
+            Driver = new DriverRepository(_db);
+            Location = new LocationRepository(_db);
+            OrderTemplete = new OrderTempleteRepository(_db);
+        }
+
         public void Dispose()
         {
             _db.Dispose();
@@ -41,6 +42,7 @@ namespace DaanaPaaniApi.Repository
         public async Task SaveAsync()
         {
             await _db.SaveChangesAsync();
+           
         }
     }
 }

@@ -1,19 +1,20 @@
-﻿using Sieve.Attributes;
+﻿using DaanaPaaniApi.Entities;
+using DaanaPaaniApi.Model;
+using Sieve.Attributes;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace DaanaPaaniApi.Model
+namespace DaanaPaaniApi.Entities
 {
     public class Order
     {
         public int OrderId { get; set; }
-        public int customerId { get; set; }
-        public Customer customer { get; set; }
+        public int CustomerId { get; set; }
+        public Customer Customer { get; set; }
 
         public string Comment { get; set; }
-        public int PackageId { get; set; }
-        public Package Package { get; set; }
+        public ICollection<OrderItem> OrderItems { get; set; }
 
         [Sieve(CanFilter = true)]
         [DataType(DataType.Date)]
@@ -23,8 +24,8 @@ namespace DaanaPaaniApi.Model
         [DataType(DataType.Date)]
         public DateTime? EndDate { get; set; } = null;
 
-        public ICollection<AddOn> AddOns { get; set; }
         public Discount Discount { get; set; }
+        public int? DiscountId { get; set; }
         public int OrderTotal { get; set; }
     }
 }
