@@ -9,6 +9,20 @@ namespace DaanaPaaniApi.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
+                name: "Discounts",
+                columns: table => new
+                {
+                    OrderId = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    DiscountValue = table.Column<int>(nullable: false),
+                    DiscountType = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Discounts", x => x.OrderId);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Drivers",
                 columns: table => new
                 {
@@ -33,7 +47,8 @@ namespace DaanaPaaniApi.Migrations
                     ItemId = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ItemName = table.Column<string>(nullable: true),
-                    ItemPrice = table.Column<int>(nullable: false)
+                    ItemPrice = table.Column<int>(nullable: false),
+                    Combo = table.Column<bool>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -41,17 +56,16 @@ namespace DaanaPaaniApi.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Packages",
+                name: "OrderTempletes",
                 columns: table => new
                 {
-                    PackageId = table.Column<int>(nullable: false)
+                    OrderTempleteId = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    PackageName = table.Column<string>(nullable: true),
-                    PackagePrice = table.Column<int>(nullable: false)
+                    OrderTempleteDesc = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Packages", x => x.PackageId);
+                    table.PrimaryKey("PK_OrderTempletes", x => x.OrderTempleteId);
                 });
 
             migrationBuilder.CreateTable(
@@ -65,7 +79,6 @@ namespace DaanaPaaniApi.Migrations
                     PhoneNumber = table.Column<string>(nullable: false),
                     DateOfBirth = table.Column<DateTime>(nullable: false),
                     AddedDate = table.Column<DateTime>(nullable: false),
-                    Active = table.Column<bool>(nullable: false),
                     driverId = table.Column<int>(nullable: true)
                 },
                 constraints: table =>
@@ -102,27 +115,27 @@ namespace DaanaPaaniApi.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "PackageItems",
+                name: "ItemItems",
                 columns: table => new
                 {
-                    PackageId = table.Column<int>(nullable: false),
-                    ItemId = table.Column<int>(nullable: false),
+                    ParentItemId = table.Column<int>(nullable: false),
+                    ChildItemId = table.Column<int>(nullable: false),
                     Quantity = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_PackageItems", x => new { x.ItemId, x.PackageId });
+                    table.PrimaryKey("PK_ItemItems", x => new { x.ParentItemId, x.ChildItemId });
                     table.ForeignKey(
-                        name: "FK_PackageItems_Items_ItemId",
-                        column: x => x.ItemId,
+                        name: "FK_ItemItems_Items_ChildItemId",
+                        column: x => x.ChildItemId,
                         principalTable: "Items",
                         principalColumn: "ItemId",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_PackageItems_Packages_PackageId",
-                        column: x => x.PackageId,
-                        principalTable: "Packages",
-                        principalColumn: "PackageId",
+                        name: "FK_ItemItems_Items_ParentItemId",
+                        column: x => x.ParentItemId,
+                        principalTable: "Items",
+                        principalColumn: "ItemId",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -149,7 +162,7 @@ namespace DaanaPaaniApi.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "LocationInfos",
+                name: "Locations",
                 columns: table => new
                 {
                     customerId = table.Column<int>(nullable: false),
@@ -159,9 +172,9 @@ namespace DaanaPaaniApi.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_LocationInfos", x => x.customerId);
+                    table.PrimaryKey("PK_Locations", x => x.customerId);
                     table.ForeignKey(
-                        name: "FK_LocationInfos_Customers_customerId",
+                        name: "FK_Locations_Customers_customerId",
                         column: x => x.customerId,
                         principalTable: "Customers",
                         principalColumn: "CustomerId",
@@ -174,77 +187,63 @@ namespace DaanaPaaniApi.Migrations
                 {
                     OrderId = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    customerId = table.Column<int>(nullable: false),
+                    CustomerId = table.Column<int>(nullable: false),
                     Comment = table.Column<string>(nullable: true),
-                    PackageId = table.Column<int>(nullable: false),
                     StartDate = table.Column<DateTime>(nullable: false),
-                    EndDate = table.Column<DateTime>(nullable: true)
+                    EndDate = table.Column<DateTime>(nullable: true),
+                    DiscountId = table.Column<int>(nullable: true),
+                    OrderTotal = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Orders", x => x.OrderId);
                     table.ForeignKey(
-                        name: "FK_Orders_Packages_PackageId",
-                        column: x => x.PackageId,
-                        principalTable: "Packages",
-                        principalColumn: "PackageId",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Orders_Customers_customerId",
-                        column: x => x.customerId,
+                        name: "FK_Orders_Customers_CustomerId",
+                        column: x => x.CustomerId,
                         principalTable: "Customers",
                         principalColumn: "CustomerId",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Orders_Discounts_DiscountId",
+                        column: x => x.DiscountId,
+                        principalTable: "Discounts",
+                        principalColumn: "OrderId",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
-                name: "AddOns",
+                name: "OrderItems",
                 columns: table => new
                 {
-                    OrderId = table.Column<int>(nullable: false),
+                    OrderItemId = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    OrderId = table.Column<int>(nullable: true),
                     ItemId = table.Column<int>(nullable: false),
+                    OrderTempleteId = table.Column<int>(nullable: true),
                     Quantity = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_AddOns", x => new { x.ItemId, x.OrderId });
+                    table.PrimaryKey("PK_OrderItems", x => x.OrderItemId);
                     table.ForeignKey(
-                        name: "FK_AddOns_Items_ItemId",
+                        name: "FK_OrderItems_Items_ItemId",
                         column: x => x.ItemId,
                         principalTable: "Items",
                         principalColumn: "ItemId",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_AddOns_Orders_OrderId",
+                        name: "FK_OrderItems_Orders_OrderId",
                         column: x => x.OrderId,
                         principalTable: "Orders",
                         principalColumn: "OrderId",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Discounts",
-                columns: table => new
-                {
-                    OrderId = table.Column<int>(nullable: false),
-                    DiscountValue = table.Column<int>(nullable: false),
-                    DiscountType = table.Column<int>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Discounts", x => x.OrderId);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Discounts_Orders_OrderId",
-                        column: x => x.OrderId,
-                        principalTable: "Orders",
-                        principalColumn: "OrderId",
-                        onDelete: ReferentialAction.Cascade);
+                        name: "FK_OrderItems_OrderTempletes_OrderTempleteId",
+                        column: x => x.OrderTempleteId,
+                        principalTable: "OrderTempletes",
+                        principalColumn: "OrderTempleteId",
+                        onDelete: ReferentialAction.Restrict);
                 });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_AddOns_OrderId",
-                table: "AddOns",
-                column: "OrderId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Customers_PhoneNumber",
@@ -258,52 +257,69 @@ namespace DaanaPaaniApi.Migrations
                 column: "driverId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Orders_PackageId",
-                table: "Orders",
-                column: "PackageId");
+                name: "IX_ItemItems_ChildItemId",
+                table: "ItemItems",
+                column: "ChildItemId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Orders_customerId",
-                table: "Orders",
-                column: "customerId");
+                name: "IX_OrderItems_ItemId",
+                table: "OrderItems",
+                column: "ItemId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_PackageItems_PackageId",
-                table: "PackageItems",
-                column: "PackageId");
+                name: "IX_OrderItems_OrderId",
+                table: "OrderItems",
+                column: "OrderId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_OrderItems_OrderTempleteId",
+                table: "OrderItems",
+                column: "OrderTempleteId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Orders_CustomerId",
+                table: "Orders",
+                column: "CustomerId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Orders_DiscountId",
+                table: "Orders",
+                column: "DiscountId",
+                unique: true,
+                filter: "[DiscountId] IS NOT NULL");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "AddOns");
-
-            migrationBuilder.DropTable(
                 name: "Addresses");
-
-            migrationBuilder.DropTable(
-                name: "Discounts");
 
             migrationBuilder.DropTable(
                 name: "DriverAddresses");
 
             migrationBuilder.DropTable(
-                name: "LocationInfos");
+                name: "ItemItems");
 
             migrationBuilder.DropTable(
-                name: "PackageItems");
+                name: "Locations");
 
             migrationBuilder.DropTable(
-                name: "Orders");
+                name: "OrderItems");
 
             migrationBuilder.DropTable(
                 name: "Items");
 
             migrationBuilder.DropTable(
-                name: "Packages");
+                name: "Orders");
+
+            migrationBuilder.DropTable(
+                name: "OrderTempletes");
 
             migrationBuilder.DropTable(
                 name: "Customers");
+
+            migrationBuilder.DropTable(
+                name: "Discounts");
 
             migrationBuilder.DropTable(
                 name: "Drivers");

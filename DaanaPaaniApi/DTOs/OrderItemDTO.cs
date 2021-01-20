@@ -4,7 +4,8 @@ namespace DaanaPaaniApi.DTOs
 {
     public class OrderItemDTO
     {
-        public ItemDTO Item { get; set; }
+        public int ItemId { get; set; }
+        public string ItemName { get; set; }
         public int Quantity { get; set; }
     }
 }

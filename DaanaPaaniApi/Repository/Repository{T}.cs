@@ -28,7 +28,7 @@ namespace DaanaPaaniApi.Repository
         public void Delete(int id)
         {
             T entity = dbSet.Find(id);
-            dbSet.Remove(entity);
+            dbSet.RemoveRange(entity);
         }
 
         public IQueryable<T> GetAllAsync(Expression<Func<T, bool>> filter = null, Func<IQueryable<T>,

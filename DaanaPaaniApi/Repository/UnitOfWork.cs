@@ -20,7 +20,6 @@ namespace DaanaPaaniApi.Repository
 
         public ILocationRepository Location { get; private set; }
 
-        public IOrderTempleteRepository OrderTemplete { get; private set; }
 
 
         public UnitOfWork(DataContext db)
@@ -31,7 +30,6 @@ namespace DaanaPaaniApi.Repository
             Order = new OrderRepository(_db);
             Driver = new DriverRepository(_db);
             Location = new LocationRepository(_db);
-            OrderTemplete = new OrderTempleteRepository(_db);
         }
 
         public void Dispose()

@@ -15,8 +15,10 @@ namespace DaanaPaaniApi
             CreateMap<Discount, DiscountDTO>().ReverseMap();
             CreateMap<OrderDTO, Order>().ReverseMap();
             CreateMap<ItemDTO, Item>().ReverseMap();
-            CreateMap<OrderItem, OrderItemDTO>().ReverseMap();
-            CreateMap<OrderTemplete, OrderTempleteDTO>().ReverseMap();
+            CreateMap<OrderItem, OrderItemDTO>().ForMember(dest=>dest.ItemName,opt=>opt.MapFrom(src=>src.Item.ItemName));
+            CreateMap<OrderItemDTO, OrderItem>();
+            CreateMap<ItemItem, ItemItemDTO>().ReverseMap();
+            CreateMap<Item, ChildItemDTO>().ReverseMap();
         }
 
         //public class orderTotalResolver : IValueResolver<OrderDTO, Order, int>

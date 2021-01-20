@@ -18,10 +18,12 @@ namespace DaanaPaaniApi.Entities
 
         [Sieve(CanFilter = true)]
         [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0:dd-MM-yyyy}")]
         public DateTime StartDate { get; set; }
 
         [Sieve(CanFilter = true)]
         [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0:dd-MM-yyyy}")]
         public DateTime? EndDate { get; set; } = null;
 
         public Discount Discount { get; set; }

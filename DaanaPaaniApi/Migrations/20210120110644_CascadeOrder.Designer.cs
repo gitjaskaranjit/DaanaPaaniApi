@@ -11,8 +11,8 @@ using NetTopologySuite.Geometries;
 namespace DaanaPaaniApi.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20200620191124_AddedOrderTotaltoOrderTable")]
-    partial class AddedOrderTotaltoOrderTable
+    [Migration("20210120110644_CascadeOrder")]
+    partial class CascadeOrder
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -21,6 +21,85 @@ namespace DaanaPaaniApi.Migrations
                 .HasAnnotation("ProductVersion", "3.1.5")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+            modelBuilder.Entity("DaanaPaaniApi.Entities.Address", b =>
+                {
+                    b.Property<int>("CustomerId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("AddressType")
+                        .HasColumnType("int");
+
+                    b.Property<string>("City")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PostalCode")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("StreetName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("StreetNo")
+                        .HasColumnType("int");
+
+                    b.HasKey("CustomerId");
+
+                    b.ToTable("Addresses");
+                });
+
+            modelBuilder.Entity("DaanaPaaniApi.Entities.Customer", b =>
+                {
+                    b.Property<int>("CustomerId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("AddedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DateOfBirth")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Email")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Fullname")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PhoneNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int?>("driverId")
+                        .HasColumnType("int");
+
+                    b.HasKey("CustomerId");
+
+                    b.HasIndex("PhoneNumber")
+                        .IsUnique();
+
+                    b.HasIndex("driverId");
+
+                    b.ToTable("Customers");
+                });
+
+            modelBuilder.Entity("DaanaPaaniApi.Entities.Discount", b =>
+                {
+                    b.Property<int>("OrderId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("DiscountType")
+                        .HasColumnType("int");
+
+                    b.Property<int>("DiscountValue")
+                        .HasColumnType("int");
+
+                    b.HasKey("OrderId");
+
+                    b.ToTable("Discounts");
+                });
 
             modelBuilder.Entity("DaanaPaaniApi.Entities.Driver", b =>
                 {
@@ -77,107 +156,15 @@ namespace DaanaPaaniApi.Migrations
                     b.ToTable("DriverAddresses");
                 });
 
-            modelBuilder.Entity("DaanaPaaniApi.Model.AddOn", b =>
-                {
-                    b.Property<int>("ItemId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("OrderId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Quantity")
-                        .HasColumnType("int");
-
-                    b.HasKey("ItemId", "OrderId");
-
-                    b.HasIndex("OrderId");
-
-                    b.ToTable("AddOns");
-                });
-
-            modelBuilder.Entity("DaanaPaaniApi.Model.Address", b =>
-                {
-                    b.Property<int>("CustomerId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("AddressType")
-                        .HasColumnType("int");
-
-                    b.Property<string>("City")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PostalCode")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("StreetName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("StreetNo")
-                        .HasColumnType("int");
-
-                    b.HasKey("CustomerId");
-
-                    b.ToTable("Addresses");
-                });
-
-            modelBuilder.Entity("DaanaPaaniApi.Model.Customer", b =>
-                {
-                    b.Property<int>("CustomerId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<DateTime>("AddedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("DateOfBirth")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Email")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Fullname")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PhoneNumber")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<int?>("driverId")
-                        .HasColumnType("int");
-
-                    b.HasKey("CustomerId");
-
-                    b.HasIndex("PhoneNumber")
-                        .IsUnique();
-
-                    b.HasIndex("driverId");
-
-                    b.ToTable("Customers");
-                });
-
-            modelBuilder.Entity("DaanaPaaniApi.Model.Discount", b =>
-                {
-                    b.Property<int>("OrderId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("DiscountType")
-                        .HasColumnType("int");
-
-                    b.Property<int>("DiscountValue")
-                        .HasColumnType("int");
-
-                    b.HasKey("OrderId");
-
-                    b.ToTable("Discounts");
-                });
-
-            modelBuilder.Entity("DaanaPaaniApi.Model.Item", b =>
+            modelBuilder.Entity("DaanaPaaniApi.Entities.Item", b =>
                 {
                     b.Property<int>("ItemId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<bool>("Combo")
+                        .HasColumnType("bit");
 
                     b.Property<string>("ItemName")
                         .HasColumnType("nvarchar(max)");
@@ -190,7 +177,25 @@ namespace DaanaPaaniApi.Migrations
                     b.ToTable("Items");
                 });
 
-            modelBuilder.Entity("DaanaPaaniApi.Model.Location", b =>
+            modelBuilder.Entity("DaanaPaaniApi.Entities.ItemItem", b =>
+                {
+                    b.Property<int>("ParentItemId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ChildItemId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.HasKey("ParentItemId", "ChildItemId");
+
+                    b.HasIndex("ChildItemId");
+
+                    b.ToTable("ItemItems");
+                });
+
+            modelBuilder.Entity("DaanaPaaniApi.Entities.Location", b =>
                 {
                     b.Property<int>("customerId")
                         .HasColumnType("int");
@@ -210,7 +215,7 @@ namespace DaanaPaaniApi.Migrations
                     b.ToTable("Locations");
                 });
 
-            modelBuilder.Entity("DaanaPaaniApi.Model.Order", b =>
+            modelBuilder.Entity("DaanaPaaniApi.Entities.Order", b =>
                 {
                     b.Property<int>("OrderId")
                         .ValueGeneratedOnAdd()
@@ -220,64 +225,74 @@ namespace DaanaPaaniApi.Migrations
                     b.Property<string>("Comment")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("CustomerId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("DiscountId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime?>("EndDate")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("OrderTotal")
                         .HasColumnType("int");
 
-                    b.Property<int>("PackageId")
-                        .HasColumnType("int");
-
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("customerId")
-                        .HasColumnType("int");
-
                     b.HasKey("OrderId");
 
-                    b.HasIndex("PackageId");
+                    b.HasIndex("CustomerId");
 
-                    b.HasIndex("customerId");
+                    b.HasIndex("DiscountId")
+                        .IsUnique()
+                        .HasFilter("[DiscountId] IS NOT NULL");
 
                     b.ToTable("Orders");
                 });
 
-            modelBuilder.Entity("DaanaPaaniApi.Model.Package", b =>
+            modelBuilder.Entity("DaanaPaaniApi.Entities.OrderItem", b =>
                 {
-                    b.Property<int>("PackageId")
+                    b.Property<int>("OrderItemId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("PackageName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("PackagePrice")
-                        .HasColumnType("int");
-
-                    b.HasKey("PackageId");
-
-                    b.ToTable("Packages");
-                });
-
-            modelBuilder.Entity("DaanaPaaniApi.Model.PackageItem", b =>
-                {
                     b.Property<int>("ItemId")
                         .HasColumnType("int");
 
-                    b.Property<int>("PackageId")
+                    b.Property<int?>("OrderId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("OrderTempleteId")
                         .HasColumnType("int");
 
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
 
-                    b.HasKey("ItemId", "PackageId");
+                    b.HasKey("OrderItemId");
 
-                    b.HasIndex("PackageId");
+                    b.HasIndex("ItemId");
 
-                    b.ToTable("PackageItems");
+                    b.HasIndex("OrderId");
+
+                    b.ToTable("OrderItems");
+                });
+
+            modelBuilder.Entity("DaanaPaaniApi.Entities.Address", b =>
+                {
+                    b.HasOne("DaanaPaaniApi.Entities.Customer", "Customer")
+                        .WithOne("Address")
+                        .HasForeignKey("DaanaPaaniApi.Entities.Address", "CustomerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("DaanaPaaniApi.Entities.Customer", b =>
+                {
+                    b.HasOne("DaanaPaaniApi.Entities.Driver", "driver")
+                        .WithMany("customers")
+                        .HasForeignKey("driverId");
                 });
 
             modelBuilder.Entity("DaanaPaaniApi.Entities.DriverAddress", b =>
@@ -289,83 +304,55 @@ namespace DaanaPaaniApi.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("DaanaPaaniApi.Model.AddOn", b =>
+            modelBuilder.Entity("DaanaPaaniApi.Entities.ItemItem", b =>
                 {
-                    b.HasOne("DaanaPaaniApi.Model.Item", "Item")
-                        .WithMany("AddOns")
-                        .HasForeignKey("ItemId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                    b.HasOne("DaanaPaaniApi.Entities.Item", "ChildItem")
+                        .WithMany("ParentItems")
+                        .HasForeignKey("ChildItemId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("DaanaPaaniApi.Model.Order", "Order")
-                        .WithMany("AddOns")
-                        .HasForeignKey("OrderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("DaanaPaaniApi.Model.Address", b =>
-                {
-                    b.HasOne("DaanaPaaniApi.Model.Customer", "Customer")
-                        .WithOne("Address")
-                        .HasForeignKey("DaanaPaaniApi.Model.Address", "CustomerId")
+                    b.HasOne("DaanaPaaniApi.Entities.Item", "ParentItem")
+                        .WithMany("childItems")
+                        .HasForeignKey("ParentItemId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("DaanaPaaniApi.Model.Customer", b =>
+            modelBuilder.Entity("DaanaPaaniApi.Entities.Location", b =>
                 {
-                    b.HasOne("DaanaPaaniApi.Entities.Driver", "driver")
-                        .WithMany("customers")
-                        .HasForeignKey("driverId");
-                });
-
-            modelBuilder.Entity("DaanaPaaniApi.Model.Discount", b =>
-                {
-                    b.HasOne("DaanaPaaniApi.Model.Order", "Order")
-                        .WithOne("Discount")
-                        .HasForeignKey("DaanaPaaniApi.Model.Discount", "OrderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("DaanaPaaniApi.Model.Location", b =>
-                {
-                    b.HasOne("DaanaPaaniApi.Model.Customer", "customer")
+                    b.HasOne("DaanaPaaniApi.Entities.Customer", "customer")
                         .WithOne("locationInfo")
-                        .HasForeignKey("DaanaPaaniApi.Model.Location", "customerId")
+                        .HasForeignKey("DaanaPaaniApi.Entities.Location", "customerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("DaanaPaaniApi.Model.Order", b =>
+            modelBuilder.Entity("DaanaPaaniApi.Entities.Order", b =>
                 {
-                    b.HasOne("DaanaPaaniApi.Model.Package", "Package")
-                        .WithMany("Orders")
-                        .HasForeignKey("PackageId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("DaanaPaaniApi.Model.Customer", "customer")
+                    b.HasOne("DaanaPaaniApi.Entities.Customer", "Customer")
                         .WithMany("Order")
-                        .HasForeignKey("customerId")
+                        .HasForeignKey("CustomerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("DaanaPaaniApi.Entities.Discount", "Discount")
+                        .WithOne("Order")
+                        .HasForeignKey("DaanaPaaniApi.Entities.Order", "DiscountId");
                 });
 
-            modelBuilder.Entity("DaanaPaaniApi.Model.PackageItem", b =>
+            modelBuilder.Entity("DaanaPaaniApi.Entities.OrderItem", b =>
                 {
-                    b.HasOne("DaanaPaaniApi.Model.Item", "Item")
-                        .WithMany("PackageItems")
+                    b.HasOne("DaanaPaaniApi.Entities.Item", "Item")
+                        .WithMany("OrderItems")
                         .HasForeignKey("ItemId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("DaanaPaaniApi.Model.Package", "Package")
-                        .WithMany("PackageItems")
-                        .HasForeignKey("PackageId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.HasOne("DaanaPaaniApi.Entities.Order", "Order")
+                        .WithMany("OrderItems")
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 #pragma warning restore 612, 618
         }

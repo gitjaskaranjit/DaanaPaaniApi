@@ -12,7 +12,6 @@ namespace DaanaPaaniApi.Repository.IRepository
         IOrderRepository Order { get; }
         IDriverRepository Driver { get; }
         ILocationRepository Location { get; }
-        IOrderTempleteRepository OrderTemplete { get; }
         Task SaveAsync();
     }
 }

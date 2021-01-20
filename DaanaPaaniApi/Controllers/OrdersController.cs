@@ -7,8 +7,10 @@ using Microsoft.EntityFrameworkCore;
 using NSwag.Annotations;
 using Sieve.Models;
 using Sieve.Services;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -36,7 +38,7 @@ namespace DaanaPaaniApi.Controllers
         [Description("Get list of orders")]
         public async Task<ActionResult<IEnumerable<OrderDTO>>> GetOrders([FromQuery] SieveModel sieveModel)
         {
-            var ordersQuery = _unitOfWork.Order.GetAllAsync(include: o => o.Include(o => o.Discount));
+            var ordersQuery = _unitOfWork.Order.GetAllAsync(include: o => o.Include(o => o.Discount).Include(o=>o.OrderItems).ThenInclude(o=>o.Item));
             ordersQuery = _sieveProcessor.Apply(sieveModel, ordersQuery, applyPagination: false);
             var orders = await _mapper.ProjectTo<OrderDTO>(ordersQuery).ToListAsync();
 
@@ -49,7 +51,7 @@ namespace DaanaPaaniApi.Controllers
         [SwaggerResponse(404, typeof(ApiError))]
         public async Task<ActionResult<OrderDTO>> GetOrder(int id)
         {
-            var order = await _unitOfWork.Order.GetFirstOrDefault(o => o.OrderId == id, include: o => o.Include(o => o.Discount));
+            var order = await _unitOfWork.Order.GetFirstOrDefault(o => o.OrderId == id, include: o => o.Include(o => o.Discount).Include(o=>o.OrderItems).ThenInclude(o => o.Item));
 
             if (order == null)
             {
@@ -95,7 +97,16 @@ namespace DaanaPaaniApi.Controllers
             }
 
             _unitOfWork.Order.Delete(id);
-            await _unitOfWork.SaveAsync();
+            try
+            {
+                await _unitOfWork.SaveAsync();
+
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Delete exception " + ex.InnerException.Message);
+            }
+           
             return NoContent();
         }
     }

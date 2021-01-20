@@ -24,10 +24,12 @@ namespace DaanaPaaniApi.Entities
 
         [Sieve(CanFilter = true, CanSort = true)]
         [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0:dd-MM-yyyy}")]
         public DateTime DateOfBirth { get; set; }
 
         [Sieve(CanFilter = true, CanSort = true)]
         [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0:dd-MM-yyyy}")]
         public DateTime AddedDate { get; set; }
 
         [Sieve(CanFilter = true, CanSort = true)]

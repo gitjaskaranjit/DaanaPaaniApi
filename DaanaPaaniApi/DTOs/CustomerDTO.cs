@@ -25,9 +25,9 @@ namespace DaanaPaaniApi.DTOs
         public string Email { get; set; }
 
         public string PhoneNumber { get; set; }
-
+        [DataType(DataType.Date)]
         public DateTime DateOfBirth { get; set; }
-
+        [DataType(DataType.Date)]
         public DateTime AddedDate { get; set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]

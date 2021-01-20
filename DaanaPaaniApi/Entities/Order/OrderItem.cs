@@ -14,7 +14,6 @@ namespace DaanaPaaniApi.Entities
         public int ItemId { get; set; }
         public Item Item { get; set; }
         public int? OrderTempleteId { get; set; }
-        public OrderTemplete OrderTemplete { get; set; }
         public int Quantity { get; set; }
     }
 }

@@ -8,10 +8,10 @@ namespace DaanaPaaniApi.Entities
 {
     public class Discount
     {
-        public int DiscountId { get; set; }
         public int DiscountValue { get; set; }
         public DiscountType DiscountType { get; set; }
         public Order Order { get; set; }
-        public OrderTemplete OrderTempletes { get; set; }
+        [Key]
+        public int OrderId { get; set; }
     }
 }

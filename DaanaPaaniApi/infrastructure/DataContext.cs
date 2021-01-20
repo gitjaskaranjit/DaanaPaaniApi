@@ -19,7 +19,7 @@ namespace DaanaPaaniApi
         public DbSet<Driver> Drivers { get; set; }
         public DbSet<DriverAddress> DriverAddresses { get; set; }
         public DbSet<OrderItem> OrderItems { get; set; }
-        public DbSet<OrderTemplete> OrderTempletes { get; set; }
+        public DbSet<ItemItem> ItemItems { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -29,13 +29,27 @@ namespace DaanaPaaniApi
             // Many to Many Package and item -> PackageItem
             modelBuilder.Entity<OrderItem>()
                                 .HasOne(p => p.Order)
-                                .WithMany(i => i.OrderItems);
+                                .WithMany(i => i.OrderItems)
+                                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<OrderItem>()
                                 .HasOne(p => p.Item)
-                                .WithMany(i => i.OrderItems);
+                                .WithMany(i => i.OrderItems)
+                                .OnDelete(DeleteBehavior.Cascade);
 
-        
+
+            modelBuilder.Entity<ItemItem>().HasKey(i=> new {i.ParentItemId ,i.ChildItemId });
+            modelBuilder.Entity<Item>().HasMany(i => i.childItems)
+                                        .WithOne(i => i.ParentItem).
+                                        HasForeignKey(i => i.ParentItemId);
+
+            modelBuilder.Entity<Item>().HasMany(i => i.ParentItems)
+                                        .WithOne(i => i.ChildItem)
+                                        .HasForeignKey(i => i.ChildItemId)
+                                        .OnDelete(DeleteBehavior.Restrict);
+
+
+
             //locationInfo cooridates
             modelBuilder.Entity<Location>().Property(c => c.LocationPoints)
                  .HasSrid(4326);

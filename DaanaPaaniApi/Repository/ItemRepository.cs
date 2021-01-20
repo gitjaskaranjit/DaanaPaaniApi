@@ -19,7 +19,9 @@ namespace DaanaPaaniApi.Repository
 
         public void Update(Item item)
         {
-            throw new NotImplementedException();
+            var items = _db.ItemItems.Where(o => o.ParentItemId == item.ItemId);
+            _db.RemoveRange(items);
+            _db.Items.Update(item);
         }
     }
 }

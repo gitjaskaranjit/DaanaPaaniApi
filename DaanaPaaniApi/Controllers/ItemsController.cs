@@ -32,7 +32,7 @@ namespace DaanaPaaniApi.Controllers
         [Description("Get list of items")]
         public async Task<ActionResult<IEnumerable<ItemDTO>>> GetItems()
         {
-            return Ok(await _mapper.ProjectTo<ItemDTO>(_unitOfWork.Item.GetAllAsync()).ToListAsync());
+             return Ok(await _mapper.ProjectTo<ItemDTO>(_unitOfWork.Item.GetAllAsync(include: o => o.Include(o => o.childItems).ThenInclude(i=>i.ChildItem))).ToListAsync());
         }
 
         // GET: /Item/5
@@ -42,7 +42,7 @@ namespace DaanaPaaniApi.Controllers
         [Description("Get specific item")]
         public async Task<ActionResult<ItemDTO>> GetItem(int id)
         {
-            var item = await _unitOfWork.Item.GetFirstOrDefault(i => i.ItemId == id);
+            var item = await _unitOfWork.Item.GetFirstOrDefault(i => i.ItemId == id, include: o => o.Include(o => o.childItems).ThenInclude(i => i.ChildItem));
 
             if (item == null)
             {
