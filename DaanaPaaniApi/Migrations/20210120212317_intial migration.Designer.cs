@@ -11,8 +11,8 @@ using NetTopologySuite.Geometries;
 namespace DaanaPaaniApi.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20210120110644_CascadeOrder")]
-    partial class CascadeOrder
+    [Migration("20210120212317_intial migration")]
+    partial class intialmigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

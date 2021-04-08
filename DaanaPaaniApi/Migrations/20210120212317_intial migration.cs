@@ -4,7 +4,7 @@ using NetTopologySuite.Geometries;
 
 namespace DaanaPaaniApi.Migrations
 {
-    public partial class intialMigration : Migration
+    public partial class intialmigration : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -53,19 +53,6 @@ namespace DaanaPaaniApi.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Items", x => x.ItemId);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "OrderTempletes",
-                columns: table => new
-                {
-                    OrderTempleteId = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    OrderTempleteDesc = table.Column<string>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_OrderTempletes", x => x.OrderTempleteId);
                 });
 
             migrationBuilder.CreateTable(
@@ -236,13 +223,7 @@ namespace DaanaPaaniApi.Migrations
                         column: x => x.OrderId,
                         principalTable: "Orders",
                         principalColumn: "OrderId",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_OrderItems_OrderTempletes_OrderTempleteId",
-                        column: x => x.OrderTempleteId,
-                        principalTable: "OrderTempletes",
-                        principalColumn: "OrderTempleteId",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
@@ -270,11 +251,6 @@ namespace DaanaPaaniApi.Migrations
                 name: "IX_OrderItems_OrderId",
                 table: "OrderItems",
                 column: "OrderId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_OrderItems_OrderTempleteId",
-                table: "OrderItems",
-                column: "OrderTempleteId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Orders_CustomerId",
@@ -311,9 +287,6 @@ namespace DaanaPaaniApi.Migrations
 
             migrationBuilder.DropTable(
                 name: "Orders");
-
-            migrationBuilder.DropTable(
-                name: "OrderTempletes");
 
             migrationBuilder.DropTable(
                 name: "Customers");

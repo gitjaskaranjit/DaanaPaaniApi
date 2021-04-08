@@ -16,14 +16,14 @@ namespace DaanaPaaniApi.Repository
         private readonly IHttpClientFactory _client;
         private readonly HereApiOptions _options;
         public bool Error { get; set; }
-        public HereGeocodeService(IHttpClientFactory client,IOptions<HereApiOptions> optionsWrapper)
+
+        public HereGeocodeService(IHttpClientFactory client, IOptions<HereApiOptions> optionsWrapper)
         {
             _client = client;
             _options = optionsWrapper.Value;
-
         }
 
-        public  async Task<GeocodeResponse> GetLocationInfoAsync(Entities.Address address)
+        public async Task<GeocodeResponse> GetLocationInfoAsync(Entities.Address address)
         {
             var request = new HttpRequestMessage(HttpMethod.Get,
                                                 _options.GeocodeBaseUrl
@@ -32,29 +32,19 @@ namespace DaanaPaaniApi.Repository
                                                 + address.City + "&apiKey="
                                                 + _options.HereApikey);
 
-
             var client = _client.CreateClient();
 
-            if (string.IsNullOrWhiteSpace(address.StreetName) | address.StreetNo.Equals(0))
+            var response = await client.SendAsync(request);
+            if (response.IsSuccessStatusCode)
             {
-                this.Error = true;
-                throw new ArgumentException("Please check your address");
+                var result = await response.Content.ReadAsStringAsync();
+                var JsonResult = JsonConvert.DeserializeObject<GeocodeResponse>(result);
+                this.Error = !JsonResult.Items.Any();
+                return JsonResult;
             }
             else
             {
-
-                var response = await client.SendAsync(request);
-                if (response.IsSuccessStatusCode)
-                {
-                    var result = await response.Content.ReadAsStringAsync();
-                   var JsonResult =  JsonConvert.DeserializeObject<GeocodeResponse>(result);
-                   this.Error = !JsonResult.Items.Any();
-                    return JsonResult;
-                }
-                else
-                {
-                    throw new ArgumentException("Something went wrong while fetching geocode!");
-                }
+                throw new ArgumentException("Something went wrong while fetching geocode!");
             }
         }
     }
