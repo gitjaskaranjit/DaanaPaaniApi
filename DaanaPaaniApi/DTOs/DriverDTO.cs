@@ -21,7 +21,5 @@ namespace DaanaPaaniApi.DTOs
         public string LicenseNo { get; set; }
         public DateTime LinceseExp { get; set; }
         public string DriverNote { get; set; }
-
-        public IFormFile LicImageUrl { get; set; }
     }
 }

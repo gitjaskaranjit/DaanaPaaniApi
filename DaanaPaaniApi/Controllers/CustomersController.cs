@@ -58,7 +58,7 @@ namespace DaaniPaaniApi.Controllers
             var customertoOrder = from cust in customersQuery
                                   join order in ordersQuery on cust.CustomerId equals order.CustomerId
                                   into coGroup
-                                  from cusor in coGroup.Where(o=>o.EndDate > DateTime.Now).DefaultIfEmpty()
+                                  from cusor in coGroup.Where(o=>o.EndDate >= DateTime.Today).DefaultIfEmpty()
                                   select new CustomerDTO
                                   {
                                       CustomerId = cust.CustomerId,
@@ -66,6 +66,7 @@ namespace DaaniPaaniApi.Controllers
                                       Email = cust.Email,
                                       PhoneNumber = cust.PhoneNumber,
                                       Address = _mapper.Map<Address, AddressDTO>(cust.Address),
+                                      DriverId = cust.driverId,
                                       IsActive = cusor == null ? false : true
 
                                   };

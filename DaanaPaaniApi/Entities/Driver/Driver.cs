@@ -21,7 +21,6 @@ namespace DaanaPaaniApi.Entities
         public string LicenseNo { get; set; }
         public DateTime LinceseExp { get; set; }
         public string DriverNote { get; set; }
-        public string LicImageUrl { get; set; }
         public ICollection<Customer> customers { get; set; }
     }
 }

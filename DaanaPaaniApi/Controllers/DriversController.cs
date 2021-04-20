@@ -54,7 +54,7 @@ namespace DaanaPaaniApi.Controllers
         [ProducesResponseType(201)]
         [SwaggerResponse(400,typeof(ApiError))]
         [Description("Create new driver")]
-        public async Task<IActionResult> PostDriver([FromForm] DriverDTO driverDTO)
+        public async Task<IActionResult> PostDriver([FromBody] DriverDTO driverDTO)
         {
             var driver = _mapper.Map<DriverDTO, Driver>(driverDTO);
             var NewDriver = _unitOfWork.Driver.Add(driver);
@@ -89,6 +89,21 @@ namespace DaanaPaaniApi.Controllers
             if (driverEntity == null) return NotFound(new ApiError("Driver not found"));
             _unitOfWork.Driver.Delete(id);
             await _unitOfWork.SaveAsync();
+            return NoContent();
+        }
+
+        [HttpPut("{id}/Customers")]
+        [Description("Assign driver to customers")]
+        [ProducesResponseType(204)]
+        [SwaggerResponse(404, typeof(ApiError))]
+        public async Task<IActionResult> AssignDriver(int id,CustomersDriverDTO customersDriverDTO)
+        {
+            var driverEntity = await _unitOfWork.Driver.GetFirstOrDefault(d => d.DriverId == id,
+                                                               disableTracking: true);
+            if (driverEntity == null) return NotFound(new ApiError("Driver not found"));
+            var customers =  await _unitOfWork.Customer.GetAllAsync().Where(c => customersDriverDTO.customerId.Contains(c.CustomerId)).ToListAsync();
+            customers.ForEach(c=>c.driverId = id);
+           await _unitOfWork.SaveAsync();
             return NoContent();
         }
     }
