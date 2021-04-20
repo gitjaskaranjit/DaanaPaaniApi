@@ -31,8 +31,7 @@ namespace DaanaPaaniApi.Controllers
         [ProducesResponseType(200)]
         public async Task<ActionResult<IEnumerable<DriverDTO>>> GetDrivers()
         {
-            var drivers = _unitOfWork.Driver.GetAllAsync(include: d => d.Include(d => d.driverAddress),
-                                                        disableTracking: true);
+            var drivers = _unitOfWork.Driver.GetAllAsync(disableTracking: true);
             return await _mapper.ProjectTo<DriverDTO>(drivers).ToListAsync();
         }
 
@@ -43,7 +42,6 @@ namespace DaanaPaaniApi.Controllers
         public async Task<ActionResult<DriverDTO>> GetDriver(int id)
         {
             var driver = await _unitOfWork.Driver.GetFirstOrDefault(d => d.DriverId == id,
-                                                               include: d => d.Include(d => d.driverAddress),
                                                                disableTracking: true);
             if(driver == null)
             {
@@ -56,7 +54,7 @@ namespace DaanaPaaniApi.Controllers
         [ProducesResponseType(201)]
         [SwaggerResponse(400,typeof(ApiError))]
         [Description("Create new driver")]
-        public async Task<IActionResult> PostDriver([FromBody] DriverDTO driverDTO)
+        public async Task<IActionResult> PostDriver([FromForm] DriverDTO driverDTO)
         {
             var driver = _mapper.Map<DriverDTO, Driver>(driverDTO);
             var NewDriver = _unitOfWork.Driver.Add(driver);
@@ -71,7 +69,6 @@ namespace DaanaPaaniApi.Controllers
         public async Task<IActionResult> PutDriver(int id, [FromBody] DriverDTO driverDTO)
         {
             var driverEntity = await _unitOfWork.Driver.GetFirstOrDefault(d => d.DriverId == id,
-                                                                include: d => d.Include(d => d.driverAddress),
                                                                 disableTracking: true);
             if (driverEntity == null) return NotFound(new ApiError("Driver not found"));
 
@@ -88,7 +85,6 @@ namespace DaanaPaaniApi.Controllers
         public async Task<IActionResult> Delete(int id)
         {
             var driverEntity = await _unitOfWork.Driver.GetFirstOrDefault(d => d.DriverId == id,
-                                                                include: d => d.Include(d => d.driverAddress),
                                                                 disableTracking: true);
             if (driverEntity == null) return NotFound(new ApiError("Driver not found"));
             _unitOfWork.Driver.Delete(id);

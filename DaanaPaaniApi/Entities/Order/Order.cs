@@ -1,9 +1,7 @@
-﻿using DaanaPaaniApi.Entities;
-using DaanaPaaniApi.Model;
-using Sieve.Attributes;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DaanaPaaniApi.Entities
 {
@@ -16,18 +14,16 @@ namespace DaanaPaaniApi.Entities
         public string Comment { get; set; }
         public ICollection<OrderItem> OrderItems { get; set; }
 
-        [Sieve(CanFilter = true)]
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:dd-MM-yyyy}")]
         public DateTime StartDate { get; set; }
 
-        [Sieve(CanFilter = true)]
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:dd-MM-yyyy}")]
         public DateTime? EndDate { get; set; } = null;
 
         public Discount Discount { get; set; }
         public int? DiscountId { get; set; }
-        public int OrderTotal { get; set; }
+        public decimal OrderTotal { get; set; }
     }
 }

@@ -21,6 +21,6 @@ namespace DaanaPaaniApi.DTOs
         public DateTime? EndDate { get; set; } = null;
 
         public DiscountDTO Discount { get; set; }
-        public int OrderTotal { get; set; }
+        public decimal OrderTotal { get; set; }
     }
 }

@@ -4,7 +4,7 @@ using NetTopologySuite.Geometries;
 
 namespace DaanaPaaniApi.Migrations
 {
-    public partial class intialmigration : Migration
+    public partial class intialMigration : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -132,7 +132,7 @@ namespace DaanaPaaniApi.Migrations
                 {
                     CustomerId = table.Column<int>(nullable: false),
                     StreetNo = table.Column<int>(nullable: false),
-                    StreetName = table.Column<string>(nullable: true),
+                    StreetName = table.Column<string>(nullable: false),
                     City = table.Column<string>(nullable: true),
                     PostalCode = table.Column<string>(nullable: true),
                     AddressType = table.Column<int>(nullable: false)
@@ -206,7 +206,6 @@ namespace DaanaPaaniApi.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     OrderId = table.Column<int>(nullable: true),
                     ItemId = table.Column<int>(nullable: false),
-                    OrderTempleteId = table.Column<int>(nullable: true),
                     Quantity = table.Column<int>(nullable: false)
                 },
                 constraints: table =>

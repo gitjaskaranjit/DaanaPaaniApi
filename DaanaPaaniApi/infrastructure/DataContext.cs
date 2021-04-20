@@ -17,7 +17,6 @@ namespace DaanaPaaniApi
         public DbSet<Discount> Discounts { get; set; }
         public DbSet<Location> Locations { get; set; }
         public DbSet<Driver> Drivers { get; set; }
-        public DbSet<DriverAddress> DriverAddresses { get; set; }
         public DbSet<OrderItem> OrderItems { get; set; }
         public DbSet<ItemItem> ItemItems { get; set; }
 

@@ -5,8 +5,6 @@ using DaanaPaaniApi.Repository.IRepository;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NSwag.Annotations;
-using Sieve.Models;
-using Sieve.Services;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -22,24 +20,20 @@ namespace DaanaPaaniApi.Controllers
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-        private readonly ISieveProcessor _sieveProcessor;
 
         public OrdersController(IUnitOfWork unitOfWork,
-                               IMapper mapper,
-                               ISieveProcessor sieveProcessor)
+                               IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
-            _sieveProcessor = sieveProcessor;
         }
 
         // GET: api/Order
         [HttpGet]
         [Description("Get list of orders")]
-        public async Task<ActionResult<IEnumerable<OrderDTO>>> GetOrders([FromQuery] SieveModel sieveModel)
+        public async Task<ActionResult<IEnumerable<OrderDTO>>> GetOrders()
         {
             var ordersQuery = _unitOfWork.Order.GetAllAsync(include: o => o.Include(o => o.Discount).Include(o=>o.OrderItems).ThenInclude(o=>o.Item));
-            ordersQuery = _sieveProcessor.Apply(sieveModel, ordersQuery, applyPagination: false);
             var orders = await _mapper.ProjectTo<OrderDTO>(ordersQuery).ToListAsync();
 
             return orders;

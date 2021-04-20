@@ -3,21 +3,17 @@ using DaanaPaaniApi.infrastructure;
 using DaanaPaaniApi.Model;
 using DaanaPaaniApi.Repository;
 using DaanaPaaniApi.Repository.IRepository;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
 using Okta.AspNetCore;
-using Sieve.Services;
 using System;
 using System.Linq;
-using System.Text.Json.Serialization;
 
 namespace DaanaPaaniApi
 {
@@ -66,9 +62,6 @@ namespace DaanaPaaniApi
                                                                .AllowAnyHeader()
                                                                );
             });
-            services.AddScoped<ISieveCustomFilterMethods, SieveCustomFilterMethods>();
-            services.AddScoped<ISieveCustomSortMethods, SieveCustomSortMethods>();
-            services.AddScoped<ISieveProcessor, ApplicationSieveProcessor>();
             services.AddAutoMapper(typeof(MappingProfile));
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IGeocodeService, HereGeocodeService>();

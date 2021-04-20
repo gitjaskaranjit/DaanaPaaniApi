@@ -1,6 +1,4 @@
-﻿using DaanaPaaniApi.Entities;
-using Sieve.Attributes;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -12,27 +10,22 @@ namespace DaanaPaaniApi.Entities
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int CustomerId { get; set; }
 
-        [Sieve(CanFilter = true, CanSort = true)]
         public string Fullname { get; set; }
 
         [EmailAddress]
         public string Email { get; set; }
 
         [Required]
-        [Sieve(CanFilter = true)]
         public string PhoneNumber { get; set; }
 
-        [Sieve(CanFilter = true, CanSort = true)]
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:dd-MM-yyyy}")]
         public DateTime DateOfBirth { get; set; }
 
-        [Sieve(CanFilter = true, CanSort = true)]
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:dd-MM-yyyy}")]
         public DateTime AddedDate { get; set; }
 
-        [Sieve(CanFilter = true, CanSort = true)]
         public Address Address { get; set; }
 
         public Location locationInfo { get; set; }

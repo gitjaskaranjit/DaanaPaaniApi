@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -20,6 +21,7 @@ namespace DaanaPaaniApi.DTOs
         public string LicenseNo { get; set; }
         public DateTime LinceseExp { get; set; }
         public string DriverNote { get; set; }
-        public DriverAddressDTO DriverAddress { get; set; }
+
+        public IFormFile LicImageUrl { get; set; }
     }
 }

@@ -11,7 +11,6 @@ namespace DaanaPaaniApi
             CreateMap<Customer, CustomerDTO>().ReverseMap();
             CreateMap<Address, AddressDTO>().ReverseMap();
             CreateMap<Driver, DriverDTO>().ReverseMap();
-            CreateMap<DriverAddress, DriverAddressDTO>().ReverseMap();
             CreateMap<Discount, DiscountDTO>().ReverseMap();
             CreateMap<OrderDTO, Order>().ReverseMap();
             CreateMap<ItemDTO, Item>().ReverseMap();

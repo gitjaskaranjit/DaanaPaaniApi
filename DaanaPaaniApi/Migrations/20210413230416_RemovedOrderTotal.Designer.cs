@@ -4,15 +4,17 @@ using DaanaPaaniApi;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 
 namespace DaanaPaaniApi.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20210413230416_RemovedOrderTotal")]
+    partial class RemovedOrderTotal
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -119,9 +121,6 @@ namespace DaanaPaaniApi.Migrations
                     b.Property<string>("DriverPhone")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("LicImageUrl")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("LicenseNo")
                         .HasColumnType("nvarchar(max)");
 
@@ -131,6 +130,31 @@ namespace DaanaPaaniApi.Migrations
                     b.HasKey("DriverId");
 
                     b.ToTable("Drivers");
+                });
+
+            modelBuilder.Entity("DaanaPaaniApi.Entities.DriverAddress", b =>
+                {
+                    b.Property<int>("DriverId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("City")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PostalCode")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Province")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("StreetName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("StreetNo")
+                        .HasColumnType("int");
+
+                    b.HasKey("DriverId");
+
+                    b.ToTable("DriverAddresses");
                 });
 
             modelBuilder.Entity("DaanaPaaniApi.Entities.Item", b =>
@@ -211,9 +235,6 @@ namespace DaanaPaaniApi.Migrations
                     b.Property<DateTime?>("EndDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<decimal>("OrderTotal")
-                        .HasColumnType("decimal(18,2)");
-
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
 
@@ -267,6 +288,15 @@ namespace DaanaPaaniApi.Migrations
                     b.HasOne("DaanaPaaniApi.Entities.Driver", "driver")
                         .WithMany("customers")
                         .HasForeignKey("driverId");
+                });
+
+            modelBuilder.Entity("DaanaPaaniApi.Entities.DriverAddress", b =>
+                {
+                    b.HasOne("DaanaPaaniApi.Entities.Driver", "driver")
+                        .WithOne("driverAddress")
+                        .HasForeignKey("DaanaPaaniApi.Entities.DriverAddress", "DriverId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("DaanaPaaniApi.Entities.ItemItem", b =>

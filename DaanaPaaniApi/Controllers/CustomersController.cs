@@ -9,8 +9,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.Geometries;
 using NSwag.Annotations;
-using Sieve.Models;
-using Sieve.Services;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -27,16 +25,13 @@ namespace DaaniPaaniApi.Controllers
         private readonly IMapper _mapper;
         private readonly IGeocodeService _geocodeService;
         private readonly IUnitOfWork _unitOfWork;
-        private readonly ISieveProcessor _sieveProcessr;
 
         public CustomersController(IMapper mapper,
                                   IGeocodeService geocodeService,
-                                  IUnitOfWork unitOfWork,
-                                  ISieveProcessor sieveProcessor)
+                                  IUnitOfWork unitOfWork)
         {
             _geocodeService = geocodeService;
             _mapper = mapper;
-            _sieveProcessr = sieveProcessor;
             _unitOfWork = unitOfWork;
         }
 
@@ -55,21 +50,27 @@ namespace DaaniPaaniApi.Controllers
         [HttpGet]
         [ProducesResponseType(200)]
         [Description("Get the list of all the customers")]
-        public async Task<ActionResult<PagedCollection<CustomerDTO>>> GetCustomers([FromQuery] SieveModel sieveModel)
+        public ActionResult<IEnumerable<CustomerDTO>> GetCustomers()
         {
             var customersQuery = _unitOfWork.Customer.GetAllAsync(include: c => c.Include(c => c.Address).Include(c => c.driver), disableTracking: true);
-            customersQuery = _sieveProcessr.Apply(sieveModel, customersQuery, applyPagination: false);
-            var totalSize = customersQuery.Count();
-            customersQuery = _sieveProcessr.Apply(sieveModel, customersQuery, applySorting: false, applyFiltering: false);
-            var customers = await _mapper.ProjectTo<CustomerDTO>(customersQuery).ToListAsync();
+            var ordersQuery = _unitOfWork.Order.GetAllAsync(include: o => o.Include(o => o.Discount).Include(o => o.OrderItems).ThenInclude(o => o.Item));
 
-            return new PagedCollection<CustomerDTO>
-            {
-                Page = sieveModel.Page,
-                PageSize = sieveModel.PageSize,
-                TotalSize = totalSize,
-                Items = customers
-            };
+            var customertoOrder = from cust in customersQuery
+                                  join order in ordersQuery on cust.CustomerId equals order.CustomerId
+                                  into coGroup
+                                  from cusor in coGroup.Where(o=>o.EndDate > DateTime.Now).DefaultIfEmpty()
+                                  select new CustomerDTO
+                                  {
+                                      CustomerId = cust.CustomerId,
+                                      Fullname = cust.Fullname,
+                                      Email = cust.Email,
+                                      PhoneNumber = cust.PhoneNumber,
+                                      Address = _mapper.Map<Address, AddressDTO>(cust.Address),
+                                      IsActive = cusor == null ? false : true
+
+                                  };
+            return Ok(customertoOrder);
+            
         }
 
         [HttpGet("{id}/orders")]
@@ -192,10 +193,9 @@ namespace DaaniPaaniApi.Controllers
         [HttpGet("locations")]
         [ProducesResponseType(200)]
         [Description("Get the list of all the customers Locations")]
-        public ActionResult<IEnumerable<LocationDTO>> GetCustomerLocations([FromQuery] SieveModel sieveModel)
+        public ActionResult<IEnumerable<LocationDTO>> GetCustomerLocations()
         {
             var LocationsQuery = _unitOfWork.Location.GetAllAsync().AsNoTracking();
-            LocationsQuery = _sieveProcessr.Apply(sieveModel, LocationsQuery, applyPagination: false);
             return LocationsQuery.Select((l =>
                 new LocationDTO
                 {
