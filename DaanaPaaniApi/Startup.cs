@@ -1,4 +1,5 @@
 using AutoMapper;
+using DaanaPaaniApi.Helper;
 using DaanaPaaniApi.infrastructure;
 using DaanaPaaniApi.Model;
 using DaanaPaaniApi.Repository;
@@ -64,6 +65,7 @@ namespace DaanaPaaniApi
             });
             services.AddAutoMapper(typeof(MappingProfile));
             services.AddScoped<IUnitOfWork, UnitOfWork>();
+            services.AddTransient<ICalculator, DefaultCalculator>();
             services.AddScoped<IGeocodeService, HereGeocodeService>();
             services.AddAuthentication(options =>
             {

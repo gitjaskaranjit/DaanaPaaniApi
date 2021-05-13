@@ -2,8 +2,8 @@
 using DaanaPaaniApi;
 using DaanaPaaniApi.DTOs;
 using DaanaPaaniApi.Entities;
+using DaanaPaaniApi.Helper;
 using DaanaPaaniApi.infrastructure;
-using DaanaPaaniApi.Model;
 using DaanaPaaniApi.Repository.IRepository;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -25,14 +25,18 @@ namespace DaaniPaaniApi.Controllers
         private readonly IMapper _mapper;
         private readonly IGeocodeService _geocodeService;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly ICalculator _calculator;
 
         public CustomersController(IMapper mapper,
                                   IGeocodeService geocodeService,
-                                  IUnitOfWork unitOfWork)
+                                  IUnitOfWork unitOfWork,
+                                  ICalculator calculator)
         {
             _geocodeService = geocodeService;
             _mapper = mapper;
             _unitOfWork = unitOfWork;
+            _calculator = calculator;
+
         }
 
         [HttpGet("{id}")]
@@ -55,7 +59,7 @@ namespace DaaniPaaniApi.Controllers
             var customersQuery = _unitOfWork.Customer.GetAllAsync(include: c => c.Include(c => c.Address).Include(c => c.driver), disableTracking: true);
             var ordersQuery = _unitOfWork.Order.GetAllAsync(include: o => o.Include(o => o.Discount).Include(o => o.OrderItems).ThenInclude(o => o.Item));
 
-            var customertoOrder = from cust in customersQuery
+            var customertoOrder = (from cust in customersQuery
                                   join order in ordersQuery on cust.CustomerId equals order.CustomerId
                                   into coGroup
                                   from cusor in coGroup.Where(o=>o.EndDate >= DateTime.Today).DefaultIfEmpty()
@@ -69,7 +73,7 @@ namespace DaaniPaaniApi.Controllers
                                       DriverId = cust.driverId,
                                       IsActive = cusor == null ? false : true
 
-                                  };
+                                  }).Distinct();
             return Ok(customertoOrder);
             
         }
@@ -117,6 +121,7 @@ namespace DaaniPaaniApi.Controllers
             else
             {
                 orderDTO.CustomerId = id;
+                orderDTO.OrderTotal = _calculator.OrderTotalCalculator(orderDTO.OrderItems,orderDTO.Discount);
                 var order = _mapper.Map<OrderDTO, Order>(orderDTO);
                 var NewOrder = _unitOfWork.Order.Add(order);
                 await _unitOfWork.SaveAsync();

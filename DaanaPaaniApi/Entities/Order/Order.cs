@@ -13,6 +13,7 @@ namespace DaanaPaaniApi.Entities
 
         public string Comment { get; set; }
         public ICollection<OrderItem> OrderItems { get; set; }
+        public ICollection<Invoice> Invoices { get; set; }
 
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:dd-MM-yyyy}")]

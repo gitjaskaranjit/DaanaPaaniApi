@@ -19,6 +19,8 @@ namespace DaanaPaaniApi.Repository
         public IDriverRepository Driver { get; private set; }
 
         public ILocationRepository Location { get; private set; }
+        public IInvoiceRepository Invoice { get; set; }
+        public IPaymentRepository Payment { get; set; }
 
 
 

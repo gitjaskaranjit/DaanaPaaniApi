@@ -19,13 +19,17 @@ namespace DaanaPaaniApi
         public DbSet<Driver> Drivers { get; set; }
         public DbSet<OrderItem> OrderItems { get; set; }
         public DbSet<ItemItem> ItemItems { get; set; }
+        public DbSet<Invoice> Invoices { get; set; }
+        public DbSet<InvoiceLine> InvoiceLines { get; set; }
+        public DbSet<Payment> Payments { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Customer>().Property(c => c.PhoneNumber).IsRequired();
             modelBuilder.Entity<Customer>().HasIndex(c => c.PhoneNumber).IsUnique();
 
-            // Many to Many Package and item -> PackageItem
+       
+
             modelBuilder.Entity<OrderItem>()
                                 .HasOne(p => p.Order)
                                 .WithMany(i => i.OrderItems)
@@ -35,6 +39,8 @@ namespace DaanaPaaniApi
                                 .HasOne(p => p.Item)
                                 .WithMany(i => i.OrderItems)
                                 .OnDelete(DeleteBehavior.Cascade);
+
+
 
 
             modelBuilder.Entity<ItemItem>().HasKey(i=> new {i.ParentItemId ,i.ChildItemId });
